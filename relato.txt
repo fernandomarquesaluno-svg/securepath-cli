@@ -1,94 +1,199 @@
-===============================================================================
 RELATO DE DESENVOLVIMENTO ASSISTIDO POR IA - TAREFA 3 (LEAS)
+
 Artefato: SecurePath CLI — Static Secret Scanner
+
 Aluno: Fernando Marques
+
 Repositório: https://github.com/fernandomarquesaluno-svg/securepath-cli
+
 ===============================================================================
+
+
 
 1. ENDEREÇAMENTO DO REPOSITÓRIO E DISPONIBILIDADE
+
 -------------------------------------------------------------------------------
+
 Repositório público (Git/GitHub): 
+
 https://github.com/fernandomarquesaluno-svg/securepath-cli
 
+
+
 O artefato encontra-se hospedado publicamente, cumprindo o critério de 
+
 disponibilidade por meio de licença aberta e acesso sem autenticação prévia.
 
 
+
+
+
 2. FERRAMENTAS DE INTELIGÊNCIA ARTIFICIAL E ARQUITETURA DE MODELOS
+
 -------------------------------------------------------------------------------
+
 • Engenharia de Código e Lógica CLI: OpenAI GPT-4o / Anthropic Claude 3.5 Sonnet
+
 • Documentação Técnica (README.md): OpenAI GPT-4o / Google Gemini
+
 • Revisão Acadêmica de Artefato Científico: Anthropic Claude 3.5 Sonnet / Google Gemini
 
 
+
+
+
 3. ENGENHARIA DE PROMPTS E PROCESSO RECURSIVO DE REFINAMENTO
+
 -------------------------------------------------------------------------------
+
 a) Prompt de Alta Concorrência Técnica (Sucesso):
+
 "Desenvolva uma ferramenta CLI de análise estática de código (SAST) em Python 3 
+
 utilizando unicamente a biblioteca padrão (argparse, re, pathlib). A ferramenta 
+
 deve realizar parsing iterativo de arquivos de texto e implementar Expressões 
+
 Regulares (Regex) para detecção de: 1) AWS Access Keys (AKIA[0-9A-Z]{16}), 
+
 2) Bearer Tokens, 3) Blocos de Chaves Privadas RSA, 4) String literals de senhas. 
+
 O output deve indicar linha, tipo de credencial e match mascarado."
 
+
+
 b) Prompt de Escopo Indefinido (Inadequado):
+
 "Crie um sistema completo de cibersegurança em Python para análise de vulnerabilidades."
+
 Diagnóstico da Falha: O modelo gerou um monólito contendo abstrações excessivas, 
+
 dependências externas (como `requests` e `scapy`), sem especificação de I/O 
+
 e com baixo índice de sustentabilidade.
 
+
+
 c) Estratégia de Refinamento:
+
 Aplicou-se a técnica de restrição sintática e contextual. O escopo foi 
+
 delimitado para evitar dependências de terceiros (`pip`), garantindo a 
+
 portabilidade determinística do ambiente de execução e a execução estritamente 
+
 offline (air-gapped compliance).
 
 
+
+
+
 4. TOMADA DE DECISÃO TÉCNICA E INTERVENÇÃO HUMANA
+
 -------------------------------------------------------------------------------
+
 • Restrição de Arquitetura (Zero-External-Dependencies): Optou-se por não utilizar 
+
   frameworks de terceiros (ex: `click` ou `rich`) em favor dos módulos nativos 
+
   `argparse` e `pathlib`, garantindo conformidade com o critério de sustentabilidade.
+
 • Design de Teste Reprodutível: Elaborou-se manualmente o arquivo `teste.txt` 
+
   contendo vetores de teste sintéticos (mocks) com múltiplos padrões de regex, 
+
   permitindo a validação dos limites de False Positives e False Negatives.
+
 • Compatibilidade I/O de Sistema de Arquivos: Diagnóstico e ajuste no parsing de 
+
   argumentos de linha de comando (`sys.argv`) para validar se o parâmetro de 
+
   caminho (`path`) apontava para arquivo individual ou diretório.
 
 
+
+
+
 5. SÍNTESE DA REVISÃO ACADÊMICA DO ARTEFATO (CRITÉRIOS SBSEG)
+
 -------------------------------------------------------------------------------
+
 A avaliação técnica do artefato identificou as seguintes métricas de qualidade:
 
+
+
 • Disponibilidade: Repositório público versionado via Git, contendo árvore de 
+
   diretórios organizada e acesso irrestrito ao código-fonte.
+
 • Funcionalidade: O motor regex realiza o casamento de padrões (pattern matching) 
+
   corretamente. 
+
   - Vulnerabilidade identificada na revisão: Risco de quebra de execução (runtime exception) 
+
     ao processar arquivos binários ou arquivos codificados em padrões não-UTF-8.
+
   - Correção aplicada: Implementação de captura de exceções `UnicodeDecodeError` e 
+
     `PermissionError`, acrescido da flag `errors='ignore'` no manipulador do buffer I/O (`open()`).
+
 • Sustentabilidade: Índice máximo. Ausência de árvore de dependências externas 
+
   elimina riscos de degradação por depreciação de bibliotecas (dependency hell).
+
 • Reprodutibilidade: O repositório contém as instruções determinísticas no `README.md` 
+
   e o artefato de validação `teste.txt`, permitindo a execução imediata em qualquer 
+
   interpretador Python 3.x isolado.
 
 
+
+
+
 6. REFLEXÃO CRÍTICA E ANÁLISE DE DESEMPENHO DO MODELO DE IA
+
 -------------------------------------------------------------------------------
-• Vetores de Aceleração: A IA otimizou a construção sintática das Expressões 
+
+• O que a IA acelerou e fez bem: Otimizou a construção sintática das Expressões 
+
   Regulares complexas (ex: padrões de headers PEM de chaves RSA) e a estruturação 
-  boilerplate do `argparse`.
-• Limitações e Desvios do Modelo: O LLM tende a omitir o tratamento refinado 
-  de exceções de borda de I/O (edge cases) e tenta introduzir pacotes externos 
-  sem considerar restrições de sustentabilidade do software.
-• Intervenção do Aluno: A atuação humana foi crítica para:
-  1) Execução e depuração ativa do script no terminal Windows PowerShell;
-  2) Diagnóstico da ausência de argumentos obrigatórios na CLI;
-  3) Validação empírica do comportamento de leitura do sistema de arquivos;
-  4) Ajuste das mensagens de log de saída para auditoria.
-• Conclusão: A IA atua com alta eficiência como gerador de código bruto, contudo 
-  a garantia da qualidade (quality assurance), os testes práticos de execução e 
-  as decisões arquiteturais exigem a condução e validação do engenheiro humano.
+
+  boilerplate da interface CLI via `argparse`.
+
+• Limitações e erros gerados pela IA: O LLM falhou ao tentar introduzir pacotes 
+
+  externos desnecessários, ignorando a restrição de sustentabilidade, e omitiu o 
+
+  tratamento de exceções de borda de I/O, gerando um código inicial frágil (sujeito a 
+
+  quebra por `UnicodeDecodeError`).
+
+• Situações que exigiram intervenção humana: A atuação foi crítica para impor a 
+
+  restrição de bibliotecas nativas, diagnosticar falhas na leitura de binários e 
+
+  codificar os blocos `try/except` com `errors='ignore'` para garantir a resiliência.
+
+• Importância da validação e dos testes: Os testes manuais (via `teste.txt`) 
+
+  foram fundamentais, pois o código gerado parecia correto na teoria, mas quebrava 
+
+  em situações reais de parsing.
+
+• O que faria diferente em uma próxima experiência: Em projetos futuros, eu adotaria 
+
+  uma abordagem de "Desenvolvimento Orientado a Testes com IA" (TDD-IA), solicitando 
+
+  primeiro que a IA criasse os casos de teste rigorosos e, apenas após aprová-los, 
+
+  pediria a geração do código do artefato em si, reduzindo o viés de confirmação e as 
+
+  alucinações arquiteturais logo na largada.
+
+• Conclusão (Princípio Fundamental): A IA atua com alta eficiência como gerador de 
+
+  código bruto, contudo, as decisões arquiteturais, os testes e a garantia da 
+
+  qualidade (QA) exigem a total condução, validação e responsabilidade do aluno.
