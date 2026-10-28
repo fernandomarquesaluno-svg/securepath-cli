@@ -1,0 +1,19 @@
+#### 3. Ficheiro `teste.txt`
+```text
+minha_chave_aws = "AKIA1234567890ABCDEF"
+password = "minha_senha_secreta"
+# Ficheiro de Teste de Segredos (Dados Falsos para Validação)
+
+# 1. Teste de Chave AWS
+aws_access_key_id = "AKIA1234567890ABCDEF"
+
+# 2. Teste de Senha em Variável
+db_password = "minha_senha_secreta"
+secret = "chave_super_secreta_123"
+
+# 3. Teste de Token Bearer
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.K_X
+
+# 4. Teste de Chave Privada RSA
+-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEA0Z1q...
