@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.DS_Store
+
+# Evitar publicar segredos acidentalmente (não impede o scanner de analisá-los)
+.env
+.env.*
+*.pem
+*.key

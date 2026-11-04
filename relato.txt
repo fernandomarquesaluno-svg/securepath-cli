@@ -1,199 +1,95 @@
-RELATO DE DESENVOLVIMENTO ASSISTIDO POR IA - TAREFA 3 (LEAS)
+RELATO DE DESENVOLVIMENTO ASSISTIDO POR INTELIGÊNCIA ARTIFICIAL
+Artefato: SecurePath CLI — Scanner de Credenciais Expostas
+Atividade de Cibersegurança — Relato para entrega acadêmica
+Data da revisão final: 04/11/2026
 
-Artefato: SecurePath CLI — Static Secret Scanner
-
-Aluno: Fernando Marques
-
-Repositório: https://github.com/fernandomarquesaluno-svg/securepath-cli
-
-===============================================================================
-
-
-
-1. ENDEREÇAMENTO DO REPOSITÓRIO E DISPONIBILIDADE
-
--------------------------------------------------------------------------------
-
-Repositório público (Git/GitHub): 
+1. LINK PARA O REPOSITÓRIO PÚBLICO
 
 https://github.com/fernandomarquesaluno-svg/securepath-cli
 
+O SecurePath CLI é um scanner local de código e configurações que identifica indícios de credenciais expostas por expressões regulares. Sua arquitetura utiliza exclusivamente a biblioteca padrão do Python, sem pacotes externos, acesso a APIs ou serviços de nuvem. O repositório contém o código, a documentação e um dataset inteiramente sintético.
 
+2. MODELOS DE IA UTILIZADOS EM CADA ETAPA
 
-O artefato encontra-se hospedado publicamente, cumprindo o critério de 
+Desenvolvimento do código: nas anotações fornecidas em PDF, consta Google Gemini (indicado como "Gemini 1.5 Pro / Flash") para apoio à criação da CLI com argparse, padrões Regex e tratamento de entrada/saída. O registro não permite identificar com segurança qual dessas variantes foi usada em cada interação.
 
-disponibilidade por meio de licença aberta e acesso sem autenticação prévia.
+Geração do README.md: o PDF atribui ao Google Gemini o apoio na organização e redação inicial da documentação. A versão consolidada do README foi revisada nesta interação com ChatGPT (GPT-6), com verificação do repositório e execução de testes locais.
 
+Revisão do artefato: o PDF atribui ao Google Gemini a revisão inicial; nesta revisão complementar foi utilizado ChatGPT (GPT-6) para inspeção das quatro dimensões, revisão do código, geração de testes e avaliação das evidências.
 
+RESSALVA DE RASTREABILIDADE: o arquivo relato.txt anteriormente publicado no GitHub menciona também GPT-4o e Claude 3.5 Sonnet em etapas anteriores, enquanto o PDF anexado atribui essas etapas principalmente ao Gemini. Não há transcrições de chats suficientes para reconciliar os dois registros. Antes da entrega, o aluno deve conferir seus históricos e corrigir os nomes/versões acima se necessário; não se deve apresentar como comprovado o uso de um modelo sem o respectivo registro.
 
+3. EXEMPLOS DOS PRINCIPAIS PROMPTS UTILIZADOS
 
+Os exemplos a seguir foram reconstruídos/normalizados a partir das anotações apresentadas no PDF e no relato anterior do repositório. Eles documentam a abordagem de engenharia de prompts, mas não substituem os registros originais das conversas.
 
-2. FERRAMENTAS DE INTELIGÊNCIA ARTIFICIAL E ARQUITETURA DE MODELOS
+3.1. Exemplo de prompt que produziu resultado útil:
+"Crie uma CLI em Python puro sem dependências externas para ler arquivos e buscar padrões Regex de chaves AWS e de chaves privadas RSA. Utilize argparse e pathlib."
 
--------------------------------------------------------------------------------
+Resultado descrito nas anotações: uma estrutura inicial de interface de linha de comando e expressões regulares para detecção de segredos.
 
-• Engenharia de Código e Lógica CLI: OpenAI GPT-4o / Anthropic Claude 3.5 Sonnet
+3.2. Exemplo de prompt insuficientemente especificado:
+"Faça um script que varra arquivos por segredos."
 
-• Documentação Técnica (README.md): OpenAI GPT-4o / Google Gemini
+Problema registrado: sugestão de bibliotecas externas, como click e colorama, em desacordo com a restrição arquitetural de utilizar somente a Standard Library. O relato previamente publicado no GitHub também menciona outros pacotes externos em versões de prompts genéricos; não foi possível verificar diretamente os logs dessas respostas.
 
-• Revisão Acadêmica de Artefato Científico: Anthropic Claude 3.5 Sonnet / Google Gemini
+3.3. Exemplo de refinamento:
+"Reescreva o scanner usando exclusivamente a biblioteca padrão do Python (argparse, re, pathlib, os e sys), sem pip. Leia arquivos em UTF-8 com errors='ignore', trate PermissionError e OSError sem encerrar toda a varredura, mas registre a quantidade de arquivos não analisados. Não exiba valores de credenciais e forneça testes com dados sintéticos."
 
+Efeito esperado e validado na revisão final: limitação das dependências à biblioteca padrão, separação das rotinas de análise, registro de alertas sem revelação dos valores e cenários de teste repetíveis.
 
+3.4. Solicitação de revisão utilizada nesta etapa:
+"Avalie o SecurePath CLI quanto à disponibilidade, funcionalidade, sustentabilidade e reprodutibilidade, verificando código, README, testes e tratamento de I/O; documente os problemas e correções."
 
+A solicitação foi realizada como parte da consolidação orientada pelo enunciado da atividade. A resposta não foi aceita automaticamente: foram executados testes locais e conferidos os arquivos finais.
 
+4. DECISÕES TOMADAS PELO ALUNO QUE A IA NÃO RESOLVEU ADEQUADAMENTE
 
-3. ENGENHARIA DE PROMPTS E PROCESSO RECURSIVO DE REFINAMENTO
+- Escopo: construir um scanner SAST simples e auditável, e não uma suíte completa de cibersegurança.
+- Arquitetura: exigir zero dependências de terceiros, rejeitando sugestões que introduziam click, colorama ou outros frameworks.
+- Resiliência de I/O: não interromper a varredura em caso de PermissionError/OSError de um arquivo ou subdiretório. A revisão acrescentou contadores de erros para que uma varredura parcial não seja confundida com sucesso integral.
+- Conteúdo binário: nas anotações originais, o aluno decidiu priorizar a continuidade de leitura e tratamento de arquivos problemáticos. A heurística de byte NUL e o limite de tamanho foram introduzidos posteriormente na revisão pelo GPT-6; não são atribuídos retroativamente ao aluno.
+- Governança Git: a configuração da identidade Git local na conta acadêmica consta do relato do aluno. A publicação final nesta revisão é realizada por assistência de IA na conta do projeto.
+- Critério de qualidade: o aluno disponibilizou exemplos sintéticos para validação. A suíte automatizada de nove testes e a política de não exibir valores de segredos foram formalizadas na revisão pelo GPT-6. Esses testes foram executados pela IA no ambiente de revisão, e o aluno pode reproduzi-los antes de entregar.
 
--------------------------------------------------------------------------------
+5. RESUMO DA REVISÃO REALIZADA PELA IA
 
-a) Prompt de Alta Concorrência Técnica (Sucesso):
+Problemas identificados no estado inicial do repositório (04/11/2026):
+- README.md interrompido no meio da seção de instalação e sem os 13 tópicos requeridos em forma completa.
+- Arquivo teste.txt misturando marcação Markdown com os dados de entrada, prejudicando a clareza da evidência experimental.
+- Ausência de testes automatizados, licença explícita e protocolo inequívoco de reprodução.
+- Captura genérica de Exception no scanner anterior, ausência de contagem consistente em todos os modos de execução e mensagens que não distinguiam adequadamente alerta de erro de leitura.
+- Risco de varrer binários, links simbólicos e arquivos muito grandes sem uma política de exclusão explícita.
+- Contradição entre os registros acerca dos modelos de IA utilizados.
+- O PDF anexado relata um problema anterior de README salvo em UTF-16 no Windows; o estado exato dessa versão histórica não pôde ser confirmado no repositório, e os arquivos finais foram gravados em UTF-8.
 
-"Desenvolva uma ferramenta CLI de análise estática de código (SAST) em Python 3 
+Sugestões e correções implementadas nesta revisão:
+- Separação do código em funções scan_file, scan_directory e main, com dataclass Summary para contadores.
+- Inclusão de errors='ignore' com tratamento explícito de PermissionError e OSError, sem supor que ignorar erros de codificação equivale a identificar binários.
+- Exclusão controlada de arquivos com byte NUL inicial, links simbólicos e arquivos maiores que 5 MiB por padrão; documentação das limitações.
+- Saída sem valores sensíveis, comportamento determinístico de percurso, flag --fail-on-findings e códigos de saída documentados.
+- Reformulação completa do README em UTF-8, com os 13 tópicos do enunciado, exemplos, limitações, referências e quatro critérios.
+- Substituição da base de teste por valores declaradamente sintéticos e criação de testes automatizados com unittest.
+- Adoção de licença MIT no arquivo LICENSE, documentação da revisão e roteiro de apresentação.
 
-utilizando unicamente a biblioteca padrão (argparse, re, pathlib). A ferramenta 
+Validação efetivamente realizada neste ambiente em 04/11/2026:
+- Python 3.13.5, Linux.
+- Comando: python -m unittest discover -s tests -v
+- Resultado: 9 testes executados, todos aprovados (OK).
+- Comando: python artefatos.py teste.txt --fail-on-findings
+- Resultado: 5 alertas, 1 arquivo analisado, 0 ignorados, 0 erros de I/O e código de saída 1 (esperado devido à flag).
+- O teste de permissão foi simulado com unittest.mock; não foi realizada validação de ACL real no Windows/macOS.
 
-deve realizar parsing iterativo de arquivos de texto e implementar Expressões 
+Os quatro critérios foram tratados por evidências: acesso público e documentação (Disponibilidade), demonstração e testes (Funcionalidade), legibilidade e ausência de dependências externas (Sustentabilidade), além de base sintética e protocolo executável (Reprodutibilidade). A pontuação definitiva cabe ao docente, não à IA.
 
-Regulares (Regex) para detecção de: 1) AWS Access Keys (AKIA[0-9A-Z]{16}), 
+6. REFLEXÃO CRÍTICA SOBRE O PROCESSO
 
-2) Bearer Tokens, 3) Blocos de Chaves Privadas RSA, 4) String literals de senhas. 
+O auxílio de IA acelerou a construção inicial da CLI, a elaboração das expressões regulares, o desenho do parser de argumentos e a organização do README. Também se mostrou útil para revisar o artefato sob uma rubrica explícita e sugerir cenários de teste que não haviam sido documentados.
 
-O output deve indicar linha, tipo de credencial e match mascarado."
+Entretanto, as anotações evidenciam limitações: recomendações incompatíveis com a restrição de zero dependências; pouca atenção inicial a exceções de I/O e codificações; documentação incompleta; e tendência a apresentar funcionalidades como mais abrangentes do que realmente são. Regex identifica indícios e não prova que uma credencial seja válida. Uma varredura sem alertas não prova ausência de vazamentos, especialmente quando arquivos são ignorados.
 
+A intervenção humana foi fundamental para fixar o problema e as restrições, rejeitar dependências inadequadas, decidir a política de exclusão de binários e links, interpretar falhas de I/O, escolher testes sintéticos e avaliar a qualidade da documentação. A revisão por IA gerou propostas; os comandos executados e os testes produziram a evidência técnica.
 
+Em uma próxima experiência, iniciaria pelo protocolo de testes e por critérios de aceitação mensuráveis, mantendo um registro de prompts por modelo e versão, com data, resposta e mudança aplicada. Também testaria mais cedo em sistemas operacionais diferentes e separaria testes de I/O simulados de testes de permissões reais.
 
-b) Prompt de Escopo Indefinido (Inadequado):
-
-"Crie um sistema completo de cibersegurança em Python para análise de vulnerabilidades."
-
-Diagnóstico da Falha: O modelo gerou um monólito contendo abstrações excessivas, 
-
-dependências externas (como `requests` e `scapy`), sem especificação de I/O 
-
-e com baixo índice de sustentabilidade.
-
-
-
-c) Estratégia de Refinamento:
-
-Aplicou-se a técnica de restrição sintática e contextual. O escopo foi 
-
-delimitado para evitar dependências de terceiros (`pip`), garantindo a 
-
-portabilidade determinística do ambiente de execução e a execução estritamente 
-
-offline (air-gapped compliance).
-
-
-
-
-
-4. TOMADA DE DECISÃO TÉCNICA E INTERVENÇÃO HUMANA
-
--------------------------------------------------------------------------------
-
-• Restrição de Arquitetura (Zero-External-Dependencies): Optou-se por não utilizar 
-
-  frameworks de terceiros (ex: `click` ou `rich`) em favor dos módulos nativos 
-
-  `argparse` e `pathlib`, garantindo conformidade com o critério de sustentabilidade.
-
-• Design de Teste Reprodutível: Elaborou-se manualmente o arquivo `teste.txt` 
-
-  contendo vetores de teste sintéticos (mocks) com múltiplos padrões de regex, 
-
-  permitindo a validação dos limites de False Positives e False Negatives.
-
-• Compatibilidade I/O de Sistema de Arquivos: Diagnóstico e ajuste no parsing de 
-
-  argumentos de linha de comando (`sys.argv`) para validar se o parâmetro de 
-
-  caminho (`path`) apontava para arquivo individual ou diretório.
-
-
-
-
-
-5. SÍNTESE DA REVISÃO ACADÊMICA DO ARTEFATO (CRITÉRIOS SBSEG)
-
--------------------------------------------------------------------------------
-
-A avaliação técnica do artefato identificou as seguintes métricas de qualidade:
-
-
-
-• Disponibilidade: Repositório público versionado via Git, contendo árvore de 
-
-  diretórios organizada e acesso irrestrito ao código-fonte.
-
-• Funcionalidade: O motor regex realiza o casamento de padrões (pattern matching) 
-
-  corretamente. 
-
-  - Vulnerabilidade identificada na revisão: Risco de quebra de execução (runtime exception) 
-
-    ao processar arquivos binários ou arquivos codificados em padrões não-UTF-8.
-
-  - Correção aplicada: Implementação de captura de exceções `UnicodeDecodeError` e 
-
-    `PermissionError`, acrescido da flag `errors='ignore'` no manipulador do buffer I/O (`open()`).
-
-• Sustentabilidade: Índice máximo. Ausência de árvore de dependências externas 
-
-  elimina riscos de degradação por depreciação de bibliotecas (dependency hell).
-
-• Reprodutibilidade: O repositório contém as instruções determinísticas no `README.md` 
-
-  e o artefato de validação `teste.txt`, permitindo a execução imediata em qualquer 
-
-  interpretador Python 3.x isolado.
-
-
-
-
-
-6. REFLEXÃO CRÍTICA E ANÁLISE DE DESEMPENHO DO MODELO DE IA
-
--------------------------------------------------------------------------------
-
-• O que a IA acelerou e fez bem: Otimizou a construção sintática das Expressões 
-
-  Regulares complexas (ex: padrões de headers PEM de chaves RSA) e a estruturação 
-
-  boilerplate da interface CLI via `argparse`.
-
-• Limitações e erros gerados pela IA: O LLM falhou ao tentar introduzir pacotes 
-
-  externos desnecessários, ignorando a restrição de sustentabilidade, e omitiu o 
-
-  tratamento de exceções de borda de I/O, gerando um código inicial frágil (sujeito a 
-
-  quebra por `UnicodeDecodeError`).
-
-• Situações que exigiram intervenção humana: A atuação foi crítica para impor a 
-
-  restrição de bibliotecas nativas, diagnosticar falhas na leitura de binários e 
-
-  codificar os blocos `try/except` com `errors='ignore'` para garantir a resiliência.
-
-• Importância da validação e dos testes: Os testes manuais (via `teste.txt`) 
-
-  foram fundamentais, pois o código gerado parecia correto na teoria, mas quebrava 
-
-  em situações reais de parsing.
-
-• O que faria diferente em uma próxima experiência: Em projetos futuros, eu adotaria 
-
-  uma abordagem de "Desenvolvimento Orientado a Testes com IA" (TDD-IA), solicitando 
-
-  primeiro que a IA criasse os casos de teste rigorosos e, apenas após aprová-los, 
-
-  pediria a geração do código do artefato em si, reduzindo o viés de confirmação e as 
-
-  alucinações arquiteturais logo na largada.
-
-• Conclusão (Princípio Fundamental): A IA atua com alta eficiência como gerador de 
-
-  código bruto, contudo, as decisões arquiteturais, os testes e a garantia da 
-
-  qualidade (QA) exigem a total condução, validação e responsabilidade do aluno.
+Conclusão: o uso de IA foi relevante, mas a qualidade, a rastreabilidade e a responsabilidade pelo artefato dependem de decisões técnicas e validação independente conduzidas pelo aluno.
