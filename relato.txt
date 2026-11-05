@@ -11,13 +11,13 @@ O SecurePath CLI é um scanner local de código e configurações que identifica
 
 2. MODELOS DE IA UTILIZADOS EM CADA ETAPA
 
-Desenvolvimento do código: nas anotações fornecidas em PDF, consta Google Gemini (indicado como "Gemini 1.5 Pro / Flash") para apoio à criação da CLI com argparse, padrões Regex e tratamento de entrada/saída. O registro não permite identificar com segurança qual dessas variantes foi usada em cada interação.
+Desenvolvimento original do código: Google Gemini 1.5 Pro, conforme confirmação direta do aluno em 05/11/2026, auxiliando a criação da CLI com argparse, padrões Regex e tratamento de entrada/saída. A confirmação do modelo pelo aluno não substitui as transcrições históricas das interações.
 
-Geração do README.md: o PDF atribui ao Google Gemini o apoio na organização e redação inicial da documentação. A versão consolidada do README foi revisada nesta interação com ChatGPT (GPT-6), com verificação do repositório e execução de testes locais.
+Geração inicial do README.md: atribuída a Google Gemini 1.5 Pro conforme confirmação do aluno de que esta foi a versão utilizada originalmente. A versão consolidada do README foi posteriormente revisada com ChatGPT (GPT-6), em trabalho de análise e correção do repositório.
 
-Revisão do artefato: o PDF atribui ao Google Gemini a revisão inicial; nesta revisão complementar foi utilizado ChatGPT (GPT-6) para inspeção das quatro dimensões, revisão do código, geração de testes e avaliação das evidências.
+Revisão inicial do artefato: atribuída a Google Gemini 1.5 Pro, conforme confirmação do aluno sobre a versão original. Na revisão complementar de 04–05/11/2026, foi utilizado ChatGPT (GPT-6) para inspeção dos quatro critérios, revisão do código, geração de testes e avaliação das evidências.
 
-RESSALVA DE RASTREABILIDADE: o arquivo relato.txt anteriormente publicado no GitHub menciona também GPT-4o e Claude 3.5 Sonnet em etapas anteriores, enquanto o PDF anexado atribui essas etapas principalmente ao Gemini. Não há transcrições de chats suficientes para reconciliar os dois registros. Antes da entrega, o aluno deve conferir seus históricos e corrigir os nomes/versões acima se necessário; não se deve apresentar como comprovado o uso de um modelo sem o respectivo registro.
+RESSALVA DE RASTREABILIDADE: o aluno confirmou em 05/11/2026 que o modelo da etapa original foi o Gemini 1.5 Pro. Versões anteriores do relato mencionavam GPT-4o e Claude 3.5 Sonnet; tais menções permanecem como histórico de versões anteriores, sem comprovação de uso nessa tarefa. As transcrições originais dos prompts ainda não estão reunidas. A revisão complementar com ChatGPT (GPT-6) é posterior e não deve ser atribuída ao Gemini.
 
 3. EXEMPLOS DOS PRINCIPAIS PROMPTS UTILIZADOS
 
@@ -60,7 +60,7 @@ Problemas identificados no estado inicial do repositório (04/11/2026):
 - Ausência de testes automatizados, licença explícita e protocolo inequívoco de reprodução.
 - Captura genérica de Exception no scanner anterior, ausência de contagem consistente em todos os modos de execução e mensagens que não distinguiam adequadamente alerta de erro de leitura.
 - Risco de varrer binários, links simbólicos e arquivos muito grandes sem uma política de exclusão explícita.
-- Contradição entre os registros acerca dos modelos de IA utilizados.
+- Contradição inicial entre registros sobre modelos de IA; em 05/11/2026 o aluno confirmou Gemini 1.5 Pro para a etapa original, mantendo a ressalva sobre ausência de transcrições históricas.
 - O PDF anexado relata um problema anterior de README salvo em UTF-16 no Windows; o estado exato dessa versão histórica não pôde ser confirmado no repositório, e os arquivos finais foram gravados em UTF-8.
 
 Sugestões e correções implementadas nesta revisão:
@@ -105,4 +105,4 @@ A IA inspecionou o código publicado, executou a suíte existente (9 testes apro
 
 Disponibilidade: arquivos publicados e acessíveis. Funcionalidade: testes e demonstração executados nesta revisão. Sustentabilidade: correção pequena, biblioteca padrão e testes de regressão. Reprodutibilidade: comandos, amostra e log preservados. Estes pareceres se limitam ao escopo educacional e não representam selos oficiais.
 
-Ações ainda sob responsabilidade do aluno: conferir seu histórico e registrar modelo/versão por etapa; substituir ou confirmar os prompts reconstruídos com exemplos realmente usados; confirmar as decisões humanas descritas; executar a versão final e acrescentar data, ambiente, comandos e saídas de sua própria validação; revisar a reflexão crítica. Até isso ocorrer, o relato é uma versão revisada com pendências de comprovação, e não prova de que todas essas etapas foram conduzidas pelo aluno.
+Ações ainda sob responsabilidade do aluno: o modelo original foi identificado como Gemini 1.5 Pro por declaração do aluno; se possível, guardar evidência dessa identificação nas conversas antigas. Substituir ou confirmar os prompts reconstruídos com exemplos realmente usados; confirmar as decisões humanas descritas; executar a versão final e acrescentar data, ambiente, comandos e saídas de sua própria validação; revisar a reflexão crítica. Até isso ocorrer, o relato é uma versão revisada com pendências de comprovação, e não prova de que todas essas etapas foram conduzidas pelo aluno.
