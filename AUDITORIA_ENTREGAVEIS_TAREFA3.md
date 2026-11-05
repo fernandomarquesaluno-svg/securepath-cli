@@ -51,3 +51,15 @@
 ## 5. Conclusão
 
 **Situação: tecnicamente muito próxima da conclusão.** Artefato, documentação, licença, testes e revisão crítica estão documentados. A entrega não deve ser declarada integralmente comprovada até conferir os prompts históricos e a validação pessoal do estudante.
+
+
+## 6. Atualização posterior: versão ampliada (05/11/2026)
+
+- Artefato atual: **7 regras** (SEC001–SEC007) e saída textual/JSON; preserva execução em Python puro.
+- Testes: **16 casos** na suíte, resultado confirmado nesta sessão de revisão em Linux: **16 aprovados**.
+- Demonstração ampliada: **3 arquivos analisados, 4 alertas, 0 erros de I/O** com dados sintéticos.
+- Apresentação: **11 slides** com um slide dedicado à demonstração ao vivo no Windows.
+- Proveniência: Gemini 1.5 Pro informado pelo aluno para o desenvolvimento original; GPT-6 responsável pela extensão posterior. Textos históricos dos prompts permanecem reconstruídos.
+- **Pendente antes da entrega definitiva:** executar os comandos no Windows do estudante, registrar versão do Python e confirmar o relato autoral. O ZIP e o PowerPoint foram disponibilizados nesta conversa; a publicação no GitHub não equivale a testar Windows.
+
+Os números antigos de 11 testes descrevem uma versão anterior, não o estado atual.
