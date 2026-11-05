@@ -1,0 +1,2 @@
+# Cabeçalho sintético; não existe chave privada neste arquivo.
+-----BEGIN OPENSSH PRIVATE KEY-----
