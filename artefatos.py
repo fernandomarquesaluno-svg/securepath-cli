@@ -5,7 +5,8 @@ Somente biblioteca padrão. Nenhum conteúdo de segredo é exibido.
 """
 
 import argparse
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+import json
 import os
 from pathlib import Path
 import re
@@ -13,17 +14,27 @@ import stat
 import sys
 
 
-# Expressões conservadoras: ocorrências são indícios, não confirmação de exposição.
-PATTERNS = {
-    "AWS Access Key ID": re.compile(r"\bAKIA[A-Z0-9]{16}\b"),
-    "Bearer token": re.compile(r"\bBearer\s+[A-Za-z0-9._~+/-]{20,}", re.IGNORECASE),
-    "Cabeçalho de chave RSA privada": re.compile(r"-----BEGIN RSA PRIVATE KEY-----"),
-    "Senha/segredo atribuído": re.compile(
+@dataclass(frozen=True)
+class Rule:
+    rule_id: str
+    category: str
+    pattern: re.Pattern
+
+
+# Expressões heurísticas indicam padrões, não a autenticidade das credenciais.
+RULES = (
+    Rule("SEC001", "AWS Access Key ID", re.compile(r"\bAKIA[A-Z0-9]{16}\b")),
+    Rule("SEC002", "Bearer token", re.compile(r"\bBearer\s+[A-Za-z0-9._~+/-]{20,}", re.IGNORECASE)),
+    Rule("SEC003", "Cabeçalho de chave RSA privada", re.compile(r"-----BEGIN RSA PRIVATE KEY-----")),
+    Rule("SEC004", "Senha/segredo atribuído", re.compile(
         r"\b(?:[A-Za-z_][A-Za-z0-9_]*_)?(?:password|passwd|pwd|secret)"
-        r"\s*=\s*(['\"])[^'\"\r\n]+\1",
-        re.IGNORECASE,
-    ),
-}
+        r"\s*=\s*(['\"])[^'\"\r\n]+\1", re.IGNORECASE)),
+    Rule("SEC005", "AWS Temporary Access Key ID", re.compile(r"\bASIA[A-Z0-9]{16}\b")),
+    Rule("SEC006", "GitHub personal access token (clássico)", re.compile(r"\bghp_[A-Za-z0-9]{36}\b")),
+    Rule("SEC007", "Cabeçalho de chave privada PEM/OpenSSH", re.compile(
+        r"-----BEGIN (?:EC |OPENSSH )?PRIVATE KEY-----")),
+)
+PATTERNS = {rule.category: rule.pattern for rule in RULES}
 
 IGNORED_DIRS = frozenset({
     ".git", ".venv", "venv", "__pycache__", ".pytest_cache",
@@ -32,12 +43,30 @@ IGNORED_DIRS = frozenset({
 DEFAULT_MAX_SIZE_KIB = 5120  # 5 MiB
 
 
+@dataclass(frozen=True)
+class Finding:
+    rule_id: str
+    category: str
+    path: str
+    line: int
+
+    def to_dict(self) -> dict:
+        return {
+            "rule_id": self.rule_id,
+            "category": self.category,
+            "path": self.path,
+            "line": self.line,
+        }
+
+
 @dataclass
 class Summary:
     examined: int = 0
     skipped: int = 0
     errors: int = 0
     findings: int = 0
+    output_format: str = "text"
+    records: list[Finding] = field(default_factory=list)
 
 
 def report_error(path: Path, exc: OSError, summary: Summary) -> None:
@@ -64,11 +93,15 @@ def scan_file(path: Path, summary: Summary, max_bytes: int) -> None:
         with path.open("r", encoding="utf-8", errors="ignore") as text_file:
             summary.examined += 1
             for line_number, line in enumerate(text_file, start=1):
-                for label, expression in PATTERNS.items():
-                    if expression.search(line):
+                for rule in RULES:
+                    if rule.pattern.search(line):
                         summary.findings += 1
-                        # Nunca imprimir a linha nem o valor encontrado.
-                        print(f"[ALERTA] {path}:{line_number} | {label}")
+                        record = Finding(rule.rule_id, rule.category, str(path), line_number)
+                        if summary.output_format == "json":
+                            summary.records.append(record)
+                        else:
+                            # Nenhum valor ou trecho de credencial é impresso.
+                            print(f"[ALERTA] {path}:{line_number} | {rule.category}")
     except PermissionError as exc:
         report_error(path, exc, summary)
     except OSError as exc:
@@ -105,10 +138,14 @@ def main(argv=None) -> int:
         "--fail-on-findings", action="store_true",
         help="Retorna código 1 quando há alertas (útil em automações)",
     )
+    parser.add_argument(
+        "--format", choices=("text", "json"), default="text",
+        help="Saída humana ou JSON estruturado (padrão: text)",
+    )
     args = parser.parse_args(argv)
     if args.max_size_kib <= 0:
         parser.error("--max-size-kib deve ser maior que zero")
-    summary = Summary()
+    summary = Summary(output_format=args.format)
     try:
         if args.path.is_symlink():
             parser.error("o caminho inicial não pode ser um link simbólico")
@@ -123,11 +160,25 @@ def main(argv=None) -> int:
     except OSError as exc:
         report_error(args.path, exc, summary)
 
-    print(
-        f"\nResumo: arquivos analisados={summary.examined} | "
-        f"ignorados={summary.skipped} | erros de I/O={summary.errors} | "
-        f"alertas={summary.findings}"
-    )
+    if args.format == "json":
+        result = {
+            "schema_version": "1.0",
+            "scanner": "SecurePath CLI",
+            "summary": {
+                "examined": summary.examined,
+                "skipped": summary.skipped,
+                "io_errors": summary.errors,
+                "findings": summary.findings,
+            },
+            "findings": [record.to_dict() for record in summary.records],
+        }
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    else:
+        print(
+            f"\nResumo: arquivos analisados={summary.examined} | "
+            f"ignorados={summary.skipped} | erros de I/O={summary.errors} | "
+            f"alertas={summary.findings}"
+        )
     if summary.errors:
         return 2
     if summary.findings and args.fail_on_findings:
