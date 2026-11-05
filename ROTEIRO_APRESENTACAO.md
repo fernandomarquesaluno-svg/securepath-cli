@@ -1,54 +1,56 @@
-# Roteiro de apresentação — SecurePath CLI
+# Roteiro revisado — Apresentação da Atividade 3
 
-**Sugestão:** 8 slides, aproximadamente 6–7 minutos. Texto preparado para leitura em tom profissional e natural. O roteiro reflete os arquivos revisados, sem alegar que o projeto recebeu selos oficiais do SBSeg.
+**Artefato:** SecurePath CLI — Scanner estático de possíveis credenciais expostas  
+**Estrutura:** 10 slides; sugestão de duração: 6 a 8 minutos.  
+**Premissa:** conteúdo baseado no enunciado da Atividade 3 e nas evidências disponíveis. Não afirmar concessão de selos oficiais.
 
-## Slide 1 — SecurePath CLI: análise estática de credenciais com Python puro
-**Na tela:** título, descrição curta, repositório GitHub.
+## 1. SecurePath CLI
 
-**Fala:** “Este trabalho apresenta o SecurePath CLI, uma ferramenta de linha de comando para identificar possíveis credenciais expostas em arquivos de código e de configuração. O objetivo foi resolver um problema concreto de cibersegurança com uma implementação pequena, auditável e que pudesse ser reproduzida por outra pessoa. Desenvolvi o artefato com apoio de inteligência artificial, mas mantive as decisões de arquitetura, testes e validação sob minha responsabilidade.”
+“Apresento o SecurePath CLI, uma ferramenta local em Python para identificar possíveis credenciais expostas em arquivos de código e configuração. O desenvolvimento contou com apoio de inteligência artificial, mas o objetivo principal foi produzir um artefato simples, auditável e testável.”
 
-## Slide 2 — Problema e objetivo
-**Na tela:** exposição de segredos; detecção local; escopo limitado.
+## 2. Problema e objetivo
 
-**Fala:** “O problema é o vazamento acidental de informações como identificadores de acesso, tokens e chaves privadas em repositórios. O SecurePath faz uma varredura local e aponta indícios de exposição antes que o código seja compartilhado. Ele não comprova que um segredo seja válido, não revoga chaves e não substitui uma plataforma completa de segurança. Esse limite de escopo foi intencional, para garantir um artefato executável e avaliável.”
+“Senhas, tokens e chaves privadas podem acabar publicados em repositórios. Minha ferramenta percorre arquivos e identifica padrões suspeitos, mostrando caminho, linha e categoria. Ela não confirma se uma credencial é válida.”
 
-## Slide 3 — Arquitetura e funcionamento
-**Na tela:** arquivo/diretório → leitura tolerante → regex → alertas e resumo.
+## 3. Arquitetura técnica
 
-**Fala:** “A arquitetura utiliza exclusivamente a biblioteca padrão do Python. O argparse trata os argumentos da CLI; pathlib e os fazem o acesso aos arquivos e diretórios; e o módulo re executa os padrões de detecção. O processo é simples: eu informo um caminho, o scanner percorre os arquivos e procura padrões de chave AWS, token Bearer, cabeçalho RSA e atribuições de senhas. A saída informa arquivo, linha e categoria, sem imprimir o segredo encontrado.”
+“A entrada é um arquivo ou diretório. O programa faz a varredura usando a biblioteca padrão do Python, aplica expressões regulares e gera alertas e contadores. Não depende de serviços externos. Arquivos especiais e itens grandes ou provavelmente binários são tratados de forma conservadora.”
 
-## Slide 4 — Como conduzi o uso de IA
-**Na tela:** solicitação inicial → resposta → análise crítica → prompt refinado → testes.
+## 4. IA em três etapas
 
-**Fala:** “A inteligência artificial foi usada na geração do código, na documentação e na revisão. Uma dificuldade registrada foi que prompts muito genéricos levaram à sugestão de bibliotecas externas, como click e colorama. Isso contrariava um requisito que eu havia definido: zero dependências. Por isso, refinei os prompts para exigir apenas a Standard Library, tratamento explícito de erros de I/O e testes com valores sintéticos. O ponto principal aqui não foi aceitar a primeira resposta, mas impor restrições e validar o resultado.”
+“O enunciado exige IA em três momentos: desenvolvimento e testes, geração ou revisão do README e revisão crítica depois da publicação. Essas etapas estão documentadas, mas o histórico exato dos modelos antigos ainda precisa ser reconciliado.”
 
-## Slide 5 — Decisões humanas e resiliência de I/O
-**Na tela:** errors='ignore'; PermissionError/OSError; binários; limites e logs.
+## 5. Prompts e refinamento
 
-**Fala:** “A principal decisão técnica foi evitar que um único arquivo problemático interrompesse toda a análise. A leitura de texto usa UTF-8 com errors igual a ignore e os erros de permissão ou sistema de arquivos são registrados, permitindo continuar a varredura. Para arquivos provavelmente binários, implementei uma heurística de byte nulo no início, além de limite de tamanho e exclusão de links simbólicos. É importante reconhecer que essas escolhas favorecem robustez operacional, mas também podem causar falsos negativos. Por isso, os arquivos ignorados são contabilizados e as limitações estão documentadas.”
+“Um pedido muito genérico — fazer um script para buscar segredos — não definiu as restrições e, segundo as anotações, levou a sugestões de bibliotecas externas. O refinamento passou a exigir Python puro, tratamento de falhas e dados sintéticos. Os textos de prompts no relato são reconstruções; não são transcrições auditadas.”
 
-## Slide 6 — Demonstração e testes reproduzíveis
-**Na tela:** `python artefatos.py teste.txt`; `python -m unittest discover -s tests -v`.
+## 6. Decisões e correções
 
-**Fala:** “Para demonstrar a ferramenta, preparei um dataset inteiramente sintético, que permite executar a análise sem usar nenhuma credencial real. O comando de demonstração identifica cinco alertas no arquivo de teste. Além disso, executei nove testes automatizados com unittest, todos aprovados no ambiente local. Eles incluem casos de arquivo limpo, binário, codificação inválida, erro de permissão simulado e falha de travessia de diretórios. Assim, a reprodução não depende apenas da minha descrição: outra pessoa pode executar os mesmos comandos e comparar os resultados.”
+“O escopo foi restringido para um scanner heurístico. A saída não apresenta o valor encontrado. Também foi necessário tratar falhas de entrada e saída para uma ocorrência não interromper toda a varredura. Na revisão posterior, foi corrigido o risco de bloqueio ao acessar arquivos FIFO e criados testes específicos.”
 
-## Slide 7 — Avaliação pelos quatro critérios
-**Na tela:** tabela Disponibilidade / Funcionalidade / Sustentabilidade / Reprodutibilidade.
+## 7. Testes executados
 
-**Fala:** “A análise crítica foi orientada pelos quatro critérios previstos na atividade. A disponibilidade é demonstrada pelo repositório público e pela documentação. A funcionalidade é apoiada pela execução da CLI e pelos testes. A sustentabilidade está no código pequeno, organizado em funções e sem dependências externas. A reprodutibilidade é sustentada pelos comandos, dados sintéticos e resultados esperados. Esses elementos apoiam a avaliação, mas não representam uma atribuição oficial de selos.”
+“O repositório registra onze testes aprovados em Linux. A amostra fictícia produz cinco alertas e nenhum erro de leitura. O código um, com a opção fail-on-findings, indica que foram encontrados alertas, não uma falha inesperada.”
 
-## Slide 8 — Limitações, aprendizado e conclusão
-**Na tela:** falsos positivos; falsos negativos; validação humana; próximas melhorias.
+## 8. Quatro critérios
 
-**Fala:** “O principal limite técnico é que expressões regulares detectam padrões, e não o contexto completo de segurança. Portanto, podem ocorrer falsos positivos e falsos negativos. O aprendizado mais importante do trabalho foi sobre a gestão da IA no desenvolvimento: ela acelerou implementação e documentação, mas também sugeriu soluções inadequadas e deixou lacunas. A qualidade só melhorou com definição de critérios, revisão crítica e testes. Como continuidade, eu ampliaria os padrões e avaliaria o comportamento em diferentes sistemas operacionais, mantendo o mesmo cuidado com rastreabilidade e validação.”
+“Disponibilidade vem do repositório e da documentação. Funcionalidade, dos testes. Sustentabilidade, da organização e ausência de dependências de terceiros. Reprodutibilidade, dos comandos, dos dados sintéticos e das saídas previstas. Não estou atribuindo selos oficiais.”
 
-## Demonstração curta recomendada (antes ou depois do slide 6)
+## 9. Limitações
+
+“Regex detecta padrões, e não o contexto completo. Pode haver falsos positivos e falsos negativos. Não medi precisão ou recall em projetos reais, nem validei a execução em Windows ou macOS. Também estou separando os registros históricos de IA ainda não confirmados.”
+
+## 10. Conclusão e entregáveis
+
+“O trabalho reúne código público, testes, README, licença, relato crítico e protocolo de reprodução. O aprendizado principal é que a IA acelera a implementação, mas não elimina a necessidade de especificar requisitos, verificar propostas e testar. Antes da entrega definitiva, preciso confirmar meus registros históricos e executar a versão final no meu ambiente.”
+
+## Demonstração sugerida
 
 ```bash
-python artefatos.py teste.txt
 python -m unittest discover -s tests -v
+python artefatos.py teste.txt --fail-on-findings
 ```
 
-**Frase de encerramento:** “O SecurePath CLI mostra que um artefato de segurança pode ser pequeno e, ainda assim, ter documentação, testes, limites explícitos e um processo de desenvolvimento com IA auditável.”
+Se a demonstração for feita em Windows e o comando `python` não existir, tentar `py -3`. Registrar o sistema, a versão e as saídas; o status do último comando deve ser 1 devido aos cinco alertas sintéticos.
 
-> **Observação de fidelidade:** as anotações de IA disponíveis divergem sobre o histórico de modelos: o PDF indica Gemini, enquanto o relato antigo do GitHub também menciona GPT-4o e Claude. Não cite nomes e versões de modelos na apresentação além dos que conseguir confirmar nos registros originais.
+**Código:** https://github.com/fernandomarquesaluno-svg/securepath-cli
