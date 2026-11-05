@@ -19,7 +19,7 @@ Se `py -3` não estiver disponível, tente `python` no lugar.
 
 ## Resultados esperados
 
-- 11 cenários no código de testes; alguns testes específicos de POSIX poderão ser pulados no Windows.
+- 16 cenários no código de testes; o teste FIFO específico de POSIX pode ser pulado no Windows.
 - Cinco alertas no `teste.txt`, sem impressão dos valores identificados.
 - Código de saída 1 com `--fail-on-findings`, porque a amostra contém padrões suspeitos intencionalmente. Esse resultado não significa erro do programa.
 - Nenhuma conexão externa é necessária na execução.
@@ -39,3 +39,13 @@ Registre a data, o sistema operacional, a versão do Python e as saídas dos com
 - [Roteiro de apresentação](ROTEIRO_APRESENTACAO.md)
 
 **Histórico do uso de IA:** Gemini 1.5 Pro no desenvolvimento original (confirmado pelo aluno) e GPT-6 na revisão complementar. Os prompts originais não foram recuperados literalmente.
+
+## Demonstração ampliada
+
+```powershell
+py -3 artefatos.py demonstracao
+py -3 artefatos.py demonstracao --format json
+py -3 -m unittest discover -s tests -v
+```
+
+A versão mais recente possui sete regras e 16 testes, com quatro achados esperados nos três arquivos da pasta `demonstracao`. O exemplo ampliado foi verificado no ambiente Linux do assistente, não no Windows do aluno. Consulte [EVOLUCAO_TECNICA.md](EVOLUCAO_TECNICA.md).
