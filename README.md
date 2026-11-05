@@ -3,6 +3,9 @@
 **SecurePath CLI** é uma ferramenta de linha de comando para análise estática local de arquivos e diretórios. Identifica **indícios** de credenciais expostas por expressões regulares, sem enviar conteúdo à rede e sem dependências externas: utiliza somente a **Python Standard Library**.
 
 **Repositório:** https://github.com/fernandomarquesaluno-svg/securepath-cli  
+
+**Conferência da Atividade 3:** [matriz de entregáveis, evidências e pendências](AUDITORIA_ENTREGAVEIS_TAREFA3.md).  
+**Roteiro revisado da apresentação:** [dez slides](ROTEIRO_APRESENTACAO.md).  
 **Contexto:** artefato educacional de Cibersegurança desenvolvido com assistência de IA. Não equivale a um scanner corporativo completo nem comprova, isoladamente, que uma credencial esteja ativa.
 
 ## 1. Descrição do problema
