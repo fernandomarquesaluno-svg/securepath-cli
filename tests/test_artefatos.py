@@ -2,6 +2,7 @@
 
 from contextlib import redirect_stdout, redirect_stderr
 from io import StringIO
+import json
 from pathlib import Path
 import os
 import subprocess
@@ -129,6 +130,61 @@ class SecurePathTests(unittest.TestCase):
         self.assertIn("alertas=1", out)
         self.assertIn("erros de I/O=1", out)
         self.assertIn("[ERRO]", err)
+
+
+    def test_json_output_is_structured_and_redacted(self):
+        source = Path(__file__).resolve().parents[1] / "teste.txt"
+        code, output, err = self.run_cli(source, "--format", "json", "--fail-on-findings")
+        self.assertEqual(code, 1)
+        report = json.loads(output)
+        self.assertEqual(report["schema_version"], "1.0")
+        self.assertEqual(report["summary"]["findings"], 5)
+        self.assertEqual(len(report["findings"]), 5)
+        self.assertEqual(report["findings"][0]["rule_id"], "SEC001")
+        self.assertEqual(report["findings"][0]["line"], 3)
+        self.assertNotIn("senha_ficticia_nao_utilizar", output)
+        self.assertNotIn("AKIA0000000000000000", output)
+        self.assertEqual(err, "")
+
+    def test_json_clean_result_is_machine_readable(self):
+        clean = self.root / "limpo.txt"
+        clean.write_text("status = 'ok'\n", encoding="utf-8")
+        code, output, _ = self.run_cli(clean, "--format", "json", "--fail-on-findings")
+        self.assertEqual(code, 0)
+        report = json.loads(output)
+        self.assertEqual(report["findings"], [])
+        self.assertEqual(report["summary"]["findings"], 0)
+
+    def test_additional_credential_types_detected(self):
+        synthetic = self.root / "tipos_adicionais.txt"
+        synthetic.write_text(
+            "aws_session = 'ASIA" + "A" * 16 + "'\n"
+            + "github = 'ghp_" + "a" * 36 + "'\n"
+            + "-----BEGIN OPENSSH PRIVATE KEY-----\n",
+            encoding="utf-8",
+        )
+        code, output, _ = self.run_cli(synthetic, "--format", "json")
+        self.assertEqual(code, 0)
+        report = json.loads(output)
+        ids = {rec["rule_id"] for rec in report["findings"]}
+        self.assertEqual(ids, {"SEC005", "SEC006", "SEC007"})
+        self.assertEqual(report["summary"]["findings"], 3)
+        self.assertNotIn("ASIA" + "A" * 16, output)
+
+    def test_short_similar_strings_do_not_match_new_rules(self):
+        synthetic = self.root / "controle_negativo.txt"
+        synthetic.write_text("ASIA1234\nghp_abc\n", encoding="utf-8")
+        code, output, _ = self.run_cli(synthetic, "--format", "json")
+        self.assertEqual(code, 0)
+        self.assertEqual(json.loads(output)["summary"]["findings"], 0)
+
+    def test_default_text_output_remains_compatible(self):
+        source = Path(__file__).resolve().parents[1] / "teste.txt"
+        code, output, _ = self.run_cli(source)
+        self.assertEqual(code, 0)
+        self.assertIn("[ALERTA]", output)
+        self.assertIn("alertas=5", output)
+        self.assertNotIn('"schema_version"', output)
 
 
 if __name__ == "__main__":
