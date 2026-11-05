@@ -18,7 +18,7 @@
 
 ## 4. IA em três etapas
 
-“O enunciado exige IA em três momentos: desenvolvimento e testes, geração ou revisão do README e revisão crítica depois da publicação. Essas etapas estão documentadas, mas o histórico exato dos modelos antigos ainda precisa ser reconciliado.”
+“O enunciado exige IA em três momentos: desenvolvimento e testes, geração ou revisão do README e revisão crítica depois da publicação. Na etapa original utilizei Gemini 1.5 Pro; depois, o GPT-6 auxiliou uma revisão complementar. Os prompts históricos completos ainda precisam ser preservados.”
 
 ## 5. Prompts e refinamento
 
@@ -38,11 +38,11 @@
 
 ## 9. Limitações
 
-“Regex detecta padrões, e não o contexto completo. Pode haver falsos positivos e falsos negativos. Não medi precisão ou recall em projetos reais, nem validei a execução em Windows ou macOS. Também estou separando os registros históricos de IA ainda não confirmados.”
+“Regex detecta padrões, e não o contexto completo. Pode haver falsos positivos e falsos negativos. Não medi precisão ou recall em projetos reais, nem validei a execução em Windows ou macOS. A versão do modelo original foi confirmada, mas os prompts históricos ainda não foram auditados.”
 
 ## 10. Conclusão e entregáveis
 
-“O trabalho reúne código público, testes, README, licença, relato crítico e protocolo de reprodução. O aprendizado principal é que a IA acelera a implementação, mas não elimina a necessidade de especificar requisitos, verificar propostas e testar. Antes da entrega definitiva, preciso confirmar meus registros históricos e executar a versão final no meu ambiente.”
+“O trabalho reúne código público, testes, README, licença, relato crítico e protocolo de reprodução. O aprendizado principal é que a IA acelera a implementação, mas não elimina a necessidade de especificar requisitos, verificar propostas e testar. Antes da entrega definitiva, preciso conferir meus prompts históricos e executar a versão final no meu ambiente.”
 
 ## Demonstração sugerida
 
