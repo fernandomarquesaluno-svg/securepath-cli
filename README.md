@@ -193,3 +193,18 @@ Execute apenas sobre arquivos que você tem autorização para ler e use a amost
 ### Pendências do relato acadêmico
 
 O relato diferencia anotações históricas de evidência desta revisão. O aluno ainda deve confirmar os modelos exatos e os prompts originais, revisar a reflexão em suas próprias palavras e reproduzir os comandos. A assistência atual não comprova retroativamente decisões ou testes realizados pelo aluno.
+
+## Atualização funcional — 05/11/2026
+
+A versão mais recente amplia o scanner para **sete regras heurísticas (SEC001–SEC007)** e **16 testes automatizados**. Acrescenta identificadores AWS temporários (`ASIA`), tokens GitHub clássicos (`ghp_`) e cabeçalhos de chave privada PEM/OpenSSH, sem alterar os padrões anteriores. Há também um formato estruturado de relatório JSON, que inclui categoria, caminho, linha e ID da regra, **sem revelar o valor detectado**.
+
+```bash
+python -m unittest discover -s tests -v
+python artefatos.py demonstracao
+python artefatos.py demonstracao --format json
+python artefatos.py teste.txt --fail-on-findings
+```
+
+A pasta `demonstracao/` contém somente dados artificiais: **4 alertas esperados em 3 arquivos analisados**. O arquivo `teste.txt` original continua produzindo **5 alertas**. A saída `--format json` pode ser utilizada em automações, mas expõe nomes e caminhos dos arquivos analisados; não publique resultados de projetos privados.
+
+Os resultados históricos de **11 testes** continuam documentados como evidência da versão anterior, não do estado atual. Na atualização de 05/11, a extensão foi verificada em cópia local Linux/Python 3.13.5, com **16 testes aprovados**; a validação em Windows segue pendente. Consulte [Evolução técnica](EVOLUCAO_TECNICA.md), [guia de execução](GUIA_EXECUCAO_E_ENTREGA.md), [relato](relato.txt) e [prompts](PROMPTS_REGISTRADOS.md). A IA original confirmada foi Gemini 1.5 Pro; a extensão é da revisão posterior com GPT-6.
