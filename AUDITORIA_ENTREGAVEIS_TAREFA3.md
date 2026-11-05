@@ -37,12 +37,12 @@
 1. O pacote **SecurePath_CLI_Entrega_Final.zip**, anteriormente gerado em 04/11/2026, possui **nove testes** e não contém as duas verificações de regressão para FIFO e links simbólicos introduzidas posteriormente. **Não utilizar esse ZIP como snapshot final do projeto.** O repositório GitHub, atualizado em 05/11/2026, é a versão de referência.
 2. O log de 05/11/2026 apresenta prefixos de comando truncados na transcrição textual: `$ -m unittest...` e `$ artefatos.py...`. Os comandos completos para reprodução são `python -m unittest discover -s tests -v` e `python artefatos.py teste.txt --fail-on-findings`; conferir a [nota de transcrição](evidencias/NOTA_TRANSCRICAO.md). A saída registrada não foi reatribuída a um operador humano.
 3. A versão pública registra 11 testes aprovados em Python 3.12.14/Linux. Como conferência adicional, nesta revisão foi executada uma **cópia local reconstruída**: partiu-se do ZIP de 04/11 e aplicaram-se a verificação de arquivo regular e os dois testes de regressão inspecionados no GitHub. Em Python 3.13.5/Linux, 11/11 testes passaram e a amostra produziu cinco alertas e código 1. **Essa verificação não é uma clonagem autenticada do último commit.**
-4. O relato original apresenta divergências entre Gemini, GPT-4o e Claude, e não preserva as transcrições necessárias para identificar os modelos/versões históricos por etapa. Os prompts descritos foram **reconstruídos**, não são transcrições autenticadas.
+4. O aluno confirmou em 05/11/2026 que utilizou **Google Gemini 1.5 Pro na etapa original**. Anotações anteriores conflitavam com essa declaração, mas as transcrições originais não estão disponíveis para auditoria. Os prompts descritos foram **reconstruídos**, não são transcrições autenticadas. A revisão complementar de 04–05/11/2026 foi realizada com ChatGPT (GPT-6).
 5. A apresentação revisada foi reorganizada em dez slides, para explicitar uso de IA nas três etapas, refinamento de prompts, decisões humanas, testes, critérios e limites. O arquivo PowerPoint foi disponibilizado nesta conversa, não publicado automaticamente neste repositório.
 
 ## 4. Pendências que exigem comprovação pelo aluno
 
-- Confirmar **modelo, versão e provedor** realmente utilizados no desenvolvimento, na redação do README e na revisão; corrigir divergências com base no histórico, sem inventar interações.
+- Modelo original **Gemini 1.5 Pro** informado pelo aluno; se possível, preservar a confirmação e os históricos originais para rastreabilidade, sem inventar interações.
 - Substituir os prompts reconstruídos por exemplos **literalmente utilizados**, quando houver registros, ou mantê-los explicitamente como reconstruções.
 - Reproduzir os comandos da versão GitHub no próprio computador e registrar **data, sistema operacional, versão de Python, comandos e saídas**, indicando o operador.
 - Validar em primeira pessoa a seção de decisões humanas e a reflexão crítica de [relato.txt](relato.txt).
@@ -50,4 +50,4 @@
 
 ## 5. Conclusão
 
-**Situação: tecnicamente muito próxima da conclusão.** Artefato, documentação, licença, testes e revisão crítica estão documentados. A entrega não deve ser declarada integralmente comprovada até fechar o histórico do uso de IA e a validação pessoal do estudante.
+**Situação: tecnicamente muito próxima da conclusão.** Artefato, documentação, licença, testes e revisão crítica estão documentados. A entrega não deve ser declarada integralmente comprovada até conferir os prompts históricos e a validação pessoal do estudante.
