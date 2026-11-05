@@ -1,7 +1,7 @@
 RELATO DE DESENVOLVIMENTO ASSISTIDO POR INTELIGÊNCIA ARTIFICIAL
 Artefato: SecurePath CLI — Scanner de Credenciais Expostas
 Atividade de Cibersegurança — Relato para entrega acadêmica
-Data da revisão final: 04/11/2026
+Data da revisão complementar: 05/11/2026
 
 1. LINK PARA O REPOSITÓRIO PÚBLICO
 
@@ -93,3 +93,16 @@ A intervenção humana foi fundamental para fixar o problema e as restrições, 
 Em uma próxima experiência, iniciaria pelo protocolo de testes e por critérios de aceitação mensuráveis, mantendo um registro de prompts por modelo e versão, com data, resposta e mudança aplicada. Também testaria mais cedo em sistemas operacionais diferentes e separaria testes de I/O simulados de testes de permissões reais.
 
 Conclusão: o uso de IA foi relevante, mas a qualidade, a rastreabilidade e a responsabilidade pelo artefato dependem de decisões técnicas e validação independente conduzidas pelo aluno.
+
+
+7. ADENDO DE REVISÃO PÓS-PUBLICAÇÃO - 05/11/2026
+
+Ferramenta desta etapa: ChatGPT/Codex, OpenAI. O identificador exato de implantação não foi registrado. Este adendo não confirma os nomes de modelos atribuídos a interações históricas.
+
+Solicitação real desta etapa: "Corrija as atividades e também verifique oq precisa ser feito com base nos seguintes enunciados", acompanhada das exigências de disponibilidade, funcionalidade, sustentabilidade e reprodutibilidade.
+
+A IA inspecionou o código publicado, executou a suíte existente (9 testes aprovados), identificou que a travessia poderia abrir um FIFO e bloquear, acrescentou verificação de arquivo regular com stat.S_ISREG e dois testes: FIFO em subprocesso com timeout e link simbólico. A suíte final executou 11 testes, todos aprovados, em Python 3.12.14/Linux. A amostra produziu 5 alertas, nenhum erro de I/O e código 1 com a flag --fail-on-findings. O log está em evidencias/validacao_2026-11-05.txt.
+
+Disponibilidade: arquivos publicados e acessíveis. Funcionalidade: testes e demonstração executados nesta revisão. Sustentabilidade: correção pequena, biblioteca padrão e testes de regressão. Reprodutibilidade: comandos, amostra e log preservados. Estes pareceres se limitam ao escopo educacional e não representam selos oficiais.
+
+Ações ainda sob responsabilidade do aluno: conferir seu histórico e registrar modelo/versão por etapa; substituir ou confirmar os prompts reconstruídos com exemplos realmente usados; confirmar as decisões humanas descritas; executar a versão final e acrescentar data, ambiente, comandos e saídas de sua própria validação; revisar a reflexão crítica. Até isso ocorrer, o relato é uma versão revisada com pendências de comprovação, e não prova de que todas essas etapas foram conduzidas pelo aluno.

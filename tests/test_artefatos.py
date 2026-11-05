@@ -3,6 +3,9 @@
 from contextlib import redirect_stdout, redirect_stderr
 from io import StringIO
 from pathlib import Path
+import os
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -38,6 +41,32 @@ class SecurePathTests(unittest.TestCase):
         code, output, _ = self.run_cli(clean, "--fail-on-findings")
         self.assertEqual(code, 0)
         self.assertIn("alertas=0", output)
+
+    @unittest.skipUnless(hasattr(os, "mkfifo"), "FIFO requer POSIX")
+    def test_fifo_does_not_block_directory_scan(self):
+        os.mkfifo(self.root / "pipe")
+        scanner = Path(__file__).resolve().parents[1] / "artefatos.py"
+        result = subprocess.run(
+            [sys.executable, str(scanner), str(self.root)],
+            capture_output=True, text=True, timeout=3,
+        )
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("ignorados=1", result.stdout)
+
+    def test_symlink_is_skipped_without_reading_target(self):
+        target = self.root / "target.txt"
+        target.write_text("password = 'synthetic'", encoding="utf-8")
+        link = self.root / "alias.txt"
+        try:
+            link.symlink_to(target)
+        except (OSError, NotImplementedError):
+            self.skipTest("links simbólicos indisponíveis")
+        summary = Summary()
+        with redirect_stdout(StringIO()) as output:
+            scan_file(link, summary, 1024)
+        self.assertEqual(summary.skipped, 1)
+        self.assertEqual(summary.findings, 0)
+        self.assertEqual(output.getvalue(), "")
 
     def test_binary_file_is_skipped(self):
         binary = self.root / "binario.bin"
@@ -104,3 +133,4 @@ class SecurePathTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

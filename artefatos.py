@@ -9,6 +9,7 @@ from dataclasses import dataclass
 import os
 from pathlib import Path
 import re
+import stat
 import sys
 
 
@@ -50,7 +51,9 @@ def scan_file(path: Path, summary: Summary, max_bytes: int) -> None:
         if path.is_symlink():
             summary.skipped += 1
             return
-        if path.stat().st_size > max_bytes:
+        file_stat = path.stat()
+        # FIFOs, sockets e dispositivos podem bloquear ou produzir fluxos ilimitados.
+        if not stat.S_ISREG(file_stat.st_mode) or file_stat.st_size > max_bytes:
             summary.skipped += 1
             return
         # NUL é uma heurística simples para arquivos binários; não é detector perfeito.

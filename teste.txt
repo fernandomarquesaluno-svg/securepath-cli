@@ -7,3 +7,4 @@ Authorization: Bearer token_ficticio_abcdefghijklmnop
 db_password = "outra_senha_ficticia"
 # Controle negativo: isto não deve produzir alertas.
 status = "sem_segredos"
+

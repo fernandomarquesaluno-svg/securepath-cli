@@ -24,7 +24,7 @@ Percorrer um arquivo ou uma árvore de diretórios, localizar padrões suspeitos
 - Reconhece cabeçalhos PEM do formato legado de chave privada RSA.
 - Identifica atribuições textuais de `password`, `passwd`, `pwd`, `secret` e variantes com prefixo, como `db_password`.
 - Percorre diretórios recursivamente, em ordem estável, ignorando pastas de ferramentas/geração (`.git`, `.venv`, `venv`, `__pycache__`, `.pytest_cache`, `node_modules`, `dist`, `build`).
-- Não segue links simbólicos; ignora arquivos que excedam o limite de tamanho (padrão: **5 MiB**) ou cujo início contenha byte NUL (heurística para binário).
+- Não segue links simbólicos; ignora arquivos especiais (FIFO, socket e dispositivo), arquivos que excedam o limite de tamanho (padrão: **5 MiB**) ou cujo início contenha byte NUL (heurística para binário).
 - Utiliza leitura UTF-8 com `errors='ignore'` e `try/except` específico para `PermissionError` e `OSError`; conta arquivos analisados, ignorados, erros e alertas.
 - Oferece a opção `--fail-on-findings` para integração em scripts/CI.
 
@@ -32,7 +32,7 @@ Percorrer um arquivo ou uma árvore de diretórios, localizar padrões suspeitos
 
 ## 5. Dependências
 
-**Zero dependências de terceiros:** nenhum `pip install`, `requirements.txt`, `click`, `rich`, `colorama` ou serviço externo é necessário. Módulos utilizados: `argparse`, `dataclasses`, `os`, `pathlib`, `re` e `sys`. Os testes usam também `unittest`, `unittest.mock`, `tempfile`, `contextlib` e `io`, todos nativos.
+**Zero dependências de terceiros:** nenhum `pip install`, `requirements.txt`, `click`, `rich`, `colorama` ou serviço externo é necessário. Módulos utilizados: `argparse`, `dataclasses`, `os`, `pathlib`, `re`, `stat` e `sys`. Os testes usam também `unittest`, `unittest.mock`, `tempfile`, `contextlib` `io`, `subprocess` e `sys`, todos nativos.
 
 ## 6. Requisitos de execução
 
@@ -122,7 +122,7 @@ python artefatos.py teste.txt
 python artefatos.py teste.txt --fail-on-findings
 ```
 
-**Resultados esperados:** 9 testes `OK`, 5 alertas no `teste.txt`, 0 erros de I/O. No último comando, a saída é a mesma, mas o processo termina com código `1`, intencionalmente.
+**Resultados esperados:** 11 testes `OK`, 5 alertas no `teste.txt`, 0 erros de I/O. No último comando, a saída é a mesma, mas o processo termina com código `1`, intencionalmente.
 
 A suíte cobre: achados sintéticos e não exposição do conteúdo; arquivo limpo; arquivo binário com NUL; leitura de texto fora de UTF-8; arquivo acima do limite; exclusão de `.git`; erro de permissão simulado; caminho inexistente; erro simulado de travessia de diretório com continuação. O teste de permissões **simula** a exceção e não equivale a um teste de ACL real em todos os sistemas operacionais.
 
@@ -163,3 +163,30 @@ Estes são **elementos de evidência acadêmica**, não uma atribuição oficial
 ## Licença
 
 Distribuído sob a licença MIT; consulte `LICENSE`.
+
+## Validação complementar de 05/11/2026
+
+A revisão pós-publicação executou 11 testes em Python 3.12.14/Linux, todos aprovados. O teste mínimo produziu 5 alertas e código 1 com `--fail-on-findings`, conforme esperado. Log: [evidencias/validacao_2026-11-05.txt](evidencias/validacao_2026-11-05.txt).
+
+A proteção adicionada rejeita arquivos não regulares antes da abertura, evitando bloqueio por FIFO. Foram testados um FIFO real em subprocesso com timeout e a exclusão de link simbólico. Em plataformas sem esses recursos, os respectivos testes podem ser ignorados e devem ser reportados como tal. O scanner não protege contra alteração maliciosa concorrente do sistema de arquivos entre a inspeção e a abertura.
+
+### Critérios e reivindicações verificáveis
+
+Este trabalho considera Disponibilidade, Funcionalidade, Sustentabilidade e Reprodutibilidade como critérios acadêmicos. Não há artigo associado nem concessão de selos SBSeg ao SecurePath. A reprodução demonstrada refere-se aos testes sintéticos abaixo.
+
+| Reivindicação limitada | Procedimento | Resultado esperado |
+|---|---|---|
+| Detectar os padrões da amostra | `python artefatos.py teste.txt --fail-on-findings` | 5 alertas, sem valores dos segredos, código 1 |
+| Distinguir arquivo limpo de indícios | Suíte `unittest` | Controle negativo sem alertas e código 0 |
+| Continuar após falha local de I/O | Teste com exceção simulada | Erro contabilizado, outros arquivos analisados, código 2 |
+| Evitar leitura bloqueante de FIFO | Teste POSIX em subprocesso | FIFO ignorado, processo termina antes do timeout |
+
+Os testes desta revisão terminaram em menos de um segundo neste ambiente; isso não é benchmark nem garantia para outras máquinas. Não há necessidade de GPU ou serviços externos. O uso de memória e disco não foi medido. O limite de tamanho por arquivo é 5 MiB, configurável.
+
+### Preocupações com segurança
+
+Execute apenas sobre arquivos que você tem autorização para ler e use a amostra sintética na avaliação. A ferramenta não modifica os arquivos nem acessa rede; caminhos dos arquivos aparecem na saída. Diretórios ignorados não são contabilizados como arquivos ignorados. Validação em Windows/macOS e avaliação de precisão/recall em corpus real permanecem fora do escopo.
+
+### Pendências do relato acadêmico
+
+O relato diferencia anotações históricas de evidência desta revisão. O aluno ainda deve confirmar os modelos exatos e os prompts originais, revisar a reflexão em suas próprias palavras e reproduzir os comandos. A assistência atual não comprova retroativamente decisões ou testes realizados pelo aluno.

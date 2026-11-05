@@ -1,0 +1,32 @@
+Data: 05/11/2026; Python 3.12.14; Linux; execução pela IA no ambiente de revisão.
+$ -m unittest discover -s tests -v
+
+test_binary_file_is_skipped (test_artefatos.SecurePathTests.test_binary_file_is_skipped) ... ok
+test_clean_file_has_no_alerts (test_artefatos.SecurePathTests.test_clean_file_has_no_alerts) ... ok
+test_detects_five_synthetic_findings_without_revealing_values (test_artefatos.SecurePathTests.test_detects_five_synthetic_findings_without_revealing_values) ... ok
+test_directory_io_error_is_reported_and_scan_continues (test_artefatos.SecurePathTests.test_directory_io_error_is_reported_and_scan_continues) ... ok
+test_directory_scan_ignores_git_folder (test_artefatos.SecurePathTests.test_directory_scan_ignores_git_folder) ... ok
+test_fifo_does_not_block_directory_scan (test_artefatos.SecurePathTests.test_fifo_does_not_block_directory_scan) ... ok
+test_large_file_is_skipped (test_artefatos.SecurePathTests.test_large_file_is_skipped) ... ok
+test_non_utf8_file_does_not_crash (test_artefatos.SecurePathTests.test_non_utf8_file_does_not_crash) ... ok
+test_permission_error_does_not_abort_scan (test_artefatos.SecurePathTests.test_permission_error_does_not_abort_scan) ... ok
+test_symlink_is_skipped_without_reading_target (test_artefatos.SecurePathTests.test_symlink_is_skipped_without_reading_target) ... ok
+test_unavailable_path_returns_argument_error (test_artefatos.SecurePathTests.test_unavailable_path_returns_argument_error) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.059s
+
+OK
+
+exit_code=0
+$ artefatos.py teste.txt --fail-on-findings
+[ALERTA] teste.txt:3 | AWS Access Key ID
+[ALERTA] teste.txt:4 | Senha/segredo atribuído
+[ALERTA] teste.txt:5 | Bearer token
+[ALERTA] teste.txt:6 | Cabeçalho de chave RSA privada
+[ALERTA] teste.txt:7 | Senha/segredo atribuído
+
+Resumo: arquivos analisados=1 | ignorados=0 | erros de I/O=0 | alertas=5
+
+
+exit_code=1

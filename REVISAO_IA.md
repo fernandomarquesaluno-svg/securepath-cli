@@ -57,3 +57,12 @@ O código `1` é esperado na presença de alertas com `--fail-on-findings`. Erro
 ## Conclusão técnica
 
 Há evidência local de funcionamento e reprodução do protocolo sintético, com melhorias de manutenção e documentação. Não há base para garantir nota máxima, atribuição formal de selo ou desempenho em aplicações reais; isso exige avaliação independente do docente e eventual ampliação experimental.
+
+
+## Revisão pós-publicação de 05/11/2026
+
+ChatGPT/Codex (OpenAI) conferiu o estado público e os quatro critérios. A execução atual confirmou os nove testes preexistentes. Foi identificada a possibilidade de bloqueio ao abrir FIFO durante varredura de diretório. A verificação de arquivo regular corrigiu esse cenário; dois testes adicionais cobrem FIFO real e link simbólico. Resultado: 11 testes OK em Python 3.12.14/Linux. Demonstração: 5 alertas, código 1 com a flag correspondente. Veja [log real](evidencias/validacao_2026-11-05.txt).
+
+D: arquivos acessíveis. F: comportamentos testados confirmados. S: funções separadas, biblioteca padrão e regressões. R: repetição da amostra e da suíte documentada; sem alegação de benchmark científico ou validação de corpus real.
+
+Pendência acadêmica: resolver a atribuição histórica dos modelos e confirmar a participação do aluno. Prompts reconstruídos são exemplos de documentação, não transcrições. Não foram realizados testes de ACL real ou validação em Windows/macOS.
