@@ -24,3 +24,8 @@ A revisão posterior atualizou a suíte para 11 testes, corrigiu o risco de bloq
 ## Limite da evidência
 
 A identificação Gemini 1.5 Pro foi confirmada pelo aluno; a redação dos prompts antigos **não foi confirmada literalmente**. Os exemplos são adequados à análise metodológica desde que essa ressalva seja mantida. Não se devem fabricar logs, datas ou respostas de Gemini.
+
+
+## Extensão posterior — solicitações e verificação
+
+Na sequência de revisão com GPT-6, o aluno solicitou que o artefato não fosse excessivamente simplificado. A assistência implementou novas regras heurísticas, saída JSON e testes. Foram executados 16 testes em Linux com aprovação, e um projeto sintético com três arquivos produziu quatro alertas. Os resultados são de uma execução do assistente, não do Windows do aluno. A data, o provedor e a versão dessa etapa não substituem o histórico original do Gemini 1.5 Pro.
