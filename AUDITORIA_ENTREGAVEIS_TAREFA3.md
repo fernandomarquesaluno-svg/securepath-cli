@@ -63,3 +63,10 @@
 - **Pendente antes da entrega definitiva:** executar os comandos no Windows do estudante, registrar versão do Python e confirmar o relato autoral. O ZIP e o PowerPoint foram disponibilizados nesta conversa; a publicação no GitHub não equivale a testar Windows.
 
 Os números antigos de 11 testes descrevem uma versão anterior, não o estado atual.
+
+
+## 7. Nova evidência fornecida pelo aluno — Codespaces (06/11/2026)
+
+O aluno enviou nesta conversa uma transcrição do terminal do GitHub Codespaces com Linux/Python 3.14.2, relatando a execução de `python3 -m unittest discover -s tests -v`, `python3 artefatos.py demonstracao` e `python3 artefatos.py demonstracao --format json`. A suíte informou **16 testes aprovados** (`OK`), e a demonstração informou **3 arquivos analisados, 4 alertas e 0 erros de I/O**. A saída JSON exibiu quatro achados e os identificadores SEC007, SEC005, SEC006 e SEC004. A transcrição enviada foi duplicada na mensagem, mas isso não equivale a duas execuções independentes.
+
+Evidência: [validação do aluno no Codespaces](evidencias/validacao_codespaces_2026-11-06.md). É uma evidência de execução realizada pelo aluno conforme relato, sem inspeção direta do ambiente pelo assistente. **A validação Linux/Codespaces deixou de ser uma pendência**. O teste em Windows continua não realizado e não deve ser apresentado como concluído; pode ser complementar se o professor exigir. Permanecem sob responsabilidade do aluno a confirmação do relato histórico da utilização de IA e o envio dos materiais exigidos.
