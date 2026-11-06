@@ -4,7 +4,8 @@
 
 **Repositório:** https://github.com/fernandomarquesaluno-svg/securepath-cli  
 
-**Conferência da Atividade 3:** [matriz de entregáveis, evidências e pendências](AUDITORIA_ENTREGAVEIS_TAREFA3.md).  
+**Conferência da Atividade 3:** [matriz de entregáveis, evidências e pendências](AUDITORIA_ENTREGAVEIS_TAREFA3.md).
+**Validação adicional do aluno:** [Codespaces/Linux, Python 3.14.2 — 16 testes aprovados (06/11/2026)](evidencias/validacao_codespaces_2026-11-06.md).  
 **Roteiro revisado da apresentação:** [11 slides](ROTEIRO_APRESENTACAO.md).  
 **Contexto:** artefato educacional de Cibersegurança desenvolvido com assistência de IA. Não equivale a um scanner corporativo completo nem comprova, isoladamente, que uma credencial esteja ativa.
 
