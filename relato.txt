@@ -19,7 +19,7 @@ Revisão inicial do artefato: atribuída a Google Gemini 1.5 Pro, conforme confi
 
 RESSALVA DE RASTREABILIDADE: o aluno confirmou em 05/11/2026 que o modelo da etapa original foi o Gemini 1.5 Pro. Versões anteriores do relato mencionavam GPT-4o e Claude 3.5 Sonnet; tais menções permanecem como histórico de versões anteriores, sem comprovação de uso nessa tarefa. As transcrições originais dos prompts ainda não estão reunidas. A revisão complementar com ChatGPT (GPT-6) é posterior e não deve ser atribuída ao Gemini.
 
-3. EXEMPLOS DOS PRINCIPAIS PROMPTS UTILIZADOS
+3. EXEMPLOS RECONSTRUÍDOS DOS PROMPTS (NÃO SÃO TRANSCRIÇÕES LITERAIS)
 
 Os exemplos a seguir foram reconstruídos/normalizados a partir das anotações apresentadas no PDF e no relato anterior do repositório. Eles documentam a abordagem de engenharia de prompts, mas não substituem os registros originais das conversas.
 
@@ -111,3 +111,17 @@ Ações ainda sob responsabilidade do aluno: o modelo original foi identificado 
 8. FECHAMENTO DOCUMENTAL DA VERSÃO AMPLIADA — 05/11/2026
 
 A extensão posterior ao desenvolvimento original com Gemini 1.5 Pro foi feita com apoio do GPT-6 e acrescentou três regras (SEC005–SEC007), formato de relatório JSON sem valores sensíveis, pasta demonstracao/ e cinco testes de regressão. O total passou para sete regras e 16 testes. O conjunto foi novamente executado em Linux nesta sessão, com 16 testes aprovados; a pasta demonstracao/ apresentou quatro alertas em três arquivos, sem erros de I/O. O teste original teste.txt permanece com cinco alertas. Esses resultados correspondem a testes do assistente, não à validação pessoal do aluno no Windows. O modelo original (Gemini 1.5 Pro) foi informado diretamente pelo aluno; os prompts históricos continuam registrados como reconstruções, não como transcrições autenticadas. A atribuição das mudanças desta extensão ao GPT-6 não deve ser retroativa. A apresentação técnica final descreve a versão de sete regras, 16 testes e saída JSON.
+
+
+9. CONFERÊNCIA FINAL DA RASTREABILIDADE DE IA — 06/11/2026
+
+Foi realizada conferência documental entre este relato, PROMPTS_REGISTRADOS.md, a auditoria da atividade, as evidências de execução e o histórico das conversas disponível.
+
+- Desenvolvimento original: Google Gemini 1.5 Pro, identificado por declaração expressa do aluno em 05/11/2026. Não há transcrições integrais autenticadas das interações originais.
+- README inicial e revisão inicial: atribuídos ao Gemini 1.5 Pro de acordo com o relato do aluno, não por logs completos verificados.
+- Revisões e ampliação posteriores: ChatGPT/GPT-6, com alterações no scanner, README, testes, saída JSON e documentação. Essas implementações não devem ser apresentadas como resultados originais do Gemini ou como decisões técnicas tomadas exclusivamente pelo aluno.
+- Registros de GPT-4o e Claude 3.5 Sonnet em relatos antigos: histórico conflitante, sem prova suficiente de utilização nesta atividade. Não integrar à lista de modelos confirmados.
+- Prompts da seção 3 e de PROMPTS_REGISTRADOS.md: exemplos documentais RECONSTRUÍDOS/NORMALIZADOS, não transcrições literais autenticadas. A relação entre um prompt antigo específico e determinada resposta da IA não pôde ser reconstituída com segurança.
+- Evidência posterior do aluno: em 06/11/2026, no GitHub Codespaces/Linux com Python 3.14.2, o aluno forneceu transcrição de 16 testes aprovados e demonstração com 3 arquivos, 4 alertas, 0 erros de I/O e saída JSON. Ver evidencias/validacao_codespaces_2026-11-06.md. Isso complementa a validação técnica, mas não comprova o texto literal dos prompts antigos nem execução em Windows.
+
+PARECER: a descrição das ferramentas e da sequência geral de desenvolvimento está coerente com o histórico recuperado, desde que se preservem as ressalvas de proveniência. A conferência documental não substitui a validação pessoal pelo aluno das decisões e reflexões redigidas em primeira pessoa, nem comprova submissão ao professor.
