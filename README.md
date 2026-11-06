@@ -5,7 +5,7 @@
 **Repositório:** https://github.com/fernandomarquesaluno-svg/securepath-cli  
 
 **Conferência da Atividade 3:** [matriz de entregáveis, evidências e pendências](AUDITORIA_ENTREGAVEIS_TAREFA3.md).  
-**Roteiro revisado da apresentação:** [dez slides](ROTEIRO_APRESENTACAO.md).  
+**Roteiro revisado da apresentação:** [11 slides](ROTEIRO_APRESENTACAO.md).  
 **Contexto:** artefato educacional de Cibersegurança desenvolvido com assistência de IA. Não equivale a um scanner corporativo completo nem comprova, isoladamente, que uma credencial esteja ativa.
 
 ## 1. Descrição do problema
@@ -24,18 +24,20 @@ Percorrer um arquivo ou uma árvore de diretórios, localizar padrões suspeitos
 
 - Identifica IDs de chave de acesso AWS com prefixo `AKIA` e 16 caracteres alfanuméricos maiúsculos adicionais.
 - Identifica tokens em cabeçalhos `Bearer` com comprimento mínimo configurado no padrão.
+- Identifica IDs de chave de acesso temporária AWS com prefixo `ASIA` e tokens clássicos do GitHub com prefixo `ghp_`.
+- Reconhece cabeçalhos de chaves privadas PEM/OpenSSH nas formas implementadas pelas regras SEC003 e SEC007.
 - Reconhece cabeçalhos PEM do formato legado de chave privada RSA.
 - Identifica atribuições textuais de `password`, `passwd`, `pwd`, `secret` e variantes com prefixo, como `db_password`.
 - Percorre diretórios recursivamente, em ordem estável, ignorando pastas de ferramentas/geração (`.git`, `.venv`, `venv`, `__pycache__`, `.pytest_cache`, `node_modules`, `dist`, `build`).
 - Não segue links simbólicos; ignora arquivos especiais (FIFO, socket e dispositivo), arquivos que excedam o limite de tamanho (padrão: **5 MiB**) ou cujo início contenha byte NUL (heurística para binário).
 - Utiliza leitura UTF-8 com `errors='ignore'` e `try/except` específico para `PermissionError` e `OSError`; conta arquivos analisados, ignorados, erros e alertas.
-- Oferece a opção `--fail-on-findings` para integração em scripts/CI.
+- Oferece `--fail-on-findings` para integração em scripts/CI e `--format json` para gerar relatórios estruturados sem valores de credenciais.
 
 **Proteção na saída:** a ferramenta apresenta metadados do alerta, **não a linha original nem o conteúdo da credencial**.
 
 ## 5. Dependências
 
-**Zero dependências de terceiros:** nenhum `pip install`, `requirements.txt`, `click`, `rich`, `colorama` ou serviço externo é necessário. Módulos utilizados: `argparse`, `dataclasses`, `os`, `pathlib`, `re`, `stat` e `sys`. Os testes usam também `unittest`, `unittest.mock`, `tempfile`, `contextlib` `io`, `subprocess` e `sys`, todos nativos.
+**Zero dependências de terceiros:** nenhum `pip install`, `requirements.txt`, `click`, `rich`, `colorama` ou serviço externo é necessário. Módulos utilizados: `argparse`, `dataclasses`, `json`, `os`, `pathlib`, `re`, `stat` e `sys`. Os testes usam também `unittest`, `unittest.mock`, `tempfile`, `contextlib`, `io`, `subprocess` e `sys`, todos nativos.
 
 ## 6. Requisitos de execução
 
@@ -60,10 +62,11 @@ Alternativamente, baixe os arquivos do repositório. O Git é necessário apenas
 python artefatos.py CAMINHO
 python artefatos.py CAMINHO --max-size-kib 1024
 python artefatos.py CAMINHO --fail-on-findings
+python artefatos.py CAMINHO --format json
 python artefatos.py --help
 ```
 
-`CAMINHO` pode ser um arquivo ou diretório. `--max-size-kib` define o máximo por arquivo em KiB (inteiro positivo; padrão 5120).
+`CAMINHO` pode ser um arquivo ou diretório. `--max-size-kib` define o máximo por arquivo em KiB (inteiro positivo; padrão 5120). `--format json` produz `schema_version`, contadores e uma lista de achados com `rule_id`, categoria, arquivo e linha, sem incluir valores capturados.
 
 **Códigos de saída:** `0` = varredura sem erros de I/O (mesmo com alertas, se não usar `--fail-on-findings`); `1` = alertas presentes com `--fail-on-findings`; `2` = erro de I/O ou erro de argumentos. Erros de I/O têm prioridade sobre alertas, pois a análise ficou parcial.
 
@@ -104,9 +107,16 @@ securepath-cli/
 ├── tests/
 │   └── test_artefatos.py     # Testes unitários com unittest
 ├── README.md                 # Documentação e protocolo de reprodução
+├── demonstracao/             # Três arquivos de exemplo sintético
+├── evidencias/               # Registros históricos de execução
 ├── relato.txt                # Histórico crítico do desenvolvimento com IA
+├── PROMPTS_REGISTRADOS.md    # Exemplos reconstruídos com ressalvas
+├── EVOLUCAO_TECNICA.md      # Histórico das versões do scanner
+├── GUIA_EXECUCAO_E_ENTREGA.md # Reprodução no Windows
+├── AUDITORIA_ENTREGAVEIS_TAREFA3.md # Matriz de requisitos
 ├── ROTEIRO_APRESENTACAO.md   # Texto de fala por slide
 ├── REVISAO_IA.md             # Auditoria e evidências da revisão
+├── executar_windows.bat      # Atalho para demonstração local
 ├── .gitignore
 └── LICENSE                   # Licença MIT
 ```
@@ -125,16 +135,16 @@ python artefatos.py teste.txt
 python artefatos.py teste.txt --fail-on-findings
 ```
 
-**Resultados esperados:** 11 testes `OK`, 5 alertas no `teste.txt`, 0 erros de I/O. No último comando, a saída é a mesma, mas o processo termina com código `1`, intencionalmente.
+**Resultados esperados na versão atual:** 16 casos de teste (no Windows, o caso de FIFO pode ser marcado como `skipped`), 5 alertas no `teste.txt` e 0 erros de I/O. No último comando, a saída é a mesma, mas o processo termina com código `1`, intencionalmente.
 
-A suíte cobre: achados sintéticos e não exposição do conteúdo; arquivo limpo; arquivo binário com NUL; leitura de texto fora de UTF-8; arquivo acima do limite; exclusão de `.git`; erro de permissão simulado; caminho inexistente; erro simulado de travessia de diretório com continuação. O teste de permissões **simula** a exceção e não equivale a um teste de ACL real em todos os sistemas operacionais.
+A suíte cobre: achados sintéticos e não exposição do conteúdo; arquivo limpo; arquivo binário com NUL; leitura de texto fora de UTF-8; arquivo acima do limite; exclusão de `.git`; erro de permissão simulado; caminho inexistente; erro simulado de travessia de diretório com continuação; FIFO e link simbólico; saída JSON, tipos adicionais de credenciais, controles negativos e compatibilidade da saída textual. O teste de permissões **simula** a exceção e não equivale a um teste de ACL real em todos os sistemas operacionais.
 
 **Evidência de revisão local em 04/11/2026:** Python 3.13.5, Linux, 9 testes aprovados. Consulte `REVISAO_IA.md` para o diagnóstico e as decisões de correção.
 
 ## 12. Limitações conhecidas
 
 - Os padrões Regex são **heurísticos**: podem produzir falsos positivos e falsos negativos; não validam se uma chave está ativa.
-- A identificação AWS contempla IDs `AKIA`, não todos os formatos de credenciais AWS (por exemplo, `ASIA`). A análise RSA reconhece apenas cabeçalhos legados `RSA PRIVATE KEY`.
+- As regras AWS contemplam IDs `AKIA` e `ASIA`, mas não todos os formatos de credenciais AWS. As regras de chaves privadas reconhecem alguns cabeçalhos RSA, PEM e OpenSSH, não o conteúdo completo nem a validade criptográfica.
 - O scanner não interpreta AST, contexto semântico, formatos de arquivos compactados, histórico Git, segredos divididos entre linhas ou arquivos criptografados.
 - A opção `errors='ignore'` descarta bytes inválidos silenciosamente; facilita continuidade de I/O, mas pode **ocultar padrões** em conteúdos com codificação incompatível. Um byte NUL nos primeiros 4096 bytes faz o arquivo ser ignorado, mas nem todo binário contém NUL.
 - Pastas excluídas, arquivos muito grandes e links simbólicos não são varridos; portanto, **um resultado sem alertas não demonstra ausência de segredos**.
