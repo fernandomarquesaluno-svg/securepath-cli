@@ -1,191 +1,167 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#091421">
-  <meta name="description" content="Conheça o SecurePath CLI: scanner local de possíveis credenciais expostas, seu fluxo, regras, demonstrações e evidências técnicas em um atlas interativo.">
-  <title>SecurePath · Atlas Interativo do Artefato</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23091421'/%3E%3Cpath d='M32 8 51 16v15c0 13-9 21-19 26C22 52 13 44 13 31V16L32 8Z' fill='none' stroke='%2365e8d5' stroke-width='4'/%3E%3Cpath d='m23 32 6 6 13-14' fill='none' stroke='%2365e8d5' stroke-width='4'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./style.css">
-  <script src="./app.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080d15">
+<meta name="description" content="SecurePath CLI: uma experiência interativa para conhecer um scanner de credenciais expostas, seus padrões, funcionamento e evidências técnicas.">
+<meta property="og:title" content="SecurePath — Segredos não devem passar despercebidos">
+<meta property="og:description" content="Explore visualmente o scanner de segredos feito em Python. Entenda a arquitetura, experimente uma simulação e consulte as evidências.">
+<title>SecurePath — Explore o scanner de segredos</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23080d15'/%3E%3Cpath d='M32 7 51 16v15c0 13-8 21-19 26-11-5-19-13-19-26V16z' fill='none' stroke='%23b8ff66' stroke-width='4'/%3E%3Cpath d='m23 31 6 6 13-13' stroke='%23b8ff66' stroke-width='4' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css?v=2.0">
+<script src="./app.js?v=2.0" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
-  <div class="ambient ambient-a" aria-hidden="true"></div><div class="ambient ambient-b" aria-hidden="true"></div>
-  <div class="noise" aria-hidden="true"></div>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <a class="brand" href="#inicio" aria-label="SecurePath, início">
-        <span class="brand-logo" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="m16 3 11 5v9c0 7-5 11-11 14C10 28 5 24 5 17V8L16 3Z"/><path d="m11 17 3.5 3.5L21 13"/></svg></span>
-        <span>SECUREPATH<span class="brand-dot">.</span><small>ATLAS DO ARTEFATO</small></span>
-      </a>
-      <nav class="top-links" aria-label="Navegação principal">
-        <a href="#fluxo">Como funciona</a><a href="#laboratorio">Laboratório</a><a href="#regras">Regras</a><a href="#evidencias">Evidências</a>
-      </nav>
-      <a class="top-repo" href="https://github.com/fernandomarquesaluno-svg/securepath-cli" target="_blank" rel="noopener noreferrer">Código no GitHub <span aria-hidden="true">↗</span></a>
-      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Abrir menu">☰</button>
+<a href="#conteudo" class="skip">Pular para o conteúdo</a>
+<div class="page-noise" aria-hidden="true"></div>
+<div class="progress-track" aria-hidden="true"><div id="scroll-progress"></div></div>
+<header class="site-header">
+ <div class="container header-inner">
+  <a class="brand" href="#inicio" aria-label="SecurePath, início"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M20 4 33 10v11c0 8-5.5 12.5-13 16-7.5-3.5-13-8-13-16V10L20 4Z" stroke="currentColor" stroke-width="2.5"/><path d="m14 20 4 4 9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>securepath<span class="brand-period">.</span></span></a>
+  <nav class="desktop-nav" aria-label="Navegação"><a href="#problema">O problema</a><a href="#como-funciona">Como funciona</a><a href="#demonstracao">Experimente</a><a href="#regras">Detecções</a><a href="#evidencias">Resultados</a></nav>
+  <a class="header-github" href="https://github.com/fernandomarquesaluno-svg/securepath-cli" target="_blank" rel="noopener noreferrer">Ver no GitHub <span aria-hidden="true">↗</span></a>
+  <button class="menu-button" id="menu-button" aria-label="Abrir navegação" aria-expanded="false" aria-controls="mobile-nav" type="button"><span></span><span></span><span></span></button>
+ </div>
+ <nav class="mobile-nav" id="mobile-nav" aria-label="Navegação móvel" hidden><a href="#problema">O problema</a><a href="#como-funciona">Como funciona</a><a href="#demonstracao">Experimente</a><a href="#regras">Detecções</a><a href="#evidencias">Resultados</a><a href="#executar">Executar</a></nav>
+</header>
+<main id="conteudo">
+<section class="hero" id="inicio">
+ <div class="hero-halo halo-one" aria-hidden="true"></div><div class="hero-halo halo-two" aria-hidden="true"></div>
+ <div class="container hero-grid">
+  <div class="hero-text rise">
+   <div class="eyebrow"><span class="eyebrow-line"></span> CIBERSEGURANÇA QUE VOCÊ PODE EXPLORAR <span class="live-point"></span></div>
+   <h1>Seu código pode esconder <span class="hero-emphasis">mais do que bugs<span class="period">.</span></span></h1>
+   <p class="hero-description">Uma senha esquecida. Um token em um arquivo. Uma chave que nunca deveria estar ali. <strong>O SecurePath CLI ajuda a encontrar esses indícios antes que se tornem um problema.</strong></p>
+   <div class="hero-actions">
+    <a class="btn btn-primary" href="#demonstracao">Ver scanner em ação <span aria-hidden="true">↗</span></a>
+    <a class="btn btn-text" href="#como-funciona">Entenda o funcionamento <span aria-hidden="true">↓</span></a>
+   </div>
+   <div class="hero-trust"><div class="trust-avatars" aria-hidden="true"><span>PY</span><span>CLI</span><span>RE</span></div><p><strong>Python puro.</strong> Execução local.<br>Sem bibliotecas de terceiros.</p></div>
+  </div>
+  <div class="hero-stage rise" aria-label="Ilustração animada de uma análise de arquivos com alertas de segurança">
+   <div class="stage-backdrop" aria-hidden="true"><div class="circle-ring ring-one"></div><div class="circle-ring ring-two"></div><div class="circle-ring ring-three"></div><span class="orbit-dot dot-a"></span><span class="orbit-dot dot-b"></span><span class="orbit-dot dot-c"></span></div>
+   <div class="security-display">
+    <div class="display-top"><div class="traffic-lights" aria-hidden="true"><i></i><i></i><i></i></div><span>SECUREPATH / LIVE PREVIEW</span><span class="display-status"><i></i> OFFLINE</span></div>
+    <div class="display-main">
+     <div class="display-left"><div class="tiny-label">SELEÇÃO DE ARQUIVOS</div><div class="file-tree"><div class="folder-row"><span class="folder-icon">▣</span> meu-projeto <span class="faint">/</span></div><div class="tree-row"><span class="tree-stem">├─</span><span class="file-ico">⌁</span> app.py <span class="file-tick">✓</span></div><div class="tree-row scanned-file"><span class="tree-stem">├─</span><span class="file-ico">≡</span> config.py <span class="file-alert">!</span></div><div class="tree-row"><span class="tree-stem">└─</span><span class="file-ico">≡</span> readme.md <span class="file-tick">✓</span></div></div>
+     <div class="display-divider"></div><div class="tiny-label">INSPEÇÃO EM ANDAMENTO</div><div class="scan-graphic"><div class="graphic-grid"></div><div class="scan-vertical"></div><div class="graphic-crosshair"><span>◎</span></div></div><div class="scan-legend"><span><i></i> ANÁLISE HEURÍSTICA</span><span>7 REGRAS</span></div></div>
+     <div class="display-right"><div class="tiny-label">POSSÍVEL EXPOSIÇÃO ENCONTRADA</div><div class="alert-surface"><div class="alert-surface-head"><span class="alert-icon">!</span><strong>Indício detectado</strong><span>SEC004</span></div><p>Possível segredo atribuído no código-fonte</p><div class="redacted-row">VALOR DA CREDENCIAL <span>••••••••••••</span></div><div class="alert-location">config.py <span>linha 12</span></div></div><div class="data-foot"><span>SEGREDO NÃO EXIBIDO</span><span class="pulse-mini"></span></div><div class="decorative-wave"><span style="--height:30%"></span><span style="--height:58%"></span><span style="--height:44%"></span><span style="--height:85%"></span><span style="--height:40%"></span><span style="--height:70%"></span><span style="--height:95%"></span><span style="--height:55%"></span><span style="--height:37%"></span><span style="--height:63%"></span><span style="--height:42%"></span><span style="--height:24%"></span></div></div>
     </div>
-    <nav id="mobile-menu" class="mobile-menu" aria-label="Menu móvel" hidden>
-      <a href="#fluxo">Como funciona</a><a href="#laboratorio">Laboratório</a><a href="#regras">Regras</a><a href="#evidencias">Evidências</a><a href="#instalacao">Executar</a>
-    </nav>
-    <span class="scroll-progress" id="scroll-progress" aria-hidden="true"></span>
-  </header>
-  <div class="site-shell">
-    <aside class="sidebar" aria-label="Índice do atlas">
-      <p class="side-label">EXPLORAR ATLAS</p>
-      <nav class="side-nav">
-        <a class="active" href="#inicio"><span class="side-index">01</span> Visão geral</a>
-        <a href="#contexto"><span class="side-index">02</span> O problema</a>
-        <a href="#fluxo"><span class="side-index">03</span> Fluxo interativo</a>
-        <a href="#laboratorio"><span class="side-index">04</span> Laboratório</a>
-        <a href="#regras"><span class="side-index">05</span> Explorador de regras</a>
-        <a href="#arquitetura"><span class="side-index">06</span> Arquitetura</a>
-        <a href="#evidencias"><span class="side-index">07</span> Evidências</a>
-        <a href="#instalacao"><span class="side-index">08</span> Executar localmente</a>
-      </nav>
-      <div class="side-foot">
-        <span class="tiny-pulse"></span> Scanner local · Python puro
-        <p>Projeto acadêmico de cibersegurança. Resultados heurísticos, não verificação de credenciais.</p>
-      </div>
-    </aside>
-    <main id="conteudo">
-      <section id="inicio" class="hero section">
-        <div class="hero-copy reveal">
-          <div class="eyebrow"><span class="eyebrow-orb"></span> VISÃO GERAL <span class="eyebrow-div">/</span> SEGURANÇA DE SOFTWARE</div>
-          <h1>Segredos expostos.<br><span class="gradient-text">Riscos visíveis.</span></h1>
-          <p class="hero-lead">Um atlas interativo para entender como o <strong>SecurePath CLI</strong> percorre código-fonte, encontra padrões suspeitos de credenciais e gera alertas sem revelar os valores detectados.</p>
-          <div class="hero-tags"><span>ANÁLISE ESTÁTICA</span><span>EXECUÇÃO OFFLINE</span><span>SEM DEPENDÊNCIAS EXTERNAS</span></div>
-          <div class="hero-ctas"><a class="button button-primary" href="#laboratorio">Explorar demonstração <span aria-hidden="true">↗</span></a><a class="button button-ghost" href="#fluxo">Entender o processo <span aria-hidden="true">↓</span></a></div>
-        </div>
-        <div class="hero-visual reveal">
-          <div class="orbit orbit-1"></div><div class="orbit orbit-2"></div><div class="hero-spark s1"></div><div class="hero-spark s2"></div><div class="hero-spark s3"></div>
-          <div class="scan-card">
-            <div class="scan-card-top"><div class="win-dots"><i></i><i></i><i></i></div><span>SECUREPATH / TERMINAL</span><span class="live-mark">● LOCAL</span></div>
-            <div class="scan-card-body">
-              <div class="terminal-prompt"><span>$</span> python artefatos.py demonstracao</div>
-              <p class="dim-code"># Exemplo sintético · sem exposição de valores</p>
-              <div class="mini-row"><span class="mini-status">●</span><span>chave_exemplo.txt:2</span><small>SEC007</small></div>
-              <div class="mini-row"><span class="mini-status">●</span><span>configuracao.py:2</span><small>SEC005</small></div>
-              <div class="mini-row"><span class="mini-status">●</span><span>configuracao.py:3</span><small>SEC006</small></div>
-              <div class="mini-row"><span class="mini-status">●</span><span>configuracao.py:4</span><small>SEC004</small></div>
-              <div class="hero-result"><span>ANÁLISE CONCLUÍDA</span><strong>04 <small>indícios</small></strong></div>
-            </div>
-          </div>
-          <div class="floating-pill pill-one"><span class="tiny-pulse"></span> Execução 100% local</div>
-          <div class="floating-pill pill-two">7 regras ativas <span class="accent">✦</span></div>
-        </div>
-        <div class="hero-metrics reveal">
-          <div><strong>07</strong><span>regras heurísticas</span></div>
-          <div><strong>16</strong><span>casos de teste</span></div>
-          <div><strong>5 <small>MiB</small></strong><span>limite por arquivo</span></div>
-          <div><strong>0</strong><span>pacotes de terceiros</span></div>
-        </div>
-      </section>
+    <div class="display-bottom"><span><i class="status-dot"></i> VISUALIZAÇÃO CONCEITUAL</span><span>SCAN ENGINE / LOCAL</span></div>
+   </div>
+   <div class="floating-tag tag-left"><span class="tag-circle">✓</span> Análise sem internet</div>
+   <div class="floating-tag tag-right"><span class="tag-circle danger">!</span> Valores protegidos</div>
+  </div>
+ </div>
+ <div class="container hero-metrics rise"><div><strong>07</strong><p>regras implementadas<br><small>SEC001 a SEC007</small></p></div><div><strong>16</strong><p>testes automatizados<br><small>registrados no projeto</small></p></div><div><strong>0</strong><p>dependências de terceiros<br><small>somente Python padrão</small></p></div><div><strong>100<span>%</span></strong><p>análise local<br><small>sem upload de arquivos</small></p></div></div>
+</section>
+<div class="marquee" aria-hidden="true"><div class="marquee-run"><span>LEIA SEU CÓDIGO</span><b>✳</b><span>IDENTIFIQUE INDÍCIOS</span><b>✳</b><span>PROTEJA SEUS SEGREDOS</span><b>✳</b><span>LEIA SEU CÓDIGO</span><b>✳</b><span>IDENTIFIQUE INDÍCIOS</span><b>✳</b><span>PROTEJA SEUS SEGREDOS</span><b>✳</b></div></div>
 
-      <section id="contexto" class="section section-space">
-        <div class="section-heading reveal"><div class="eyebrow">01 / O PROBLEMA</div><h2>Uma credencial no código <span class="muted">pode virar um incidente.</span></h2><p>Senhas e tokens inseridos por engano em repositórios ou configurações podem abrir caminho para acessos não autorizados. A análise estática oferece uma camada adicional de revisão antes da publicação.</p></div>
-        <div class="problem-grid">
-          <article class="info-card reveal"><div class="icon-block">01<span>!</span></div><h3>Exposição acidental</h3><p>Chaves, tokens e senhas podem permanecer em arquivos e chegar a commits ou pacotes.</p><span class="card-hint">RISCO</span></article>
-          <article class="info-card reveal"><div class="icon-block">02<span>⌕</span></div><h3>Inspeção automatizada</h3><p>O SecurePath busca padrões suspeitos linha a linha, com regras Regex transparentes e auditáveis.</p><span class="card-hint">RESPOSTA</span></article>
-          <article class="info-card reveal"><div class="icon-block">03<span>✓</span></div><h3>Alerta sem vazamento</h3><p>A saída informa categoria, caminho e linha, sem repetir a possível credencial encontrada.</p><span class="card-hint">PROTEÇÃO DE SAÍDA</span></article>
-        </div>
-        <div class="inline-note reveal"><span>IMPORTANTE</span> Um alerta é um <strong>indício</strong>, não prova de que a credencial é real ou está ativa. Um resultado limpo também não garante ausência de segredos.</div>
-      </section>
+<section class="section problem-section" id="problema">
+ <div class="container">
+  <div class="section-head reveal"><span class="overline"><span>01</span> / POR QUE ISSO IMPORTA?</span><h2>O perigo nem sempre está <em>onde você olha.</em></h2><p>Credenciais podem acabar no código durante testes e configurações. Se forem publicadas, podem expor serviços, dados ou ambientes. O SecurePath foi criado para tornar esses indícios mais fáceis de perceber.</p></div>
+  <div class="problem-story reveal">
+   <div class="story-case"><span class="story-index">CENÁRIO 01</span><div class="story-visual raw"><div class="file-sticker">config.py</div><div class="fake-line w80"></div><div class="fake-line w55"></div><div class="fake-line w90 danger-line"></div><div class="fake-line w70"></div><div class="story-warning">! Possível segredo no arquivo</div></div><h3>Um descuido pequeno.</h3><p>Uma atribuição de senha ou um token incluído por engano pode permanecer escondido em um arquivo de configuração.</p></div>
+   <div class="story-middle" aria-hidden="true"><div class="arrow-connector">→</div><span>SECUREPATH</span></div>
+   <div class="story-case"><span class="story-index green">CENÁRIO 02</span><div class="story-visual checked"><div class="story-radar"><span>◎</span></div><div class="story-check"><span>✓</span> Indício localizado</div><div class="story-location">arquivo + linha + categoria</div></div><h3>Uma chance de corrigir.</h3><p>O scanner aponta onde revisar sem repetir a possível credencial no relatório.</p></div>
+  </div>
+  <div class="value-grid">
+   <article class="value-card reveal"><div class="value-icon">⌕</div><div class="card-count">01 / VISIBILIDADE</div><h3>Detectar antes de publicar</h3><p>Procura formatos conhecidos de chaves, tokens e atribuições suspeitas em arquivos locais.</p></article>
+   <article class="value-card reveal"><div class="value-icon">⛨</div><div class="card-count">02 / PRIVACIDADE</div><h3>Sem enviar seu código</h3><p>O processamento acontece no computador do usuário e não exige serviços externos.</p></article>
+   <article class="value-card reveal"><div class="value-icon">◇</div><div class="card-count">03 / SIMPLICIDADE</div><h3>Fácil de inspecionar</h3><p>Um scanner pequeno, baseado em Regex e na biblioteca padrão do Python.</p></article>
+  </div>
+ </div>
+</section>
 
-      <section id="fluxo" class="section section-space">
-        <div class="section-heading reveal"><div class="eyebrow">02 / PROCESSAMENTO</div><h2>O caminho de uma <span class="gradient-text">varredura.</span></h2><p>Selecione uma etapa do mapa para inspecionar o que acontece internamente. O fluxo segue a implementação de <code>artefatos.py</code>.</p></div>
-        <div class="flow-lab reveal">
-          <div class="flow-topline"><span>MAPA DE EXECUÇÃO</span><span class="trace-legend"><i></i> SELECIONE UM NÓ</span></div>
-          <div class="pipeline" role="group" aria-label="Etapas de execução">
-            <button class="pipeline-node selected" type="button" data-step="0" aria-pressed="true"><small>ETAPA 01</small><span class="node-icon">⌁</span><strong>Entrada</strong><em>Arquivo ou pasta</em></button>
-            <div class="pipeline-link" aria-hidden="true"><span></span></div>
-            <button class="pipeline-node" type="button" data-step="1" aria-pressed="false"><small>ETAPA 02</small><span class="node-icon">⊘</span><strong>Filtros</strong><em>Excluir e validar</em></button>
-            <div class="pipeline-link" aria-hidden="true"><span></span></div>
-            <button class="pipeline-node" type="button" data-step="2" aria-pressed="false"><small>ETAPA 03</small><span class="node-icon">⌕</span><strong>Detecção</strong><em>7 regras Regex</em></button>
-            <div class="pipeline-link" aria-hidden="true"><span></span></div>
-            <button class="pipeline-node" type="button" data-step="3" aria-pressed="false"><small>ETAPA 04</small><span class="node-icon">≡</span><strong>Relatório</strong><em>Texto ou JSON</em></button>
-          </div>
-          <div class="step-inspector"><div class="step-copy"><span class="panel-kicker" id="step-kicker">ETAPA 01 · ENTRADA</span><h3 id="step-title">O caminho define a análise</h3><p id="step-description">A CLI recebe um arquivo ou diretório como argumento. Para diretórios, o percurso é recursivo e mantém ordenação estável.</p><div id="step-bullets" class="step-bullets"><span>Arquivo individual ou árvore de pastas</span><span>Início pelo argumento posicional <code>CAMINHO</code></span></div></div><div class="step-code"><div class="code-label">EXEMPLO / CLI</div><pre id="step-example">python artefatos.py ./meu-projeto</pre></div></div>
-          <div class="flow-actions"><button class="text-button" type="button" id="prev-step">← Etapa anterior</button><span id="step-counter">01 / 04</span><button class="text-button" type="button" id="next-step">Próxima etapa →</button></div>
-        </div>
-      </section>
+<section class="section workflow-section" id="como-funciona">
+ <div class="container">
+  <div class="section-head reveal"><span class="overline"><span>02</span> / UM PROCESSO SIMPLES</span><h2>Do arquivo ao alerta. <em>Entenda cada etapa.</em></h2><p>Selecione uma etapa abaixo e veja o que o programa faz. A explicação acompanha a estrutura real de <code>artefatos.py</code>.</p></div>
+  <div class="workflow-wrap reveal">
+   <div class="workflow-nav" role="group" aria-label="Etapas do funcionamento">
+    <button type="button" class="workflow-tab active" data-step="0" aria-pressed="true"><span class="workflow-num">01</span><span><strong>Escolha um caminho</strong><small>Arquivo ou diretório</small></span><span class="workflow-arrow">↗</span></button>
+    <button type="button" class="workflow-tab" data-step="1" aria-pressed="false"><span class="workflow-num">02</span><span><strong>Filtre o que analisar</strong><small>Exclusões e limites</small></span><span class="workflow-arrow">↗</span></button>
+    <button type="button" class="workflow-tab" data-step="2" aria-pressed="false"><span class="workflow-num">03</span><span><strong>Procure padrões</strong><small>Regex linha a linha</small></span><span class="workflow-arrow">↗</span></button>
+    <button type="button" class="workflow-tab" data-step="3" aria-pressed="false"><span class="workflow-num">04</span><span><strong>Receba o relatório</strong><small>Texto ou JSON</small></span><span class="workflow-arrow">↗</span></button>
+    <div class="workflow-nav-foot">INTERAJA COM AS ETAPAS <span>↳</span></div>
+   </div>
+   <div class="workflow-content">
+    <div class="workflow-art" id="workflow-art" data-view="0" aria-hidden="true"><div class="art-core"><div class="art-ring r1"></div><div class="art-ring r2"></div><div class="art-inner" id="art-symbol">⌁</div><div class="art-satellite s-a"></div><div class="art-satellite s-b"></div></div><span class="art-label left-label" id="art-label-one">projeto/</span><span class="art-label right-label" id="art-label-two">arquivo.py</span><div class="art-scan-line"></div></div>
+    <div class="workflow-copy"><span class="mini-overline" id="step-label">ETAPA 01 / ENTRADA</span><h3 id="step-title">Tudo começa com um caminho.</h3><p id="step-desc">Informe um arquivo ou uma pasta. Se você apontar para um diretório, o SecurePath percorre suas subpastas de forma recursiva e em ordem estável.</p><div class="step-detail" id="step-detail">O arquivo é analisado localmente. Nenhum conteúdo é enviado a um servidor.</div><div class="workflow-bottom"><span id="step-count">01 DE 04</span><button id="next-step" type="button">Próxima etapa <span aria-hidden="true">→</span></button></div></div>
+   </div>
+  </div>
+ </div>
+</section>
 
-      <section id="laboratorio" class="section section-space">
-        <div class="section-heading reveal"><div class="eyebrow">03 / LABORATÓRIO INTERATIVO</div><h2>Observe o scanner <span class="gradient-text">em ação.</span></h2><p>Uma reprodução visual de saídas documentadas no repositório. A simulação roda no navegador e <strong>não executa o Python</strong>, nem examina arquivos reais.</p></div>
-        <div class="lab-shell reveal">
-          <div class="lab-toolbar">
-            <div class="scenario-picker" role="group" aria-label="Escolha a demonstração"><button type="button" class="scenario active" data-scenario="demo" aria-pressed="true">Pasta sintética</button><button type="button" class="scenario" data-scenario="original" aria-pressed="false">Amostra original</button><button type="button" class="scenario" data-scenario="clean" aria-pressed="false">Controle limpo</button></div>
-            <div class="format-switch" role="group" aria-label="Formato da saída"><button type="button" class="format active" data-format="text" aria-pressed="true">TEXTO</button><button type="button" class="format" data-format="json" aria-pressed="false">JSON</button></div>
-          </div>
-          <div class="lab-terminal">
-            <div class="terminal-header"><span class="terminal-title"><i></i> securepath@local ~</span><span class="terminal-right" id="lab-state">PRONTO PARA SIMULAR</span></div>
-            <div class="terminal-body"><div class="lab-command" id="lab-command">$ python artefatos.py demonstracao</div><pre id="lab-output" aria-live="polite">Clique em "Reproduzir análise" para visualizar os alertas.</pre><span class="terminal-cursor" aria-hidden="true"></span></div>
-          </div>
-          <div class="lab-bottom"><div class="lab-counters"><div><small>ANALISADOS</small><strong id="count-files">—</strong></div><div><small>IGNORADOS</small><strong id="count-skipped">—</strong></div><div><small>ERROS DE I/O</small><strong id="count-errors">—</strong></div><div><small>ALERTAS</small><strong id="count-alerts">—</strong></div></div><button class="button button-primary run-button" type="button" id="run-demo"><span id="run-icon">▶</span> <span id="run-label">Reproduzir análise</span></button></div>
-        </div>
-        <p class="lab-disclaimer reveal"><span class="tiny-pulse"></span> Demonstração com dados exclusivamente sintéticos. Não cole senhas ou credenciais reais em páginas de demonstração. Execute o scanner verdadeiro em seu computador.</p>
-      </section>
+<section class="section demo-section" id="demonstracao">
+ <div class="container">
+  <div class="section-head reveal"><span class="overline"><span>03</span> / TESTE INTERATIVO</span><h2>Não imagine o resultado. <em>Veja acontecer.</em></h2><p>Escolha uma amostra de demonstração e reproduza visualmente a análise. Os cenários abaixo usam saídas esperadas de arquivos sintéticos do projeto.</p></div>
+  <div class="demo-dashboard reveal">
+   <div class="demo-header"><div class="demo-heading"><span class="lab-led"></span><span>LABORATÓRIO INTERATIVO</span><small>SIMULAÇÃO VISUAL · NÃO EXECUTA PYTHON</small></div><span class="lab-chip">SEM SEGREDOS REAIS</span></div>
+   <div class="demo-pickers"><span>ESCOLHA UM CENÁRIO</span><div class="demo-options" role="group" aria-label="Cenário de demonstração"><button class="scenario active" data-scenario="demo" type="button" aria-pressed="true">Pasta de demonstração</button><button class="scenario" data-scenario="original" type="button" aria-pressed="false">Amostra de testes</button><button class="scenario" data-scenario="clean" type="button" aria-pressed="false">Arquivo limpo</button></div></div>
+   <div class="demo-body">
+    <div class="demo-files"><span class="demo-column-label">ESTRUTURA DE ARQUIVOS</span><div id="demo-tree" class="demo-tree" aria-live="polite"><div class="demo-folder">▣ demonstracao/</div><div class="demo-file">├─ chave_exemplo.txt</div><div class="demo-file">├─ configuracao.py</div><div class="demo-file">└─ servico.py</div></div><div class="demo-visual-canvas"><div class="radar-scope"><div class="radar-sweep"></div><span>⌕</span></div><span id="demo-progress-label">PRONTO PARA VARREDURA</span></div></div>
+    <div class="demo-report"><div class="report-top"><div class="terminal-dots" aria-hidden="true"><i></i><i></i><i></i></div><span>RESULTADO DA ANÁLISE</span><div class="report-toggle" role="group" aria-label="Formato do relatório"><button class="report-format active" data-format="text" type="button" aria-pressed="true">TEXTO</button><button class="report-format" data-format="json" type="button" aria-pressed="false">JSON</button></div></div><div class="report-screen"><div class="report-command" id="report-command">$ python artefatos.py demonstracao</div><pre id="report-output" aria-live="polite">Aguardando análise. Clique no botão abaixo para começar.</pre></div><div class="report-summary"><div><strong id="result-files">—</strong><span>ARQUIVOS</span></div><div><strong id="result-alerts">—</strong><span>ALERTAS</span></div><div><strong id="result-errors">—</strong><span>ERROS</span></div><button class="btn btn-primary demo-run" id="demo-run" type="button"><span>▶</span> Iniciar simulação</button></div></div>
+   </div>
+   <div class="demo-disclaimer"><span>ⓘ</span> Esta é uma <strong>reprodução visual</strong> das amostras sintéticas documentadas. Para examinar arquivos reais, execute o SecurePath CLI localmente.</div>
+  </div>
+ </div>
+</section>
 
-      <section id="regras" class="section section-space">
-        <div class="section-heading reveal"><div class="eyebrow">04 / MOTOR DE DETECÇÃO</div><h2>Sete regras. <span class="muted">Sete pontos de inspeção.</span></h2><p>Explore as regras SEC001 a SEC007 que compõem a varredura heurística. Selecione uma regra para entender seu alvo e os limites de detecção.</p></div>
-        <div class="rules-shell reveal"><div class="rules-list" id="rules-list" role="group" aria-label="Regras de detecção">
-          <button type="button" class="rule-card active" data-rule="0" aria-pressed="true"><span>SEC001 <i class="rule-dot"></i></span><strong>AWS Access Key ID</strong><small>Identificador AKIA</small></button>
-          <button type="button" class="rule-card" data-rule="1" aria-pressed="false"><span>SEC002 <i class="rule-dot"></i></span><strong>Bearer token</strong><small>Cabeçalho de autorização</small></button>
-          <button type="button" class="rule-card" data-rule="2" aria-pressed="false"><span>SEC003 <i class="rule-dot"></i></span><strong>RSA privada</strong><small>Cabeçalho RSA legado</small></button>
-          <button type="button" class="rule-card" data-rule="3" aria-pressed="false"><span>SEC004 <i class="rule-dot"></i></span><strong>Senha / segredo</strong><small>Atribuição em texto</small></button>
-          <button type="button" class="rule-card" data-rule="4" aria-pressed="false"><span>SEC005 <i class="rule-dot"></i></span><strong>AWS temporária</strong><small>Identificador ASIA</small></button>
-          <button type="button" class="rule-card" data-rule="5" aria-pressed="false"><span>SEC006 <i class="rule-dot"></i></span><strong>Token GitHub</strong><small>Prefixo ghp_ clássico</small></button>
-          <button type="button" class="rule-card" data-rule="6" aria-pressed="false"><span>SEC007 <i class="rule-dot"></i></span><strong>PEM / OpenSSH</strong><small>Cabeçalho de chave privada</small></button>
-        </div>
-        <div class="rule-inspector">
-          <div class="inspector-header"><span id="rule-id">SEC001</span><span class="heuristic-label">REGEX HEURÍSTICA</span></div>
-          <div class="rule-symbol" aria-hidden="true">⌕</div>
-          <h3 id="rule-title">AWS Access Key ID</h3>
-          <p id="rule-description">Procura identificadores de chave de acesso AWS que começam com AKIA e seguem o formato previsto pela regra.</p>
-          <div class="rule-meta"><span>FORMATO RECONHECIDO</span><code id="rule-example">AKIA + 16 caracteres A–Z / 0–9</code></div>
-          <div class="rule-meta"><span>O QUE O ALERTA NÃO PROVA</span><p id="rule-limitation">Não confirma que o identificador existe, está ativo ou possui permissões.</p></div>
-          <div class="rule-foot"><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli/blob/main/artefatos.py" target="_blank" rel="noopener noreferrer">Ver implementação em Python ↗</a><span id="rule-counter">01 / 07</span></div>
-        </div></div>
-      </section>
+<section class="section rules-section" id="regras">
+ <div class="container">
+  <div class="section-head reveal"><span class="overline"><span>04</span> / O QUE ELE ENCONTRA?</span><h2>Sete maneiras de perceber <em>algo suspeito.</em></h2><p>Nem todo indício é uma credencial válida. Cada regra procura um formato textual específico — e cada resultado precisa ser interpretado.</p></div>
+  <div class="rules-explorer reveal">
+   <div class="rules-top"><div class="rule-filter" role="group" aria-label="Filtrar regras"><button type="button" data-group="all" class="rule-filter-btn active" aria-pressed="true">Todas as regras</button><button type="button" data-group="token" class="rule-filter-btn" aria-pressed="false">Tokens e IDs</button><button type="button" data-group="password" class="rule-filter-btn" aria-pressed="false">Senhas</button><button type="button" data-group="key" class="rule-filter-btn" aria-pressed="false">Chaves privadas</button></div><div class="rules-counter"><span id="rules-count">07</span> regras</div></div>
+   <div class="rules-layout"><div class="rules-options" id="rules-options" role="group" aria-label="Selecionar regra"></div><div class="rule-details"><span class="mini-overline" id="rule-code">SEC001 / REGEX</span><div class="rule-illustration"><div class="rule-orbit"></div><div class="rule-orbit inner"></div><span id="rule-art">AKIA</span></div><h3 id="rule-title">AWS Access Key ID</h3><p id="rule-description">Procura identificadores de chave de acesso AWS que começam com AKIA.</p><div class="rule-example"><span>FORMATO RECONHECIDO</span><code id="rule-pattern">AKIA + 16 caracteres alfanuméricos</code></div><div class="rule-caution"><strong>O que isso não comprova?</strong><p id="rule-caution">Não confirma que a chave existe ou está ativa.</p></div></div></div>
+  </div>
+ </div>
+</section>
 
-      <section id="arquitetura" class="section section-space">
-        <div class="section-heading reveal"><div class="eyebrow">05 / POR DENTRO DO CÓDIGO</div><h2>Uma arquitetura pequena, <span class="gradient-text">legível e auditável.</span></h2><p>O projeto mantém a coleta, as regras e a apresentação dos resultados separadas dentro de um único script Python.</p></div>
-        <div class="architecture-grid">
-          <article class="arch-card reveal"><div class="arch-index">01 / INTERFACE</div><h3><code>main()</code></h3><p>Interpreta argumentos, escolhe arquivo ou diretório, define formato e código de saída.</p><span>argparse</span></article>
-          <article class="arch-card reveal"><div class="arch-index">02 / PERCURSO</div><h3><code>scan_directory()</code></h3><p>Anda pela árvore de pastas, filtra diretórios e processa arquivos em ordem estável.</p><span>os · pathlib</span></article>
-          <article class="arch-card reveal"><div class="arch-index">03 / ANÁLISE</div><h3><code>scan_file()</code></h3><p>Valida tamanho/tipo, lê linhas e procura correspondência nas sete regras.</p><span>re · stat</span></article>
-          <article class="arch-card reveal"><div class="arch-index">04 / RESULTADO</div><h3><code>Summary / Finding</code></h3><p>Registra contadores e metadados dos indícios, sem valores de credenciais.</p><span>dataclasses · json</span></article>
-        </div>
-        <div class="exit-codes reveal"><div class="exit-intro"><span class="panel-kicker">AUTOMAÇÃO / CI</span><h3>O código de saída também comunica o resultado.</h3></div><div><strong class="code-zero">0</strong><span>Sem erro de I/O; sem bloqueio por alertas</span></div><div><strong class="code-one">1</strong><span>Há alertas com <code>--fail-on-findings</code></span></div><div><strong class="code-two">2</strong><span>Erro de I/O ou argumentos inválidos</span></div></div>
-      </section>
+<section class="section difference-section" id="arquitetura">
+ <div class="container">
+  <div class="section-head reveal"><span class="overline"><span>05</span> / POR DENTRO DO ARTEFATO</span><h2>Simples na execução. <em>Intencional no projeto.</em></h2><p>O SecurePath não precisa de nuvem, conta ou instalação de pacotes adicionais. Seu funcionamento usa componentes nativos do Python.</p></div>
+  <div class="architecture-row">
+   <div class="architecture-feature reveal"><div class="feature-visual"><span class="feature-grid"></span><span class="feature-big">PY</span><span class="feature-orbit">◆</span><span class="feature-orbit second">◆</span></div><div class="feature-copy"><span>UMA ESCOLHA DE ARQUITETURA</span><h3>Python Standard Library</h3><p><code>argparse</code> trata parâmetros, <code>pathlib</code> representa caminhos, <code>os</code> percorre pastas, <code>re</code> busca padrões e <code>json</code> estrutura relatórios.</p></div></div>
+   <div class="architecture-notes">
+    <article class="arch-note reveal"><span class="note-icon">⌘</span><div><h3>Executa sem internet</h3><p>Os arquivos são processados no ambiente local. O Git só é necessário se você optar por clonar o repositório.</p></div></article>
+    <article class="arch-note reveal"><span class="note-icon">◈</span><div><h3>Cuida da saída</h3><p>Os alertas trazem regra, categoria, arquivo e linha, mas não exibem o valor detectado.</p></div></article>
+    <article class="arch-note reveal"><span class="note-icon">↗</span><div><h3>Integra-se a scripts</h3><p>O modo JSON permite processamento automatizado; <code>--fail-on-findings</code> sinaliza alertas com código de saída 1.</p></div></article>
+   </div>
+  </div>
+ </div>
+</section>
 
-      <section id="evidencias" class="section section-space">
-        <div class="section-heading reveal"><div class="eyebrow">06 / EVIDÊNCIAS E LIMITES</div><h2>O que foi demonstrado. <span class="muted">E o que não foi.</span></h2><p>Os resultados abaixo são documentados no projeto. O atlas não atribui selos acadêmicos oficiais nem afirma precisão medida em dados reais.</p></div>
-        <div class="evidence-grid">
-          <div class="evidence-main reveal"><span class="panel-kicker">VALIDAÇÃO DOCUMENTADA · CODESPACES / LINUX</span><div class="evidence-number"><strong>16<span>/16</span></strong><p>testes registrados como aprovados<br><small>Python 3.14.2 · 06 nov 2026</small></p></div><div class="evidence-track"><span></span></div><p class="evidence-caption">Registro de saída enviado pelo estudante; reproduzível pelos comandos do repositório. Não é benchmark de desempenho nem avaliação de taxa de detecção.</p><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli/blob/main/evidencias/validacao_codespaces_2026-11-06.md" target="_blank" rel="noopener noreferrer">Consultar o registro ↗</a></div>
-          <div class="evidence-secondary reveal"><span class="panel-kicker">CENÁRIO SINTÉTICO</span><div class="evidence-number smaller"><strong>03</strong><p>arquivos analisados</p></div><div class="evidence-number smaller"><strong>04</strong><p>alertas esperados</p></div><div class="evidence-number smaller"><strong>00</strong><p>erros de I/O registrados</p></div></div>
-        </div>
-        <div class="criterion-grid">
-          <article class="criterion reveal"><span>01</span><h3>Disponibilidade</h3><p>Código, documentação, licença e dados sintéticos em repositório público.</p></article>
-          <article class="criterion reveal"><span>02</span><h3>Funcionalidade</h3><p>CLI, saídas esperadas e testes unitários para cenários conhecidos.</p></article>
-          <article class="criterion reveal"><span>03</span><h3>Sustentabilidade</h3><p>Biblioteca padrão do Python, componentes separados e regressões automatizadas.</p></article>
-          <article class="criterion reveal"><span>04</span><h3>Reprodutibilidade</h3><p>Comandos, amostras e evidências de execução documentados.</p></article>
-        </div>
-        <div class="caveat-block reveal"><div><span class="panel-kicker">LIMITAÇÕES REAIS</span><h3>Reconhecer padrões não é validar credenciais.</h3></div><ul><li>Falsos positivos e falsos negativos são possíveis.</li><li>Não inspeciona histórico Git, arquivos compactados ou conteúdos criptografados.</li><li>Ignora links simbólicos, determinadas pastas, binários e arquivos acima do limite.</li><li>Não mede precisão/recall em bases reais e não substitui revisão humana.</li><li>Os caminhos listados no relatório podem conter informações sensíveis.</li></ul></div>
-      </section>
+<section class="section evidence-section" id="evidencias">
+ <div class="container">
+  <div class="section-head reveal"><span class="overline"><span>06</span> / EVIDÊNCIAS REAIS</span><h2>Mais do que uma ideia. <em>Um artefato verificável.</em></h2><p>O repositório registra experimentos com dados sintéticos, suíte de testes e orientações de reprodução. Essas evidências não substituem avaliação de precisão em código real.</p></div>
+  <div class="evidence-highlight reveal"><div class="evidence-score"><span class="proof-label">VALIDAÇÃO REGISTRADA NO GITHUB CODESPACES</span><div class="big-count">16<span>/16</span><i>✓</i></div><h3>testes aprovados</h3><p>Registro de 06/11/2026 · Linux / Python 3.14.2, conforme transcrição fornecida pelo aluno e documentada no repositório.</p><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli/blob/main/evidencias/validacao_codespaces_2026-11-06.md" target="_blank" rel="noopener noreferrer">Consultar a evidência completa ↗</a></div><div class="evidence-donut"><div class="donut-ring"><div><strong>04</strong><span>ALERTAS</span></div></div><span>em 3 arquivos sintéticos</span><small>0 erros de I/O registrados</small></div></div>
+  <div class="criteria-title reveal"><h3>Os quatro critérios de avaliação de artefatos</h3><p>Evidências acadêmicas documentadas; não são selos oficiais concedidos ao SecurePath.</p></div>
+  <div class="criteria-grid"><article class="criterion-card reveal"><span>01</span><div class="criterion-symbol">◉</div><h4>Disponibilidade</h4><p>Repositório público, licença, código e documentação.</p></article><article class="criterion-card reveal"><span>02</span><div class="criterion-symbol">⌁</div><h4>Funcionalidade</h4><p>Execução com amostras e testes automatizados.</p></article><article class="criterion-card reveal"><span>03</span><div class="criterion-symbol">◇</div><h4>Sustentabilidade</h4><p>Uso de módulos nativos e estrutura auditável.</p></article><article class="criterion-card reveal"><span>04</span><div class="criterion-symbol">⤴</div><h4>Reprodutibilidade</h4><p>Comandos, ambiente e resultados esperados registrados.</p></article></div>
+  <div class="responsibility-grid reveal"><div><span class="overline">IA COMO FERRAMENTA</span><h3>Assistência na criação.<br><em>Critério na validação.</em></h3><p>Segundo o histórico do projeto, Gemini 1.5 Pro auxiliou o desenvolvimento original e GPT-6 participou da revisão complementar. A revisão humana e os testes continuam essenciais.</p></div><div class="responsibility-compare"><div><span>IA CONTRIBUIU</span><p>Estruturação inicial, documentação, alternativas de implementação.</p></div><div><span>VALIDAÇÃO HUMANA</span><p>Revisão de padrões, análise de exceções, testes e decisões técnicas.</p></div></div></div>
+ </div>
+</section>
 
-      <section id="instalacao" class="section section-space install-section">
-        <div class="section-heading reveal"><div class="eyebrow">07 / REPRODUZA VOCÊ MESMO</div><h2>Do atlas para <span class="gradient-text">seu terminal.</span></h2><p>Para executar a ferramenta de verdade, use Python 3.9+ e o repositório. A análise do código acontece localmente, sem serviço externo.</p></div>
-        <div class="install-panel reveal"><div class="install-header"><div class="install-switch" role="group" aria-label="Sistema operacional"><button class="os-choice active" type="button" data-os="unix" aria-pressed="true">Linux / macOS</button><button class="os-choice" type="button" data-os="win" aria-pressed="false">Windows</button></div><button id="copy-command" class="copy-button" type="button" aria-label="Copiar comandos">Copiar <span aria-hidden="true">⧉</span></button></div><pre id="install-code">git clone https://github.com/fernandomarquesaluno-svg/securepath-cli.git
+<section class="section limitation-section" id="limites">
+ <div class="container limits-layout reveal"><div class="limits-heading"><span class="overline"><span>07</span> / LIMITES E USO RESPONSÁVEL</span><h2>Um alerta é uma pista. <em>Não um veredito.</em></h2><p>Regex identifica padrões textuais, mas não garante autenticidade, validade ou ausência de segredos. Essa distinção faz parte da proposta técnica.</p></div><div class="limits-items"><div><span>01</span><p>Pode haver <strong>falsos positivos e falsos negativos</strong>.</p></div><div><span>02</span><p>Não analisa histórico Git, arquivos compactados nem conteúdo criptografado.</p></div><div><span>03</span><p>Ignora arquivos acima do limite, links simbólicos e pastas previstas.</p></div><div><span>04</span><p>Uma saída limpa <strong>não comprova</strong> ausência de segredos.</p></div></div></div>
+ </div>
+</section>
+
+<section class="section install-section" id="executar">
+ <div class="container">
+  <div class="install-hero reveal"><span class="overline"><span>08</span> / HORA DE USAR</span><h2>Agora é sua vez de <em>explorar o código.</em></h2><p>O site ensina como funciona. O scanner real é executado com Python 3.9+ no seu computador. Comece pelas amostras sintéticas antes de analisar seus próprios projetos.</p>
+   <div class="install-code"><div class="install-code-top"><div class="os-buttons" role="group" aria-label="Selecionar sistema"><button type="button" class="os-button active" data-os="linux" aria-pressed="true">Linux / macOS</button><button type="button" class="os-button" data-os="windows" aria-pressed="false">Windows</button></div><button class="copy-code" id="copy-code" type="button">Copiar comandos <span>⧉</span></button></div><pre id="install-commands">git clone https://github.com/fernandomarquesaluno-svg/securepath-cli.git
 cd securepath-cli
 python3 -m unittest discover -s tests -v
-python3 artefatos.py demonstracao
-python3 artefatos.py demonstracao --format json</pre><div class="install-footer">Use apenas arquivos que você tem autorização para analisar. Não publique relatórios de projetos privados.</div></div>
-        <div class="closing-cta reveal"><div><span class="panel-kicker">CONTINUE EXPLORANDO</span><h3>O código é a fonte de verdade.</h3><p>Confira as regras, testes, histórico técnico e documentação diretamente no repositório.</p></div><a class="button button-primary" href="https://github.com/fernandomarquesaluno-svg/securepath-cli" target="_blank" rel="noopener noreferrer">Abrir repositório <span aria-hidden="true">↗</span></a></div>
-      </section>
-      <footer class="footer"><span>SECUREPATH<span class="brand-dot">.</span> <small>ATLAS INTERATIVO DO ARTEFATO</small></span><p>Material explicativo acadêmico · As simulações não executam o scanner real.</p><a href="#inicio">Voltar ao topo ↑</a></footer>
-    </main>
+python3 artefatos.py demonstracao</pre></div>
+   <div class="install-actions"><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Explorar repositório <span>↗</span></a><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli/blob/main/README.md" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Ler documentação <span>↗</span></a></div>
   </div>
+ </div>
+</section>
+</main>
+<footer class="site-footer"><div class="container footer-main"><div><a class="brand" href="#inicio"><span class="brand-mark small">✓</span><span>securepath<span class="brand-period">.</span></span></a><p>Artefato acadêmico de cibersegurança desenvolvido com assistência de IA. Página explicativa, sem análise de arquivos reais no navegador.</p></div><div class="footer-links"><a href="#problema">O problema</a><a href="#como-funciona">Funcionamento</a><a href="#demonstracao">Demonstração</a><a href="#evidencias">Evidências</a><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli" target="_blank" rel="noopener noreferrer">Código no GitHub ↗</a></div></div><div class="container footer-bottom"><span>SECUREPATH CLI · PROJETO EDUCACIONAL</span><span>FEITO PARA TORNAR SEGURANÇA MAIS COMPREENSÍVEL</span><a href="#inicio">Voltar ao início ↑</a></div></footer>
 </body>
 </html>

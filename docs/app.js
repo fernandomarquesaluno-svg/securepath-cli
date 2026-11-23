@@ -1,287 +1,237 @@
 'use strict';
 
-// Atlas visual do SecurePath CLI. Esta página NÃO executa o scanner Python.
-const $ = (selector, root = document) => root.querySelector(selector);
-const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+// SecurePath Atlas v2 — interface educacional; nenhuma credencial é enviada ou analisada.
+const $ = (q, root = document) => root.querySelector(q);
+const $$ = (q, root = document) => Array.from(root.querySelectorAll(q));
+const motionReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const steps = [
-  {
-    kicker: 'ETAPA 01 · ENTRADA', title: 'O caminho define a análise',
-    description: 'A CLI recebe um arquivo ou diretório como argumento. Para diretórios, o percurso é recursivo e mantém ordenação estável.',
-    bullets: ['Arquivo individual ou árvore de pastas', 'Início pelo argumento posicional CAMINHO'],
-    code: 'python artefatos.py ./meu-projeto'
-  },
-  {
-    kicker: 'ETAPA 02 · FILTROS', title: 'Os arquivos passam por verificações',
-    description: 'Antes de procurar segredos, o programa ignora pastas conhecidas, links simbólicos, arquivos especiais, arquivos muito grandes e arquivos com byte NUL no início.',
-    bullets: ['Ignora .git, node_modules, venv, dist, build e outras pastas previstas', 'Limite padrão: 5120 KiB (5 MiB) por arquivo', 'Bytes NUL entre os 4096 primeiros sugerem arquivo binário'],
-    code: 'python artefatos.py ./meu-projeto --max-size-kib 1024'
-  },
-  {
-    kicker: 'ETAPA 03 · DETECÇÃO', title: 'Sete padrões procuram indícios',
-    description: 'Cada arquivo aceito é lido linha por linha. As sete Regex SEC001–SEC007 procuram formatos de IDs, tokens, cabeçalhos de chaves e atribuições textuais.',
-    bullets: ['Um alerta por regra correspondente em cada linha', 'Leitura UTF-8 com bytes inválidos ignorados', 'Erros locais de I/O são contabilizados sem interromper todo o percurso'],
-    code: 'for line in text_file:\n    for rule in RULES:\n        if rule.pattern.search(line):\n            summary.findings += 1'
-  },
-  {
-    kicker: 'ETAPA 04 · RELATÓRIO', title: 'Resultado útil, sem expor o valor',
-    description: 'O SecurePath informa regra, categoria, caminho e linha. Pode emitir texto legível ou JSON e retornar um código de saída apropriado para scripts.',
-    bullets: ['A saída não reproduz o texto da credencial', '--format json gera metadados estruturados', '--fail-on-findings retorna 1 quando há alertas e não há erro de I/O'],
-    code: 'python artefatos.py ./meu-projeto --format json\npython artefatos.py ./meu-projeto --fail-on-findings'
-  }
+ {label:'ETAPA 01 / ENTRADA',title:'Tudo começa com um caminho.',description:'Informe um arquivo ou uma pasta. Se você apontar para um diretório, o SecurePath percorre suas subpastas de forma recursiva e em ordem estável.',detail:'O arquivo é analisado localmente. Nenhum conteúdo é enviado a um servidor.',symbol:'⌁',a:'projeto/',b:'arquivo.py'},
+ {label:'ETAPA 02 / FILTRAGEM',title:'Nem todo arquivo precisa ser lido.',description:'Antes da leitura, o programa verifica se o arquivo é regular, se não é um link simbólico e se respeita o tamanho máximo. Pastas como .git e node_modules são excluídas.',detail:'Por padrão, arquivos acima de 5 MiB e arquivos com byte NUL nos primeiros 4096 bytes são ignorados.',symbol:'⊘',a:'limite: 5 MiB',b:'filtros ativos'},
+ {label:'ETAPA 03 / BUSCA',title:'Sete regras procuram sinais de risco.',description:'O conteúdo aceito é lido linha a linha. Expressões regulares procuram identificadores AWS, tokens, cabeçalhos de chaves e atribuições de senhas.',detail:'Cada regra pode gerar um alerta por linha. Trata-se de reconhecimento heurístico, não de confirmação de que uma credencial é válida.',symbol:'⌕',a:'SEC001—007',b:'regex / linhas'},
+ {label:'ETAPA 04 / SAÍDA',title:'O resultado aponta onde investigar.',description:'A saída informa categoria, caminho e linha do indício. Você pode escolher texto ou JSON estruturado sem exibir o conteúdo da credencial.',detail:'Com --fail-on-findings, alertas podem retornar código 1. Erros de I/O retornam 2 e têm prioridade.',symbol:'✓',a:'texto | JSON',b:'valores ocultos'}
 ];
-
 const rules = [
-  {id:'SEC001',title:'AWS Access Key ID',description:'Procura identificadores de chave de acesso AWS iniciados em AKIA, seguidos de 16 caracteres alfanuméricos maiúsculos.',example:'AKIA + 16 caracteres A–Z / 0–9',limit:'Detectar um identificador não verifica se existe uma chave válida ou uma conta associada.'},
-  {id:'SEC002',title:'Bearer token',description:'Procura sequências do tipo Bearer em texto, com pelo menos 20 caracteres do conjunto aceito pela expressão.',example:'Bearer + token com 20+ caracteres',limit:'Não autentica o token, não verifica expiração e pode ignorar formatos diferentes.'},
-  {id:'SEC003',title:'Cabeçalho RSA privado',description:'Encontra o cabeçalho textual legado que marca o início de certas chaves privadas RSA.',example:'-----BEGIN RSA PRIVATE KEY-----',limit:'Um cabeçalho isolado não comprova que exista material criptográfico válido.'},
-  {id:'SEC004',title:'Senha ou segredo atribuído',description:'Procura atribuições entre aspas para nomes como password, passwd, pwd e secret, inclusive alguns prefixos como db_password.',example:'db_password = "valor_ficticio"',limit:'Não entende a semântica do programa nem cobre todas as maneiras de armazenar segredos.'},
-  {id:'SEC005',title:'AWS Temporary Access Key ID',description:'Identifica o formato de chave de acesso temporária AWS que começa em ASIA e tem 16 caracteres adicionais.',example:'ASIA + 16 caracteres A–Z / 0–9',limit:'O formato reconhecido não confirma atividade, validade ou permissões da chave.'},
-  {id:'SEC006',title:'GitHub personal access token',description:'Procura o formato clássico de token pessoal GitHub identificado pelo prefixo ghp_.',example:'ghp_ + 36 caracteres alfanuméricos',limit:'Não abrange necessariamente formatos atuais ou futuros de tokens GitHub.'},
-  {id:'SEC007',title:'Cabeçalho privado PEM / OpenSSH',description:'Procura cabeçalhos comuns de chave privada genérica, EC e OpenSSH.',example:'BEGIN PRIVATE KEY / EC PRIVATE KEY / OPENSSH PRIVATE KEY',limit:'Identificar o cabeçalho não analisa a chave completa nem sua validade criptográfica.'}
+ {id:'SEC001',short:'AWS Access Key',group:'token',category:'Tokens e IDs',title:'Identificador de acesso AWS',description:'Localiza IDs de chave de acesso AWS iniciados em AKIA e seguidos por 16 caracteres alfanuméricos maiúsculos.',pattern:'AKIA + 16 caracteres [A–Z, 0–9]',caution:'Reconhecer um ID não prova que ele pertence a uma chave existente, ativa ou com permissões.',art:'AKIA'},
+ {id:'SEC002',short:'Bearer token',group:'token',category:'Tokens e IDs',title:'Token em cabeçalho Bearer',description:'Busca o prefixo Bearer seguido de uma sequência textual de pelo menos 20 caracteres aceitos pelo padrão.',pattern:'Bearer + sequência com 20+ caracteres',caution:'O programa não consulta o provedor nem verifica a validade ou o vencimento do token.',art:'Bearer'},
+ {id:'SEC003',short:'Chave privada RSA',group:'key',category:'Chaves privadas',title:'Cabeçalho de chave privada RSA',description:'Reconhece a marca textual de início de uma chave privada RSA no formato legado PEM.',pattern:'-----BEGIN RSA PRIVATE KEY-----',caution:'Um cabeçalho, isoladamente, não demonstra a existência de uma chave criptográfica válida.',art:'RSA'},
+ {id:'SEC004',short:'Senhas e segredos',group:'password',category:'Senhas',title:'Senhas ou segredos atribuídos',description:'Busca atribuições entre aspas para nomes como password, passwd, pwd, secret e algumas variantes com prefixos, como db_password.',pattern:'db_password = "exemplo_ficticio"',caution:'A regex não entende o contexto completo do software e não cobre todas as maneiras de armazenar segredos.',art:'••••'},
+ {id:'SEC005',short:'AWS temporária',group:'token',category:'Tokens e IDs',title:'Identificador AWS temporário',description:'Procura IDs de chave temporária AWS com prefixo ASIA e 16 caracteres maiúsculos ou numéricos.',pattern:'ASIA + 16 caracteres [A–Z, 0–9]',caution:'O formato não comprova se o ID está em uso ou se a sessão correspondente está ativa.',art:'ASIA'},
+ {id:'SEC006',short:'GitHub token',group:'token',category:'Tokens e IDs',title:'Token pessoal clássico GitHub',description:'Localiza possíveis tokens pessoais clássicos do GitHub cujo formato começa com ghp_.',pattern:'ghp_ + 36 caracteres alfanuméricos',caution:'Essa regra não cobre todos os formatos atuais e futuros de credenciais do GitHub.',art:'ghp_'},
+ {id:'SEC007',short:'PEM / OpenSSH',group:'key',category:'Chaves privadas',title:'Cabeçalho PEM / OpenSSH',description:'Reconhece cabeçalhos de chave privada genérica, EC e OpenSSH em arquivos de texto.',pattern:'BEGIN PRIVATE KEY / EC / OPENSSH',caution:'A presença de um cabeçalho não verifica o conteúdo completo ou a validade da chave.',art:'PEM'}
 ];
-
-const findingsDemo = [
+const scenarios = {
+ demo: {path:'demonstracao',files:['chave_exemplo.txt','configuracao.py','servico.py'],examined:3,skipped:0,errors:0,findings:[
   {rule_id:'SEC007',category:'Cabeçalho de chave privada PEM/OpenSSH',path:'demonstracao/chave_exemplo.txt',line:2},
   {rule_id:'SEC005',category:'AWS Temporary Access Key ID',path:'demonstracao/configuracao.py',line:2},
   {rule_id:'SEC006',category:'GitHub personal access token (clássico)',path:'demonstracao/configuracao.py',line:3},
   {rule_id:'SEC004',category:'Senha/segredo atribuído',path:'demonstracao/configuracao.py',line:4}
-];
-const findingsOriginal = [
+ ]},
+ original: {path:'teste.txt',files:['teste.txt'],examined:1,skipped:0,errors:0,findings:[
   {rule_id:'SEC001',category:'AWS Access Key ID',path:'teste.txt',line:3},
   {rule_id:'SEC004',category:'Senha/segredo atribuído',path:'teste.txt',line:4},
   {rule_id:'SEC002',category:'Bearer token',path:'teste.txt',line:5},
   {rule_id:'SEC003',category:'Cabeçalho de chave RSA privada',path:'teste.txt',line:6},
   {rule_id:'SEC004',category:'Senha/segredo atribuído',path:'teste.txt',line:7}
-];
-const demos = {
-  demo: {path:'demonstracao',examined:3,skipped:0,errors:0,findings:findingsDemo},
-  original:{path:'teste.txt',examined:1,skipped:0,errors:0,findings:findingsOriginal},
-  clean:{path:'demonstracao/servico.py',examined:1,skipped:0,errors:0,findings:[]}
+ ]},
+ clean:{path:'demonstracao/servico.py',files:['servico.py'],examined:1,skipped:0,errors:0,findings:[]}
 };
-const commandByOS = {
-  unix:'git clone https://github.com/fernandomarquesaluno-svg/securepath-cli.git\ncd securepath-cli\npython3 -m unittest discover -s tests -v\npython3 artefatos.py demonstracao\npython3 artefatos.py demonstracao --format json',
-  win:'git clone https://github.com/fernandomarquesaluno-svg/securepath-cli.git\ncd securepath-cli\npy -3 -m unittest discover -s tests -v\npy -3 artefatos.py demonstracao\npy -3 artefatos.py demonstracao --format json'
+const install = {
+ linux:'git clone https://github.com/fernandomarquesaluno-svg/securepath-cli.git\ncd securepath-cli\npython3 -m unittest discover -s tests -v\npython3 artefatos.py demonstracao',
+ windows:'git clone https://github.com/fernandomarquesaluno-svg/securepath-cli.git\ncd securepath-cli\npy -3 -m unittest discover -s tests -v\npy -3 artefatos.py demonstracao'
 };
-let currentStep = 0;
-let currentRule = 0;
-let currentScenario = 'demo';
-let currentFormat = 'text';
-let currentOS = 'unix';
-let demoTimer = null;
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function chooseStep(index) {
-  currentStep = (index + steps.length) % steps.length;
-  const step = steps[currentStep];
-  $('#step-kicker').textContent = step.kicker;
-  $('#step-title').textContent = step.title;
-  $('#step-description').textContent = step.description;
-  $('#step-example').textContent = step.code;
-  $('#step-counter').textContent = String(currentStep + 1).padStart(2,'0') + ' / 04';
-  const bullets = $('#step-bullets');
-  bullets.replaceChildren();
-  step.bullets.forEach(item => {
-    const span = document.createElement('span');
-    span.textContent = item;
-    bullets.appendChild(span);
-  });
-  $$('.pipeline-node').forEach((button, idx) => {
-    button.classList.toggle('selected', idx === currentStep);
-    button.setAttribute('aria-pressed', String(idx === currentStep));
-  });
-}
-$$('.pipeline-node').forEach(button => button.addEventListener('click', () => chooseStep(Number(button.dataset.step))));
-$('#prev-step').addEventListener('click', () => chooseStep(currentStep - 1));
-$('#next-step').addEventListener('click', () => chooseStep(currentStep + 1));
+let activeStep=0, activeRule='SEC001', activeGroup='all', activeScenario='demo', reportFormat='text', activeOS='linux';
+let simulationHandle=null;
 
-function chooseRule(index) {
-  currentRule = index;
-  const rule = rules[index];
-  $('#rule-id').textContent = rule.id;
-  $('#rule-title').textContent = rule.title;
-  $('#rule-description').textContent = rule.description;
-  $('#rule-example').textContent = rule.example;
-  $('#rule-limitation').textContent = rule.limit;
-  $('#rule-counter').textContent = String(index + 1).padStart(2,'0') + ' / 07';
-  $$('.rule-card').forEach((button, idx) => {
-    button.classList.toggle('active', idx === index);
-    button.setAttribute('aria-pressed', String(idx === index));
-  });
+function renderStep(index) {
+ activeStep=(index+steps.length)%steps.length;
+ const step=steps[activeStep];
+ $('#step-label').textContent=step.label;
+ $('#step-title').textContent=step.title;
+ $('#step-desc').textContent=step.description;
+ $('#step-detail').textContent=step.detail;
+ $('#step-count').textContent=String(activeStep+1).padStart(2,'0')+' DE 04';
+ $('#art-symbol').textContent=step.symbol;
+ $('#art-label-one').textContent=step.a;
+ $('#art-label-two').textContent=step.b;
+ $('#workflow-art').dataset.view=String(activeStep);
+ $$('.workflow-tab').forEach((node,i)=>{
+  const selected=i===activeStep;
+  node.classList.toggle('active',selected);
+  node.setAttribute('aria-pressed',String(selected));
+ });
 }
-$$('.rule-card').forEach(button => button.addEventListener('click', () => chooseRule(Number(button.dataset.rule))));
+$$('.workflow-tab').forEach(node=>node.addEventListener('click',()=>renderStep(Number(node.dataset.step))));
+$('#next-step').addEventListener('click',()=>renderStep(activeStep+1));
 
-function resetLab() {
-  if (demoTimer !== null) { clearInterval(demoTimer); demoTimer = null; }
-  const data = demos[currentScenario];
-  $('#lab-command').textContent = '$ python artefatos.py ' + data.path + (currentFormat === 'json' ? ' --format json' : '');
-  $('#lab-output').textContent = 'Clique em "Reproduzir análise" para visualizar os alertas.';
-  $('#lab-state').textContent = 'PRONTO PARA SIMULAR';
-  ['files','skipped','errors','alerts'].forEach(name => $('#count-' + name).textContent = '—');
-  $('#run-demo').disabled = false;
-  $('#run-label').textContent = 'Reproduzir análise';
-  $('#run-icon').textContent = '▶';
+function visibleRules(){return rules.filter(rule=>activeGroup==='all'||rule.group===activeGroup)}
+function renderRuleDetail() {
+ const rule=rules.find(item=>item.id===activeRule)||visibleRules()[0];
+ if(!rule)return;
+ activeRule=rule.id;
+ $('#rule-code').textContent=rule.id+' / REGEX';
+ $('#rule-art').textContent=rule.art;
+ $('#rule-title').textContent=rule.title;
+ $('#rule-description').textContent=rule.description;
+ $('#rule-pattern').textContent=rule.pattern;
+ $('#rule-caution').textContent=rule.caution;
+ $$('.rule-option').forEach(btn=>{
+  const selected=btn.dataset.rule===rule.id;
+  btn.classList.toggle('active',selected);
+  btn.setAttribute('aria-pressed',String(selected));
+ });
 }
-function chooseScenario(id) {
-  currentScenario = id;
-  $$('.scenario').forEach(button => {
-    button.classList.toggle('active', button.dataset.scenario === id);
-    button.setAttribute('aria-pressed', String(button.dataset.scenario === id));
-  });
-  resetLab();
+function renderRules(){
+ const all=visibleRules();
+ const list=$('#rules-options');
+ list.replaceChildren();
+ $('#rules-count').textContent=String(all.length).padStart(2,'0');
+ if(!all.some(rule=>rule.id===activeRule))activeRule=all[0]?.id||'SEC001';
+ for(const rule of all){
+  const btn=document.createElement('button');
+  btn.type='button';btn.className='rule-option';
+  btn.dataset.rule=rule.id;
+  btn.setAttribute('aria-pressed',String(rule.id===activeRule));
+  const code=document.createElement('span');code.textContent=rule.id;
+  const title=document.createElement('strong');title.textContent=rule.short;
+  const category=document.createElement('small');category.textContent=rule.category;
+  btn.append(code,title,category);
+  btn.addEventListener('click',()=>{activeRule=rule.id;renderRuleDetail()});
+  list.appendChild(btn);
+ }
+ renderRuleDetail();
 }
-function chooseFormat(format) {
-  currentFormat = format;
-  $$('.format').forEach(button => {
-    button.classList.toggle('active', button.dataset.format === format);
-    button.setAttribute('aria-pressed', String(button.dataset.format === format));
-  });
-  resetLab();
-}
-$$('.scenario').forEach(button => button.addEventListener('click', () => chooseScenario(button.dataset.scenario)));
-$$('.format').forEach(button => button.addEventListener('click', () => chooseFormat(button.dataset.format)));
-
-function textDemoLines(data) {
-  const lines = data.findings.map(f => '[ALERTA] ' + f.path + ':' + f.line + ' | ' + f.category);
-  lines.push('');
-  lines.push('Resumo: arquivos analisados=' + data.examined + ' | ignorados=' + data.skipped + ' | erros de I/O=' + data.errors + ' | alertas=' + data.findings.length);
-  return lines;
-}
-function jsonDemoLines(data) {
-  const output = {
-    schema_version:'1.0',scanner:'SecurePath CLI',
-    summary:{examined:data.examined,skipped:data.skipped,io_errors:data.errors,findings:data.findings.length},
-    findings:data.findings
-  };
-  return JSON.stringify(output,null,2).split('\n');
-}
-function finishDemo(data) {
-  $('#lab-state').textContent = 'SIMULAÇÃO CONCLUÍDA';
-  $('#count-files').textContent = String(data.examined).padStart(2,'0');
-  $('#count-skipped').textContent = String(data.skipped).padStart(2,'0');
-  $('#count-errors').textContent = String(data.errors).padStart(2,'0');
-  $('#count-alerts').textContent = String(data.findings.length).padStart(2,'0');
-  $('#run-demo').disabled = false;
-  $('#run-icon').textContent = '↻';
-  $('#run-label').textContent = 'Reproduzir novamente';
-}
-function runDemo() {
-  if (demoTimer !== null) clearInterval(demoTimer);
-  const data = demos[currentScenario];
-  const lines = currentFormat === 'text' ? textDemoLines(data) : jsonDemoLines(data);
-  const output = $('#lab-output');
-  output.textContent = '';
-  $('#lab-state').textContent = 'REPRODUZINDO SAÍDA';
-  $('#run-demo').disabled = true;
-  $('#run-icon').textContent = '◌';
-  $('#run-label').textContent = 'Simulando...';
-  ['files','skipped','errors','alerts'].forEach(name => $('#count-' + name).textContent = '—');
-  let position = 0;
-  const appendLine = () => {
-    if (position >= lines.length) {
-      clearInterval(demoTimer);
-      demoTimer = null;
-      finishDemo(data);
-      return;
-    }
-    output.textContent += (position ? '\n' : '') + lines[position++];
-    const terminal = $('.terminal-body');
-    terminal.scrollTop = terminal.scrollHeight;
-  };
-  if (reduceMotion) {
-    output.textContent = lines.join('\n');
-    demoTimer = null;
-    finishDemo(data);
-  } else {
-    appendLine();
-    demoTimer = window.setInterval(appendLine, currentFormat === 'json' ? 54 : 360);
-  }
-}
-$('#run-demo').addEventListener('click',runDemo);
-
-$$('.os-choice').forEach(button => button.addEventListener('click', () => {
-  currentOS = button.dataset.os;
-  $$('.os-choice').forEach(choice => {
-    choice.classList.toggle('active', choice.dataset.os === currentOS);
-    choice.setAttribute('aria-pressed', String(choice.dataset.os === currentOS));
-  });
-  $('#install-code').textContent = commandByOS[currentOS];
-  $('#copy-command').textContent = 'Copiar ⧉';
-}));
-$('#copy-command').addEventListener('click',async () => {
-  const button = $('#copy-command');
-  try {
-    await navigator.clipboard.writeText(commandByOS[currentOS]);
-    button.textContent = 'Copiado ✓';
-  } catch (_) {
-    button.textContent = 'Selecione o texto';
-    const selection = window.getSelection();
-    const range = document.createRange();
-    range.selectNodeContents($('#install-code'));
-    selection.removeAllRanges();
-    selection.addRange(range);
-  }
-});
-
-const menuToggle = $('.menu-toggle');
-const mobileMenu = $('#mobile-menu');
-menuToggle.addEventListener('click', () => {
-  const opening = mobileMenu.hidden;
-  mobileMenu.hidden = !opening;
-  menuToggle.setAttribute('aria-expanded', String(opening));
-  menuToggle.setAttribute('aria-label', opening ? 'Fechar menu' : 'Abrir menu');
-  menuToggle.textContent = opening ? '×' : '☰';
-});
-$$('#mobile-menu a').forEach(link => link.addEventListener('click', () => {
-  mobileMenu.hidden = true;
-  menuToggle.setAttribute('aria-expanded','false');
-  menuToggle.setAttribute('aria-label','Abrir menu');
-  menuToggle.textContent = '☰';
+$$('.rule-filter-btn').forEach(btn=>btn.addEventListener('click',()=>{
+ activeGroup=btn.dataset.group;
+ $$('.rule-filter-btn').forEach(item=>{
+  const selected=item===btn;
+  item.classList.toggle('active',selected);
+  item.setAttribute('aria-pressed',String(selected));
+ });
+ renderRules();
 }));
 
-if ('IntersectionObserver' in window && !reduceMotion) {
-  const revealObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  }, {threshold:.08,rootMargin:'0px 0px -30px 0px'});
-  $$('.reveal').forEach(el => revealObserver.observe(el));
-} else {
-  $$('.reveal').forEach(el => el.classList.add('visible'));
+function cancelSimulation() {
+ if(simulationHandle!==null){clearInterval(simulationHandle);simulationHandle=null;}
+ $('#demo-run').disabled=false;
+ $('#demo-run').innerHTML='<span>▶</span> Iniciar simulação';
 }
-const mainSections = $$('.section[id]');
-const sideLinks = $$('.side-nav a');
-if ('IntersectionObserver' in window) {
-  const navObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      sideLinks.forEach(link => {
-        const active = link.getAttribute('href') === '#' + entry.target.id;
-        link.classList.toggle('active',active);
-        if(active) link.setAttribute('aria-current','location');
-        else link.removeAttribute('aria-current');
-      });
-    });
-  }, {rootMargin:'-18% 0px -70% 0px',threshold:0});
-  mainSections.forEach(section => navObserver.observe(section));
+function buildTree(){
+ const data=scenarios[activeScenario];
+ const list=$('#demo-tree');
+ list.replaceChildren();
+ if(activeScenario==='demo'){
+  const folder=document.createElement('div');folder.className='demo-folder';folder.textContent='▣ demonstracao/';list.appendChild(folder);
+ }
+ data.files.forEach((name,index)=>{
+  const item=document.createElement('div');item.className='demo-file';
+  item.textContent=(index===data.files.length-1?'└─ ':'├─ ')+name;
+  item.dataset.filename=name;list.appendChild(item);
+ });
 }
-let scrollQueued = false;
-function updateProgress() {
-  const max = document.documentElement.scrollHeight - window.innerHeight;
-  $('#scroll-progress').style.width = (max > 0 ? Math.min(100,Math.max(0,window.scrollY / max * 100)) : 0) + '%';
-  scrollQueued = false;
+function resetDemo(){
+ cancelSimulation();
+ const data=scenarios[activeScenario];
+ $('#report-command').textContent='$ python artefatos.py '+data.path+(reportFormat==='json'?' --format json':'');
+ $('#report-output').textContent='Aguardando análise. Clique no botão abaixo para começar.';
+ $('#result-files').textContent='—';$('#result-alerts').textContent='—';$('#result-errors').textContent='—';
+ $('#demo-progress-label').textContent='PRONTO PARA VARREDURA';
+ buildTree();
 }
-window.addEventListener('scroll', () => {
-  if(!scrollQueued) {
-    scrollQueued = true;
-    requestAnimationFrame(updateProgress);
+function chooseScenario(name){
+ activeScenario=name;
+ $$('.scenario').forEach(btn=>{const selected=btn.dataset.scenario===name;btn.classList.toggle('active',selected);btn.setAttribute('aria-pressed',String(selected))});
+ resetDemo();
+}
+function chooseFormat(name){
+ reportFormat=name;
+ $$('.report-format').forEach(btn=>{const selected=btn.dataset.format===name;btn.classList.toggle('active',selected);btn.setAttribute('aria-pressed',String(selected))});
+ resetDemo();
+}
+$$('.scenario').forEach(btn=>btn.addEventListener('click',()=>chooseScenario(btn.dataset.scenario)));
+$$('.report-format').forEach(btn=>btn.addEventListener('click',()=>chooseFormat(btn.dataset.format)));
+function outputLines(data){
+ if(reportFormat==='json'){
+  return JSON.stringify({schema_version:'1.0',scanner:'SecurePath CLI',summary:{examined:data.examined,skipped:data.skipped,io_errors:data.errors,findings:data.findings.length},findings:data.findings},null,2).split('\n');
+ }
+ const output=data.findings.map(f=>'[ALERTA] '+f.path+':'+f.line+' | '+f.category);
+ output.push('');
+ output.push('Resumo: arquivos analisados='+data.examined+' | ignorados='+data.skipped+' | erros de I/O='+data.errors+' | alertas='+data.findings.length);
+ return output;
+}
+function endSimulation(data){
+ simulationHandle=null;
+ $('#demo-run').disabled=false;
+ $('#demo-run').innerHTML='<span>↻</span> Repetir simulação';
+ $('#demo-progress-label').textContent='SIMULAÇÃO CONCLUÍDA';
+ $('#result-files').textContent=String(data.examined).padStart(2,'0');
+ $('#result-alerts').textContent=String(data.findings.length).padStart(2,'0');
+ $('#result-errors').textContent=String(data.errors).padStart(2,'0');
+}
+function playSimulation(){
+ cancelSimulation();
+ const data=scenarios[activeScenario];
+ const lines=outputLines(data);
+ const terminal=$('#report-output');
+ terminal.textContent='';
+ $('#demo-progress-label').textContent='REPRODUZINDO SAÍDA...';
+ $('#demo-run').disabled=true;
+ $('#demo-run').innerHTML='<span>◌</span> Analisando...';
+ let cursor=0;
+ const insert=()=>{
+  if(cursor>=lines.length){
+   clearInterval(simulationHandle);endSimulation(data);return;
   }
-}, {passive:true});
+  terminal.textContent+=(cursor?'\n':'')+lines[cursor++];
+  const screen=$('.report-screen');screen.scrollTop=screen.scrollHeight;
+  const activeFilename=data.findings[Math.min(Math.max(cursor-1,0),data.findings.length-1)]?.path.split('/').pop();
+  $$('.demo-file').forEach(el=>el.classList.toggle('active',el.dataset.filename===activeFilename));
+ };
+ if(motionReduced){terminal.textContent=lines.join('\n');endSimulation(data)}
+ else{insert();simulationHandle=setInterval(insert,reportFormat==='json'?38:360)}
+}
+$('#demo-run').addEventListener('click',playSimulation);
+$$('.os-button').forEach(btn=>btn.addEventListener('click',()=>{
+ activeOS=btn.dataset.os;$('#install-commands').textContent=install[activeOS];
+ $$('.os-button').forEach(item=>{const selected=btn===item;item.classList.toggle('active',selected);item.setAttribute('aria-pressed',String(selected))});
+ $('#copy-code').innerHTML='Copiar comandos <span>⧉</span>';
+}));
+$('#copy-code').addEventListener('click',async()=>{
+ const button=$('#copy-code');
+ try{await navigator.clipboard.writeText(install[activeOS]);button.textContent='Copiado ✓'}
+ catch(e){
+  const range=document.createRange();range.selectNodeContents($('#install-commands'));
+  const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+  button.textContent='Texto selecionado';
+ }
+});
+
+const menuBtn=$('#menu-button'),mobileNav=$('#mobile-nav');
+function closeMenu(){mobileNav.hidden=true;menuBtn.setAttribute('aria-expanded','false');menuBtn.setAttribute('aria-label','Abrir navegação')}
+menuBtn.addEventListener('click',()=>{
+ const open=mobileNav.hidden;mobileNav.hidden=!open;
+ menuBtn.setAttribute('aria-expanded',String(open));
+ menuBtn.setAttribute('aria-label',open?'Fechar navegação':'Abrir navegação');
+});
+$$('#mobile-nav a').forEach(link=>link.addEventListener('click',closeMenu));
+window.addEventListener('resize',()=>{if(window.innerWidth>980)closeMenu()});
+document.addEventListener('keydown',event=>{if(event.key==='Escape')closeMenu()});
+
+if('IntersectionObserver' in window&&!motionReduced){
+ const observer=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+   if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target)}
+  });
+ },{threshold:.09,rootMargin:'0px 0px -25px 0px'});
+ $$('.reveal,.rise').forEach(node=>observer.observe(node));
+}else{$$('.reveal,.rise').forEach(node=>node.classList.add('visible'))}
+let scrolling=false;
+function updateProgress(){
+ const max=document.documentElement.scrollHeight-window.innerHeight;
+ $('#scroll-progress').style.width=(max>0?Math.min(100,Math.max(0,(window.scrollY/max)*100)):0)+'%';
+ scrolling=false;
+}
+window.addEventListener('scroll',()=>{if(!scrolling){scrolling=true;requestAnimationFrame(updateProgress)}},{passive:true});
 window.addEventListener('resize',updateProgress,{passive:true});
-updateProgress();
-chooseStep(0);
-chooseRule(0);
-resetLab();
+renderStep(0);renderRules();resetDemo();updateProgress();

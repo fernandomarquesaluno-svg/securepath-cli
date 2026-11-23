@@ -1,6 +1,6 @@
 # SecurePath CLI — Scanner de possíveis credenciais expostas
 
-> **Atlas interativo do artefato:** [abrir o código do site](docs/index.html) · [como publicar pelo GitHub Pages](docs/README.md). O site tem fluxo animado, explorador de regras e simulações visuais; a execução real continua sendo feita com o script Python.
+> **Site interativo do SecurePath:** [abrir o site publicado](https://fernandomarquesaluno-svg.github.io/securepath-cli/) · [ver código da página](docs/index.html). Nova interface com animações, explicações visuais, exploração de regras e demonstrações sintéticas. A análise real continua no script Python.
 
 **SecurePath CLI** é uma ferramenta de linha de comando para análise estática local de arquivos e diretórios. Identifica **indícios** de credenciais expostas por expressões regulares, sem enviar conteúdo à rede e sem dependências externas: utiliza somente a **Python Standard Library**.
 
