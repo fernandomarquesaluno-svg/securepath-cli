@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./style.css?v=3.0">
-<script src="./app.js?v=3.2" defer></script>
+<link rel="stylesheet" href="./style.css?v=4.0">
+<script src="./app.js?v=4.0" defer></script>
 </head>
 <body>
 <a href="#conteudo" class="skip">Pular para o conteúdo</a>
@@ -22,11 +22,11 @@
 <header class="site-header">
  <div class="container header-inner">
   <a class="brand" href="#inicio" aria-label="SecurePath, início"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M20 4 33 10v11c0 8-5.5 12.5-13 16-7.5-3.5-13-8-13-16V10L20 4Z" stroke="currentColor" stroke-width="2.5"/><path d="m14 20 4 4 9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>securepath<span class="brand-period">.</span></span></a>
-  <nav class="desktop-nav" aria-label="Navegação"><a href="#video">Vídeo</a><a href="#problema">O problema</a><a href="#como-funciona">Como funciona</a><a href="#demonstracao">Experimente</a><a href="#regras">Detecções</a><a href="#evidencias">Resultados</a></nav>
+  <nav class="desktop-nav" aria-label="Navegação"><a href="#video">Vídeo</a><a href="#problema">O problema</a><a href="#como-funciona">Como funciona</a><a href="#demonstracao">Experimente</a><a href="#regras">Detecções</a><a href="#evidencias">Resultados</a><a class="evo-nav" href="#evolucao">Evolução</a></nav>
   <a class="header-github" href="https://github.com/fernandomarquesaluno-svg/securepath-cli" target="_blank" rel="noopener noreferrer">Ver no GitHub <span aria-hidden="true">↗</span></a>
   <button class="menu-button" id="menu-button" aria-label="Abrir navegação" aria-expanded="false" aria-controls="mobile-nav" type="button"><span></span><span></span><span></span></button>
  </div>
- <nav class="mobile-nav" id="mobile-nav" aria-label="Navegação móvel" hidden><a href="#video">Vídeo explicativo</a><a href="#problema">O problema</a><a href="#como-funciona">Como funciona</a><a href="#demonstracao">Experimente</a><a href="#regras">Detecções</a><a href="#evidencias">Resultados</a><a href="#executar">Executar</a></nav>
+ <nav class="mobile-nav" id="mobile-nav" aria-label="Navegação móvel" hidden><a href="#video">Vídeo explicativo</a><a href="#problema">O problema</a><a href="#como-funciona">Como funciona</a><a href="#demonstracao">Experimente</a><a href="#regras">Detecções</a><a href="#evidencias">Resultados</a><a class="evo-nav" href="#evolucao">Evolução</a><a href="#executar">Executar</a></nav>
 </header>
 <main id="conteudo">
 <section class="hero" id="inicio">
@@ -57,7 +57,7 @@
    <div class="floating-tag tag-right"><span class="tag-circle danger">!</span> Valores protegidos</div>
   </div>
  </div>
- <div class="container hero-metrics rise"><div><strong>07</strong><p>regras implementadas<br><small>SEC001 a SEC007</small></p></div><div><strong>16</strong><p>testes automatizados<br><small>registrados no projeto</small></p></div><div><strong>0</strong><p>dependências de terceiros<br><small>somente Python padrão</small></p></div><div><strong>100<span>%</span></strong><p>análise local<br><small>sem upload de arquivos</small></p></div></div>
+ <div class="container hero-metrics rise"><div><strong>07</strong><p>regras implementadas<br><small>SEC001 a SEC007</small></p></div><div><strong>19</strong><p>testes definidos<br><small>16 aprovados na revisão anterior</small></p></div><div><strong>0</strong><p>dependências de terceiros<br><small>somente Python padrão</small></p></div><div><strong>100<span>%</span></strong><p>análise local<br><small>sem upload de arquivos</small></p></div></div>
 </section>
 <div class="marquee" aria-hidden="true"><div class="marquee-run"><span>LEIA SEU CÓDIGO</span><b>✳</b><span>IDENTIFIQUE INDÍCIOS</span><b>✳</b><span>PROTEJA SEUS SEGREDOS</span><b>✳</b><span>LEIA SEU CÓDIGO</span><b>✳</b><span>IDENTIFIQUE INDÍCIOS</span><b>✳</b><span>PROTEJA SEUS SEGREDOS</span><b>✳</b></div></div>
 
@@ -67,7 +67,7 @@
   <div class="section-head reveal">
    <span class="overline"><span>▶</span> / VÍDEO EXPLICATIVO</span>
    <h2 id="explainer-heading">Entenda o SecurePath <em>em movimento.</em></h2>
-   <p>Acompanhe uma explicação animada, com <strong>narração em português e legendas sincronizadas</strong>, desde o risco de expor senhas até o relatório do scanner.</p>
+   <p>Acompanhe uma explicação animada, com <strong>narração em português e legendas sincronizadas</strong>, desde o risco de expor senhas até o relatório do scanner. O vídeo registra a versão anterior. <a class="evo-source" href="#evolucao">Veja as novidades da versão atual ↗</a></p>
   </div>
   <div class="explainer-player reveal" id="explainer-player" aria-label="Apresentação animada e narrada do SecurePath CLI">
    <div id="explainer-native" class="explainer-native" hidden><video id="explainer-mp4" controls playsinline preload="metadata" aria-label="Vídeo narrado do SecurePath CLI"><source src="./media/securepath-explainer-natural.mp4" type="video/mp4"><track src="./media/securepath-natural-ptbr.vtt" kind="subtitles" srclang="pt-BR" label="Português"></video></div>
@@ -212,6 +212,51 @@
  </div>
 </section>
 
+
+<section class="section evolution-section" id="evolucao" aria-labelledby="evolution-heading">
+ <div class="container">
+  <div class="section-head reveal"><span class="overline"><span>↗</span> / ADENDO · 24/11/2026</span><h2 id="evolution-heading">O artefato <em>continua evoluindo.</em></h2><p>A versão apresentada no vídeo permanece como registro da etapa anterior. A revisão mais recente amplia a capacidade de analisar projetos maiores e adaptar o scanner às necessidades de cada organização, sem abandonar o funcionamento local.</p><a class="evo-source" href="https://github.com/fernandomarquesaluno-svg/securepath-cli/commit/f2cb2597ac1ece010c6611c138f250ca5e67e565" target="_blank" rel="noopener noreferrer">Consultar a evolução no código-fonte ↗</a></div>
+  <div class="evo-kpis reveal">
+   <div><span>REGRAS NATIVAS</span><strong>07</strong><small>preservadas</small></div>
+   <div><span>REGRAS ADICIONAIS</span><strong>100</strong><small>limite por JSON</small></div>
+   <div><span>WORKERS</span><strong>64</strong><small>máximo configurável</small></div>
+   <div><span>TESTES DEFINIDOS</span><strong>19</strong><small>16 anteriores + 3 novos</small></div>
+  </div>
+  <div class="evo-label reveal"><span>01 / IMPLEMENTADO</span><h3>Três novas capacidades</h3><p>Recursos presentes no código atual, com benefícios esperados — ainda sem benchmark de desempenho.</p></div>
+  <div class="evo-feature-grid">
+   <article class="evo-feature reveal"><div class="evo-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></div><span class="evo-tag">PARALELISMO</span><h3>Mais arquivos, em paralelo.</h3><p>O parâmetro <code>--workers</code> define de 1 a 64 threads. Cada tarefa analisa um arquivo e a thread principal agrega os resultados, que são ordenados ao final.</p><div class="evo-detail"><strong>Benefício esperado</strong><span>Reduzir o tempo de espera em cargas com muitos arquivos e operações de leitura.</span></div><small>Não há ganho de velocidade comprovado.</small></article>
+   <article class="evo-feature reveal"><div class="evo-icon rule-icon" aria-hidden="true"><b>{ }</b><i></i></div><span class="evo-tag">EXTENSIBILIDADE</span><h3>Regras do seu projeto.</h3><p><code>--rules-file</code> acrescenta até 100 expressões regulares por arquivo JSON, com IDs únicos, categorias e validação da configuração. As sete regras nativas continuam ativas.</p><div class="evo-detail"><strong>Benefício esperado</strong><span>Adaptar a detecção a padrões internos sem editar o núcleo Python.</span></div><small>Use apenas expressões regulares confiáveis.</small></article>
+   <article class="evo-feature reveal"><div class="evo-icon filter-icon" aria-hidden="true"><b>✓</b><b>×</b><b>✓</b></div><span class="evo-tag">CONFIGURAÇÃO</span><h3>Controle o que entra.</h3><p><code>--exclude-dir</code> permite excluir diretórios adicionais por nome e pode ser repetido. Complementa os filtros padrão e evita percorrer pastas irrelevantes.</p><div class="evo-detail"><strong>Benefício esperado</strong><span>Reduzir trabalho desnecessário e adaptar a análise à estrutura do projeto.</span></div><small>Diretórios excluídos não são inspecionados.</small></article>
+  </div>
+  <div class="evo-lab reveal">
+   <div class="evo-lab-head"><div><span class="overline">02 / EXPLORADOR DE ESCALABILIDADE</span><h3>Configure uma varredura.</h3><p>Altere o número de workers, adicione uma regra de exemplo e exclua uma pasta. Veja como os parâmetros modificam a arquitetura e o comando de execução.</p></div><span class="evo-sim-tag">MODELO CONCEITUAL</span></div>
+   <div class="evo-lab-grid">
+    <div class="evo-controls"><label for="evo-workers">Workers de análise <strong id="evo-workers-label">4</strong></label><input id="evo-workers" type="range" min="1" max="64" step="1" value="4" aria-label="Quantidade de workers"><div class="evo-range-label"><span>1 · sequencial</span><span>64 · máximo</span></div>
+     <label class="evo-check"><input id="evo-custom" type="checkbox" checked><span>Adicionar regra fictícia <strong>ORG001</strong><small>Carrega regras.example.json</small></span></label>
+     <label class="evo-check"><input id="evo-exclude" type="checkbox" checked><span>Excluir diretório generated<small>Além das exclusões padrão</small></span></label>
+     <div class="evo-command"><span>COMANDO GERADO</span><code id="evo-command">python artefatos.py CAMINHO --workers 4 --rules-file regras.example.json --exclude-dir generated --format json</code><button type="button" id="evo-copy">Copiar comando ⧉</button></div>
+    </div>
+    <div class="evo-model" aria-live="polite"><div class="evo-flow"><span class="evo-flow-box">Arquivos</span><span class="evo-flow-arrow" aria-hidden="true">→</span><span class="evo-flow-box">Filtros</span><span class="evo-flow-arrow" aria-hidden="true">→</span><span class="evo-flow-box accent">Fila</span></div><div class="evo-thread-head"><span id="evo-mode">4 workers paralelos</span><strong id="evo-queue">8 tarefas pendentes</strong></div><div class="evo-workers-visual" id="evo-worker-bars" aria-hidden="true"></div><div class="evo-flow-output"><span id="evo-rule-count">8 regras ativas</span><span>→</span><span>Agregação</span><span>→</span><span>Relatório ordenado</span></div><p id="evo-model-note">A fila admite até duas tarefas pendentes por worker (incluindo tarefas em execução). A representação não mede velocidade nem uso total de memória.</p></div>
+   </div>
+  </div>
+  <div class="evo-label reveal"><span>03 / HISTÓRICO E VALIDAÇÃO</span><h3>O que já foi verificado?</h3></div>
+  <div class="evo-timeline reveal">
+   <article><span class="evo-date">28/10/2026</span><h4>Primeira implementação</h4><p>Scanner de credenciais com expressões regulares.</p></article>
+   <article><span class="evo-date">05–06/11/2026</span><h4>Revisão e evidências</h4><p>Sete regras, relatório JSON e registro de 16 testes aprovados em Codespaces.</p></article>
+   <article class="evo-latest"><span class="evo-date">24/11/2026</span><h4>Expansão configurável</h4><p>Paralelismo, regras externas e exclusões adicionais; três novos testes no repositório.</p><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli/commit/7b5d22e7b7b290b345c6e22a119e5be4393253a7" target="_blank" rel="noopener noreferrer">Ver revisão de testes ↗</a></article>
+  </div>
+  <div class="evo-validation reveal"><strong>19 testes definidos ≠ 19 testes aprovados</strong><p>Os três novos testes verificam a preservação e ordenação dos achados no modo paralelo, a detecção de uma regra externa e a exclusão de um diretório adicional. A execução da suíte ampliada ainda precisa de evidência registrada. A validação histórica de 16/16 continua separada.</p><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli/blob/7b5d22e7b7b290b345c6e22a119e5be4393253a7/tests/test_artefatos.py" target="_blank" rel="noopener noreferrer">Consultar os testes atuais ↗</a></div>
+  <div class="evo-label reveal"><span>04 / PROPOSTAS DE EVOLUÇÃO</span><h3>Próximos passos recomendados</h3><p>Planejamento sugerido a partir da revisão do código. Não são funcionalidades implementadas nem compromissos de prazo.</p></div>
+  <div class="evo-roadmap reveal">
+   <article><span class="evo-phase">ETAPA 01 · VALIDAR</span><h4>Testes e integração contínua</h4><p>Executar e registrar os 19 testes em Linux e Windows; ampliar cenários de erros, regras inválidas e concorrência.</p><small>Critério: resultados reproduzíveis por ambiente.</small></article>
+   <article><span class="evo-phase">ETAPA 02 · MEDIR</span><h4>Benchmark de escalabilidade</h4><p>Comparar 1, 2, 4 e 8 workers em conjuntos sintéticos equivalentes, com repetição, tempo, memória de pico e achados consistentes.</p><small>Critério: medir ganho real, sem prometer aceleração.</small></article>
+   <article><span class="evo-phase">ETAPA 03 · QUALIFICAR</span><h4>Precisão e robustez</h4><p>Construir um conjunto rotulado, medir precisão e recall, avaliar regras custosas e reduzir falsos positivos. Considerar limites de execução para regex externas.</p><small>Critério: métricas documentadas e casos negativos.</small></article>
+   <article><span class="evo-phase">ETAPA 04 · INTEGRAR</span><h4>Fluxo de engenharia de software</h4><p>Integrar ao CI e ao pre-commit, oferecer SARIF e avaliar análise de mudanças e histórico Git de forma autorizada. Estudar saída incremental para grandes volumes de alertas.</p><small>Critério: integração auditável e controle de regressões.</small></article>
+  </div>
+  <div class="evo-end reveal"><div><strong>Da prova de conceito a uma ferramenta extensível.</strong><p>O próximo salto depende de evidências de desempenho, qualidade de detecção e facilidade de adoção — não apenas de novos recursos.</p></div><a class="btn btn-primary" href="https://github.com/fernandomarquesaluno-svg/securepath-cli" target="_blank" rel="noopener noreferrer">Explorar versão atual ↗</a></div>
+ </div>
+</section>
+
 <section class="section limitation-section" id="limites">
  <div class="container limits-layout reveal"><div class="limits-heading"><span class="overline"><span>07</span> / LIMITES E USO RESPONSÁVEL</span><h2>Um alerta é uma pista. <em>Não um veredito.</em></h2><p>Regex identifica padrões textuais, mas não garante autenticidade, validade ou ausência de segredos. Essa distinção faz parte da proposta técnica.</p></div><div class="limits-items"><div><span>01</span><p>Pode haver <strong>falsos positivos e falsos negativos</strong>.</p></div><div><span>02</span><p>Não analisa histórico Git, arquivos compactados nem conteúdo criptografado.</p></div><div><span>03</span><p>Ignora arquivos acima do limite, links simbólicos e pastas previstas.</p></div><div><span>04</span><p>Uma saída limpa <strong>não comprova</strong> ausência de segredos.</p></div></div></div>
  </div>
@@ -229,6 +274,6 @@ python3 artefatos.py demonstracao</pre></div>
  </div>
 </section>
 </main>
-<footer class="site-footer"><div class="container footer-main"><div><a class="brand" href="#inicio"><span class="brand-mark small">✓</span><span>securepath<span class="brand-period">.</span></span></a><p>Artefato acadêmico de cibersegurança desenvolvido com assistência de IA. Página explicativa, sem análise de arquivos reais no navegador.</p></div><div class="footer-links"><a href="#video">Vídeo animado</a><a href="#problema">O problema</a><a href="#como-funciona">Funcionamento</a><a href="#demonstracao">Demonstração</a><a href="#evidencias">Evidências</a><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli" target="_blank" rel="noopener noreferrer">Código no GitHub ↗</a></div></div><div class="container footer-bottom"><span>SECUREPATH CLI · PROJETO EDUCACIONAL</span><span>FEITO PARA TORNAR SEGURANÇA MAIS COMPREENSÍVEL</span><a href="#inicio">Voltar ao início ↑</a></div></footer>
+<footer class="site-footer"><div class="container footer-main"><div><a class="brand" href="#inicio"><span class="brand-mark small">✓</span><span>securepath<span class="brand-period">.</span></span></a><p>Artefato acadêmico de cibersegurança desenvolvido com assistência de IA. Página explicativa, sem análise de arquivos reais no navegador.</p></div><div class="footer-links"><a href="#video">Vídeo animado</a><a href="#problema">O problema</a><a href="#como-funciona">Funcionamento</a><a href="#demonstracao">Demonstração</a><a href="#evidencias">Evidências</a><a href="#evolucao">Evolução técnica</a><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli" target="_blank" rel="noopener noreferrer">Código no GitHub ↗</a></div></div><div class="container footer-bottom"><span>SECUREPATH CLI · PROJETO EDUCACIONAL</span><span>FEITO PARA TORNAR SEGURANÇA MAIS COMPREENSÍVEL</span><a href="#inicio">Voltar ao início ↑</a></div></footer>
 </body>
 </html>

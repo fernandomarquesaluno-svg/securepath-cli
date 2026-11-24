@@ -32,3 +32,7 @@ O arquivo index.html na raiz oferece um redirecionamento alternativo para /docs/
 ## Fontes da documentação
 
 README.md, artefatos.py, EVOLUCAO_TECNICA.md e evidencias/validacao_codespaces_2026-11-06.md. Os dados das demonstrações são estáticos e devem ser atualizados se o scanner mudar. Os números de testes se referem à validação documentada no Codespaces, não a um novo benchmark.
+
+## Adendo de evolução técnica — 24/11/2026
+
+A seção `#evolucao` documenta o commit `f2cb2597ac1ece010c6611c138f250ca5e67e565` e os testes do commit `7b5d22e7b7b290b345c6e22a119e5be4393253a7`. Inclui opções `--workers`, `--rules-file` e `--exclude-dir`, simulação conceitual interativa da configuração, histórico e próximos passos recomendados. Distingue 19 testes definidos de 16 testes historicamente aprovados, sem atribuir resultados não comprovados à versão ampliada. O vídeo narrado anterior é preservado como registro histórico.

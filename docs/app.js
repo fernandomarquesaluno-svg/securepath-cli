@@ -470,3 +470,32 @@ renderStep(0);renderRules();resetDemo();updateProgress();
   video.addEventListener('error',fallback,{once:true});
  }).catch(()=>{ /* HTML narrated player remains the primary experience. */ });
 })();
+
+
+// Evolução técnica: visualização conceitual da configuração da CLI atual.
+(()=>{
+ const slider=document.getElementById('evo-workers'),custom=document.getElementById('evo-custom'),exclude=document.getElementById('evo-exclude');
+ if(!slider||!custom||!exclude)return;
+ const el=id=>document.getElementById(id);
+ function render(){
+  const workers=Number(slider.value);
+  el('evo-workers-label').textContent=String(workers);
+  el('evo-mode').textContent=workers===1?'Modo sequencial':workers+' workers paralelos';
+  el('evo-queue').textContent=workers===1?'Sem fila paralela':'Até '+(workers*2)+' tarefas pendentes';
+  el('evo-rule-count').textContent=(custom.checked?8:7)+' regras ativas';
+  el('evo-command').textContent='python artefatos.py CAMINHO --workers '+workers+(custom.checked?' --rules-file regras.example.json':'')+(exclude.checked?' --exclude-dir generated':'')+' --format json';
+  el('evo-model-note').textContent=workers===1?'O scanner processa um arquivo por vez. Não há fila de tarefas paralelas.': 'Até duas tarefas pendentes por worker, incluindo tarefas em execução. Os achados são agregados e ordenados; esta simulação não mede desempenho nem memória total.';
+  const visual=el('evo-worker-bars');
+  visual.replaceChildren();
+  for(let i=0;i<workers;i++){
+   const node=document.createElement('span');node.className='evo-worker';node.style.animationDelay=(-(i%8)*.27)+'s';visual.appendChild(node);
+  }
+  el('evo-copy').textContent='Copiar comando ⧉';
+ }
+ slider.addEventListener('input',render);custom.addEventListener('change',render);exclude.addEventListener('change',render);
+ el('evo-copy').addEventListener('click',async()=>{
+  try{await navigator.clipboard.writeText(el('evo-command').textContent);el('evo-copy').textContent='Copiado ✓'}
+  catch(_){const range=document.createRange();range.selectNodeContents(el('evo-command'));const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);el('evo-copy').textContent='Comando selecionado'}
+ });
+ render();
+})();
