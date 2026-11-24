@@ -1,0 +1,10 @@
+{
+  "rules": [
+    {
+      "id": "ORG001",
+      "category": "Token interno de demonstração",
+      "pattern": "\\bcorp_[A-Za-z0-9]{32}\\b",
+      "flags": []
+    }
+  ]
+}
