@@ -35,6 +35,8 @@ Percorrer um arquivo ou uma árvore de diretórios, localizar padrões suspeitos
 - Não segue links simbólicos; ignora arquivos especiais (FIFO, socket e dispositivo), arquivos que excedam o limite de tamanho (padrão: **5 MiB**) ou cujo início contenha byte NUL (heurística para binário).
 - Utiliza leitura UTF-8 com `errors='ignore'` e `try/except` específico para `PermissionError` e `OSError`; conta arquivos analisados, ignorados, erros e alertas.
 - Oferece `--fail-on-findings` para integração em scripts/CI e `--format json` para gerar relatórios estruturados sem valores de credenciais.
+- Permite analisar árvores maiores com workers de I/O (`--workers`) e limitar a fila de arquivos pendentes, mantendo a memória sem uma lista completa de caminhos.
+- Aceita regras adicionais por JSON (`--rules-file`) e exclusões por projeto (`--exclude-dir`), sem alterar o núcleo do scanner.
 
 **Proteção na saída:** a ferramenta apresenta metadados do alerta, **não a linha original nem o conteúdo da credencial**.
 
@@ -66,10 +68,31 @@ python artefatos.py CAMINHO
 python artefatos.py CAMINHO --max-size-kib 1024
 python artefatos.py CAMINHO --fail-on-findings
 python artefatos.py CAMINHO --format json
+python artefatos.py CAMINHO --workers 4
+python artefatos.py CAMINHO --rules-file regras.json --exclude-dir generated
 python artefatos.py --help
 ```
 
-`CAMINHO` pode ser um arquivo ou diretório. `--max-size-kib` define o máximo por arquivo em KiB (inteiro positivo; padrão 5120). `--format json` produz `schema_version`, contadores e uma lista de achados com `rule_id`, categoria, arquivo e linha, sem incluir valores capturados.
+`CAMINHO` pode ser um arquivo ou diretório. `--max-size-kib` define o máximo por arquivo em KiB (inteiro positivo; padrão 5120). `--format json` produz `schema_version`, contadores e uma lista de achados com `rule_id`, categoria, arquivo e linha, sem incluir valores capturados. `--workers` aceita de 1 a 64 e usa threads para leitura/análise de arquivos; o padrão 1 mantém execução sequencial. `--exclude-dir` pode ser repetido e complementa as pastas ignoradas por padrão.
+
+### Regras específicas do projeto
+
+Use `--rules-file regras.json` para adicionar padrões internos sem editar o scanner. O formato é:
+
+```json
+{
+  "rules": [
+    {
+      "id": "ORG001",
+      "category": "Token interno de demonstração",
+      "pattern": "\\bcorp_[A-Za-z0-9]{32}\\b",
+      "flags": []
+    }
+  ]
+}
+```
+
+IDs devem ser únicos; cada arquivo pode incluir até 100 regras. `flags` aceita apenas `IGNORECASE`. Escreva e use apenas regras de fontes confiáveis: expressões regulares muito custosas podem tornar a análise lenta. O arquivo [`regras.example.json`](regras.example.json) é um modelo com um padrão fictício.
 
 **Códigos de saída:** `0` = varredura sem erros de I/O (mesmo com alertas, se não usar `--fail-on-findings`); `1` = alertas presentes com `--fail-on-findings`; `2` = erro de I/O ou erro de argumentos. Erros de I/O têm prioridade sobre alertas, pois a análise ficou parcial.
 
@@ -124,7 +147,7 @@ securepath-cli/
 └── LICENSE                   # Licença MIT
 ```
 
-`artefatos.py` separa os padrões (`PATTERNS`), os contadores (`Summary`), a análise de arquivo (`scan_file`), o percurso recursivo (`scan_directory`) e a entrada da CLI (`main`).
+`artefatos.py` separa os padrões (`PATTERNS`), os contadores (`Summary`), a análise de arquivo (`scan_file`), o percurso recursivo (`scan_directory`) e a entrada da CLI (`main`). A configuração externa de regras permite estender as detecções por organização, e o modo paralelo mantém tarefas limitadas para reduzir o custo de varreduras grandes.
 
 ## 11. Testes e dataset sintético
 
@@ -147,6 +170,8 @@ A suíte cobre: achados sintéticos e não exposição do conteúdo; arquivo lim
 ## 12. Limitações conhecidas
 
 - Os padrões Regex são **heurísticos**: podem produzir falsos positivos e falsos negativos; não validam se uma chave está ativa.
+- O paralelismo acelera principalmente leituras de muitas unidades de arquivo; não é benchmark, não garante ganho em todo projeto e não aumenta a cobertura das regras.
+- Regras regex personalizadas são executadas pelo mecanismo padrão do Python, sem timeout por regra; use apenas padrões confiáveis e revise os arquivos de configuração.
 - As regras AWS contemplam IDs `AKIA` e `ASIA`, mas não todos os formatos de credenciais AWS. As regras de chaves privadas reconhecem alguns cabeçalhos RSA, PEM e OpenSSH, não o conteúdo completo nem a validade criptográfica.
 - O scanner não interpreta AST, contexto semântico, formatos de arquivos compactados, histórico Git, segredos divididos entre linhas ou arquivos criptografados.
 - A opção `errors='ignore'` descarta bytes inválidos silenciosamente; facilita continuidade de I/O, mas pode **ocultar padrões** em conteúdos com codificação incompatível. Um byte NUL nos primeiros 4096 bytes faz o arquivo ser ignorado, mas nem todo binário contém NUL.
@@ -221,3 +246,4 @@ python artefatos.py teste.txt --fail-on-findings
 A pasta `demonstracao/` contém somente dados artificiais: **4 alertas esperados em 3 arquivos analisados**. O arquivo `teste.txt` original continua produzindo **5 alertas**. A saída `--format json` pode ser utilizada em automações, mas expõe nomes e caminhos dos arquivos analisados; não publique resultados de projetos privados.
 
 Os resultados históricos de **11 testes** continuam documentados como evidência da versão anterior, não do estado atual. Na atualização de 05/11, a extensão foi verificada em cópia local Linux/Python 3.13.5, com **16 testes aprovados**; a validação em Windows segue pendente. Consulte [Evolução técnica](EVOLUCAO_TECNICA.md), [guia de execução](GUIA_EXECUCAO_E_ENTREGA.md), [relato](relato.txt) e [prompts](PROMPTS_REGISTRADOS.md). A IA original confirmada foi Gemini 1.5 Pro; a extensão é da revisão posterior com GPT-6.
+
