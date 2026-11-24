@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./style.css?v=2.0">
-<script src="./app.js?v=2.0" defer></script>
+<link rel="stylesheet" href="./style.css?v=3.0">
+<script src="./app.js?v=3.0" defer></script>
 </head>
 <body>
 <a href="#conteudo" class="skip">Pular para o conteúdo</a>
@@ -22,11 +22,11 @@
 <header class="site-header">
  <div class="container header-inner">
   <a class="brand" href="#inicio" aria-label="SecurePath, início"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M20 4 33 10v11c0 8-5.5 12.5-13 16-7.5-3.5-13-8-13-16V10L20 4Z" stroke="currentColor" stroke-width="2.5"/><path d="m14 20 4 4 9-9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>securepath<span class="brand-period">.</span></span></a>
-  <nav class="desktop-nav" aria-label="Navegação"><a href="#problema">O problema</a><a href="#como-funciona">Como funciona</a><a href="#demonstracao">Experimente</a><a href="#regras">Detecções</a><a href="#evidencias">Resultados</a></nav>
+  <nav class="desktop-nav" aria-label="Navegação"><a href="#video">Vídeo</a><a href="#problema">O problema</a><a href="#como-funciona">Como funciona</a><a href="#demonstracao">Experimente</a><a href="#regras">Detecções</a><a href="#evidencias">Resultados</a></nav>
   <a class="header-github" href="https://github.com/fernandomarquesaluno-svg/securepath-cli" target="_blank" rel="noopener noreferrer">Ver no GitHub <span aria-hidden="true">↗</span></a>
   <button class="menu-button" id="menu-button" aria-label="Abrir navegação" aria-expanded="false" aria-controls="mobile-nav" type="button"><span></span><span></span><span></span></button>
  </div>
- <nav class="mobile-nav" id="mobile-nav" aria-label="Navegação móvel" hidden><a href="#problema">O problema</a><a href="#como-funciona">Como funciona</a><a href="#demonstracao">Experimente</a><a href="#regras">Detecções</a><a href="#evidencias">Resultados</a><a href="#executar">Executar</a></nav>
+ <nav class="mobile-nav" id="mobile-nav" aria-label="Navegação móvel" hidden><a href="#video">Vídeo explicativo</a><a href="#problema">O problema</a><a href="#como-funciona">Como funciona</a><a href="#demonstracao">Experimente</a><a href="#regras">Detecções</a><a href="#evidencias">Resultados</a><a href="#executar">Executar</a></nav>
 </header>
 <main id="conteudo">
 <section class="hero" id="inicio">
@@ -37,7 +37,7 @@
    <h1>Seu código pode esconder <span class="hero-emphasis">mais do que bugs<span class="period">.</span></span></h1>
    <p class="hero-description">Uma senha esquecida. Um token em um arquivo. Uma chave que nunca deveria estar ali. <strong>O SecurePath CLI ajuda a encontrar esses indícios antes que se tornem um problema.</strong></p>
    <div class="hero-actions">
-    <a class="btn btn-primary" href="#demonstracao">Ver scanner em ação <span aria-hidden="true">↗</span></a>
+    <a class="btn btn-primary" href="#video">Assistir ao vídeo <span aria-hidden="true">↗</span></a>
     <a class="btn btn-text" href="#como-funciona">Entenda o funcionamento <span aria-hidden="true">↓</span></a>
    </div>
    <div class="hero-trust"><div class="trust-avatars" aria-hidden="true"><span>PY</span><span>CLI</span><span>RE</span></div><p><strong>Python puro.</strong> Execução local.<br>Sem bibliotecas de terceiros.</p></div>
@@ -61,6 +61,73 @@
 </section>
 <div class="marquee" aria-hidden="true"><div class="marquee-run"><span>LEIA SEU CÓDIGO</span><b>✳</b><span>IDENTIFIQUE INDÍCIOS</span><b>✳</b><span>PROTEJA SEUS SEGREDOS</span><b>✳</b><span>LEIA SEU CÓDIGO</span><b>✳</b><span>IDENTIFIQUE INDÍCIOS</span><b>✳</b><span>PROTEJA SEUS SEGREDOS</span><b>✳</b></div></div>
 
+
+<section class="section explainer-section" id="video" aria-labelledby="explainer-heading">
+ <div class="container">
+  <div class="section-head reveal">
+   <span class="overline"><span>▶</span> / VÍDEO EXPLICATIVO</span>
+   <h2 id="explainer-heading">Entenda o SecurePath <em>em movimento.</em></h2>
+   <p>Acompanhe uma explicação animada, com <strong>narração em português e legendas sincronizadas</strong>, desde o risco de expor senhas até o relatório do scanner.</p>
+  </div>
+  <div class="explainer-player reveal" id="explainer-player" aria-label="Apresentação animada e narrada do SecurePath CLI">
+   <div id="explainer-native" class="explainer-native" hidden><video id="explainer-mp4" controls playsinline preload="metadata" aria-label="Vídeo narrado do SecurePath CLI"><source src="./media/securepath-explainer.mp4" type="video/mp4"><track src="./media/securepath-ptbr.vtt" kind="subtitles" srclang="pt-BR" label="Português"></video></div>
+   <div class="explainer-screen" id="explainer-screen">
+    <div class="clip-top"><span><i class="clip-live-dot"></i> SECUREPATH / VIDEO EXPLAINER</span><span id="clip-topic">01 · O RISCO</span></div>
+    <div class="clip-visuals" aria-hidden="true">
+     <div class="clip-scene current" data-clip-scene="0">
+      <div class="clip-headline"><small>01 / O PROBLEMA</small><strong>Um segredo pode estar <em>escondido no código.</em></strong></div>
+      <div class="clip-code-panel"><span>config.py <b>●</b></span><code>host = "local"</code><code class="clip-alert-code">password = "••••••••"</code><code>debug = False</code><div class="clip-scan-line"></div></div>
+      <div class="clip-risk-badge"><span>!</span><b>RISCO</b></div>
+     </div>
+     <div class="clip-scene" data-clip-scene="1">
+      <div class="clip-headline"><small>02 / A SOLUÇÃO</small><strong>O scanner trabalha <em>localmente.</em></strong></div>
+      <div class="clip-files"><span>▤ <b>app.py</b></span><span>▤ <b>config.py</b></span><span>▤ <b>settings.env</b></span></div>
+      <div class="clip-stream"><i></i><i></i><i></i></div>
+      <div class="clip-shield"><span>✓</span><small>PYTHON</small></div>
+     </div>
+     <div class="clip-scene" data-clip-scene="2">
+      <div class="clip-headline"><small>03 / FILTRAGEM</small><strong>Primeiro, <em>selecionar os arquivos.</em></strong></div>
+      <div class="clip-filter"><span><b>✓</b> codigo.py <i>ANALISAR</i></span><span><b>×</b> node_modules/ <i>IGNORAR</i></span><span><b>×</b> arquivo_grande.bin <i>IGNORAR</i></span></div>
+     </div>
+     <div class="clip-scene" data-clip-scene="3">
+      <div class="clip-headline"><small>04 / DETECÇÃO</small><strong>Sete regras. <em>Busca por padrões.</em></strong></div>
+      <div class="clip-rules"><span>SEC001</span><span>SEC002</span><span>SEC003</span><span>SEC004</span><span>SEC005</span><span>SEC006</span><span>SEC007</span></div>
+      <div class="clip-magnifier"><div class="clip-magnifier-ring"></div><strong>⌕</strong></div>
+      <div class="clip-rule-label">AWS • TOKENS • SENHAS • CHAVES</div>
+     </div>
+     <div class="clip-scene" data-clip-scene="4">
+      <div class="clip-headline"><small>05 / RELATÓRIO</small><strong>Encontre o local. <em>Não exponha o valor.</em></strong></div>
+      <div class="clip-report"><div><span>[ALERTA]</span><b>configuracao.py:4</b></div><p>Categoria: Senha/segredo atribuído</p><div class="clip-hidden">Valor identificado <strong>••••••••••</strong></div></div>
+     </div>
+     <div class="clip-scene" data-clip-scene="5">
+      <div class="clip-headline"><small>06 / EVIDÊNCIAS</small><strong>Resultados de uma <em>amostra sintética.</em></strong></div>
+      <div class="clip-evidence"><div><strong>03</strong><span>ARQUIVOS</span></div><div><strong>04</strong><span>ALERTAS</span></div><div><strong>16</strong><span>TESTES</span></div></div>
+      <div class="clip-evidence-caption">Valores documentados no repositório · não representam precisão em dados reais.</div>
+     </div>
+     <div class="clip-scene" data-clip-scene="6">
+      <div class="clip-headline"><small>07 / CONCLUSÃO</small><strong>Um indício <em>não é um veredito.</em></strong></div>
+      <div class="clip-ending"><div class="clip-ending-mark"><span>✓</span></div><strong>SECUREPATH<span>.</span></strong><small>Analise localmente. Revise com responsabilidade.</small></div>
+     </div>
+    </div>
+    <div class="clip-subtitles" id="clip-subtitles" role="status" aria-live="off">
+      Clique em reproduzir para acompanhar a explicação narrada.
+    </div>
+    <div class="clip-start-overlay" id="clip-start-overlay">
+     <button type="button" id="clip-start" class="clip-start-btn" aria-label="Reproduzir apresentação com narração e legendas"><span>▶</span></button>
+     <strong>Assistir à explicação</strong><small>Áudio em português · Legendas disponíveis</small>
+    </div>
+   </div>
+   <div class="clip-controlbar">
+    <button type="button" class="clip-icon-btn" id="clip-toggle" aria-label="Reproduzir ou pausar"><span id="clip-play-icon">▶</span></button>
+    <button type="button" class="clip-icon-btn" id="clip-restart" aria-label="Reiniciar vídeo">↺</button>
+    <div class="clip-progress-area"><div class="clip-progress"><span id="clip-progress-fill"></span></div><div class="clip-progress-label"><span id="clip-progress-text">CENA 1 DE 7</span><span id="clip-state-label">PRONTO PARA REPRODUZIR</span></div></div>
+    <button type="button" id="clip-voice" class="clip-pill-btn" aria-pressed="true" aria-label="Ativar ou desativar narração"><span id="clip-voice-icon">♫</span> Narração</button>
+    <button type="button" id="clip-captions" class="clip-pill-btn selected" aria-pressed="true" aria-label="Ativar ou desativar legendas">CC</button>
+   </div>
+  </div>
+  <div class="clip-note reveal"><span>ⓘ</span> O player usa animações e <strong>narração por voz do navegador</strong>, com legendas em português. Quando o MP4 for hospedado neste repositório, o player convencional o substituirá automaticamente.</div>
+ </div>
+</section>
 <section class="section problem-section" id="problema">
  <div class="container">
   <div class="section-head reveal"><span class="overline"><span>01</span> / POR QUE ISSO IMPORTA?</span><h2>O perigo nem sempre está <em>onde você olha.</em></h2><p>Credenciais podem acabar no código durante testes e configurações. Se forem publicadas, podem expor serviços, dados ou ambientes. O SecurePath foi criado para tornar esses indícios mais fáceis de perceber.</p></div>
@@ -162,6 +229,6 @@ python3 artefatos.py demonstracao</pre></div>
  </div>
 </section>
 </main>
-<footer class="site-footer"><div class="container footer-main"><div><a class="brand" href="#inicio"><span class="brand-mark small">✓</span><span>securepath<span class="brand-period">.</span></span></a><p>Artefato acadêmico de cibersegurança desenvolvido com assistência de IA. Página explicativa, sem análise de arquivos reais no navegador.</p></div><div class="footer-links"><a href="#problema">O problema</a><a href="#como-funciona">Funcionamento</a><a href="#demonstracao">Demonstração</a><a href="#evidencias">Evidências</a><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli" target="_blank" rel="noopener noreferrer">Código no GitHub ↗</a></div></div><div class="container footer-bottom"><span>SECUREPATH CLI · PROJETO EDUCACIONAL</span><span>FEITO PARA TORNAR SEGURANÇA MAIS COMPREENSÍVEL</span><a href="#inicio">Voltar ao início ↑</a></div></footer>
+<footer class="site-footer"><div class="container footer-main"><div><a class="brand" href="#inicio"><span class="brand-mark small">✓</span><span>securepath<span class="brand-period">.</span></span></a><p>Artefato acadêmico de cibersegurança desenvolvido com assistência de IA. Página explicativa, sem análise de arquivos reais no navegador.</p></div><div class="footer-links"><a href="#video">Vídeo animado</a><a href="#problema">O problema</a><a href="#como-funciona">Funcionamento</a><a href="#demonstracao">Demonstração</a><a href="#evidencias">Evidências</a><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli" target="_blank" rel="noopener noreferrer">Código no GitHub ↗</a></div></div><div class="container footer-bottom"><span>SECUREPATH CLI · PROJETO EDUCACIONAL</span><span>FEITO PARA TORNAR SEGURANÇA MAIS COMPREENSÍVEL</span><a href="#inicio">Voltar ao início ↑</a></div></footer>
 </body>
 </html>
