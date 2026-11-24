@@ -19,3 +19,6 @@ Para executar o código real de análise, use `artefatos.py` localmente. O víde
 ## Narração neural revisada
 
 Envie a faixa de áudio WAV de 62,013 s gerada em voz Afonso (pt-BR) como `securepath-narracao-natural.wav` nesta pasta. As sete cenas serão sincronizadas com a faixa. O vídeo convencional revisado, se produzido, deve ter o nome `securepath-explainer-natural.mp4`, acompanhado das legendas `securepath-natural-ptbr.vtt`. A versão original não é mais selecionada automaticamente.
+
+
+A versão neural usa primeiro a mídia publicada em `securepath-narracao-natural.wav`, com a origem do áudio aprovado como alternativa. As legendas e as cenas são sincronizadas com os tempos reais da fala. A cópia local será verificada com SHA-256 antes de ser armazenada.

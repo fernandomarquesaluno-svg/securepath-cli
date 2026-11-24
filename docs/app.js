@@ -261,16 +261,21 @@ renderStep(0);renderRules();resetDemo();updateProgress();
  recordedVoice.preload='metadata';
  const voicePath='./media/securepath-narracao-natural.wav';
  const sceneStarts=[0,7.218,15.794,24.419,34.807,43.042,51.68];
+ const neuralCues=[[0.256,4.309,"Uma senha esquecida no código pode abrir caminho para acessos indevidos."],[4.736,6.741,"Como encontrar esse risco antes de publicar?"],[7.218,11.016,"O SecurePath CLI analisa arquivos e pastas locais,"],[11.442,13.149,"sem enviar seu conteúdo à rede."],[13.746,15.325,"Foi desenvolvido em Python puro."],[15.794,19.317,"Você informa um caminho. O scanner percorre os arquivos"],[19.445,23.84,"e ignora links simbólicos, pastas excluídas e arquivos grandes."],[24.419,29.411,"Depois, sete regras buscam indícios de tokens, chaves AWS,"],[29.88,32.312,"cabeçalhos privados e senhas atribuídas."],[32.824,34.318,"Tudo por expressões regulares."],[34.807,38.903,"Ao encontrar um padrão, ele mostra arquivo, linha e categoria."],[39.287,42.573,"O valor da possível credencial não aparece no relatório."],[43.042,46.925,"Na demonstração sintética, três arquivos geraram quatro alertas."],[47.456,51.21,"O projeto também documenta dezesseis testes aprovados em Linux."],[51.68,55.861,"Atenção: padrões suspeitos não confirmam segredos válidos."],[56.443,61.478,"Conheça o código e execute o SecurePath apenas nos seus arquivos autorizados."]];
  let recordingAvailable=false,recordingPlaying=false;
  const stopRecording=()=>{recordingPlaying=false;recordedVoice.pause()};
- fetch(voicePath,{method:'HEAD',cache:'no-cache'}).then(r=>{
-  if(!r.ok)return;
-  recordedVoice.src=voicePath;
-  recordedVoice.addEventListener('canplay',()=>{
-   recordingAvailable=true;
-   if(!playing)stateLabel.textContent='NARRAÇÃO GRAVADA DISPONÍVEL';
-  },{once:true});
+ const approvedRecordingURL='https://resource2.heygen.ai/text_to_speech/7174ce40798a4bcbbc0b17ae688dad49/9ce5f601f9e04382bb26141d5a3f839d/id=d2f9c659a4e84182b7e5a42508e51b6b.wav';
+ const useRecording=(src)=>{
+  recordedVoice.src=src;
+  recordingAvailable=true;
+  if(!playing)stateLabel.textContent='NARRAÇÃO GRAVADA DISPONÍVEL';
   recordedVoice.load();
+ };
+ // Prefer the copy hosted by GitHub Pages; use the approved recording's
+ // original media URL until the verified local copy is available.
+ useRecording(approvedRecordingURL);
+ fetch(voicePath,{method:'HEAD',cache:'no-cache'}).then(r=>{
+  if(r.ok&&!recordingPlaying)useRecording(voicePath);
  }).catch(()=>{});
  recordedVoice.addEventListener('timeupdate',()=>{
   if(!recordingPlaying)return;
@@ -312,7 +317,7 @@ renderStep(0);renderRules();resetDemo();updateProgress();
  function draw(){
   $$('.clip-scene',player).forEach((el,i)=>el.classList.toggle('current',i===sceneIndex));
   title.textContent=current().topic;
-  caption.textContent=current().speech;
+  caption.textContent=recordingPlaying?(neuralCues.find(c=>recordedVoice.currentTime>=c[0]&&recordedVoice.currentTime<=c[1])?.[2]||''):current().speech;
   caption.hidden=!captionsEnabled;
   $('#clip-progress-text').textContent='CENA '+(sceneIndex+1)+' DE '+scenes.length;
   progress.style.width=(((sceneIndex+Math.min(.98,sceneProgress))/scenes.length)*100).toFixed(2)+'%';
