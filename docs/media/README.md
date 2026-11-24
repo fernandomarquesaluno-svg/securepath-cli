@@ -22,3 +22,8 @@ Envie a faixa de áudio WAV de 62,013 s gerada em voz Afonso (pt-BR) como `secur
 
 
 A versão neural usa primeiro a mídia publicada em `securepath-narracao-natural.wav`, com a origem do áudio aprovado como alternativa. As legendas e as cenas são sincronizadas com os tempos reais da fala. A cópia local será verificada com SHA-256 antes de ser armazenada.
+
+
+## Vídeo ampliado — 24/11/2026
+
+A apresentação no site preserva a faixa aprovada de 62,013 s e adiciona 38,808 s de narração Afonso (pt-BR), com quatro cenas novas. O áudio adicional é `securepath-narracao-evolucao.wav`; a legenda unificada está em `securepath-v2-ptbr.vtt`. A duração total é aproximadamente 1:41. O player HTML usa as duas faixas gravadas e não substitui a voz por síntese do navegador. Um MP4 revisado, se publicado, deve usar o nome `securepath-explainer-v2.mp4`.

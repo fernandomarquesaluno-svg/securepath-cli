@@ -1,0 +1,32 @@
+name: Armazenar narração da evolução
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/cache-evolution-narration.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  cache:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Baixar e validar a faixa complementar autorizada
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/media
+          curl --fail --location --retry 2 --max-time 90 'https://resource2.heygen.ai/text_to_speech/7174ce40798a4bcbbc0b17ae688dad49/9ce5f601f9e04382bb26141d5a3f839d/id=2f8d8c07b32145c78c8c72b735dcb6b7.wav' -o docs/media/securepath-narracao-evolucao.wav
+          python - <<'PY'
+          import wave
+          with wave.open('docs/media/securepath-narracao-evolucao.wav', 'rb') as f:
+              duration = f.getnframes() / f.getframerate()
+              assert abs(duration - 38.8084) < 0.1, duration
+              print(f'Faixa WAV validada: {duration:.3f}s')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/media/securepath-narracao-evolucao.wav
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'media: armazenar narração da evolução do SecurePath'
+          git push origin HEAD:main

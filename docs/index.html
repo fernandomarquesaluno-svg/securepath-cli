@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./style.css?v=4.0">
-<script src="./app.js?v=4.0" defer></script>
+<link rel="stylesheet" href="./style.css?v=5.0">
+<script src="./app.js?v=5.0" defer></script>
 </head>
 <body>
 <a href="#conteudo" class="skip">Pular para o conteúdo</a>
@@ -67,10 +67,10 @@
   <div class="section-head reveal">
    <span class="overline"><span>▶</span> / VÍDEO EXPLICATIVO</span>
    <h2 id="explainer-heading">Entenda o SecurePath <em>em movimento.</em></h2>
-   <p>Acompanhe uma explicação animada, com <strong>narração em português e legendas sincronizadas</strong>, desde o risco de expor senhas até o relatório do scanner. O vídeo registra a versão anterior. <a class="evo-source" href="#evolucao">Veja as novidades da versão atual ↗</a></p>
+   <p>Acompanhe uma explicação animada, com <strong>narração em português e legendas sincronizadas</strong>, desde o risco de expor senhas até o relatório do scanner. A versão ampliada inclui a evolução técnica de 24/11/2026, com 69 testes registrados como aprovados. <a class="evo-source" href="#evolucao">Explore os novos recursos ↗</a></p>
   </div>
   <div class="explainer-player reveal" id="explainer-player" aria-label="Apresentação animada e narrada do SecurePath CLI">
-   <div id="explainer-native" class="explainer-native" hidden><video id="explainer-mp4" controls playsinline preload="metadata" aria-label="Vídeo narrado do SecurePath CLI"><source src="./media/securepath-explainer-natural.mp4" type="video/mp4"><track src="./media/securepath-natural-ptbr.vtt" kind="subtitles" srclang="pt-BR" label="Português"></video></div>
+   <div id="explainer-native" class="explainer-native" hidden><video id="explainer-mp4" controls playsinline preload="none" aria-label="Vídeo atualizado do SecurePath CLI"><source src="./media/securepath-explainer-v2.mp4" type="video/mp4"><track src="./media/securepath-v2-ptbr.vtt" kind="subtitles" srclang="pt-BR" label="Português"></video></div>
    <div class="explainer-screen" id="explainer-screen">
     <div class="clip-top"><span><i class="clip-live-dot"></i> SECUREPATH / VIDEO EXPLAINER</span><span id="clip-topic">01 · O RISCO</span></div>
     <div class="clip-visuals" aria-hidden="true">
@@ -90,7 +90,7 @@
       <div class="clip-filter"><span><b>✓</b> codigo.py <i>ANALISAR</i></span><span><b>×</b> node_modules/ <i>IGNORAR</i></span><span><b>×</b> arquivo_grande.bin <i>IGNORAR</i></span></div>
      </div>
      <div class="clip-scene" data-clip-scene="3">
-      <div class="clip-headline"><small>04 / DETECÇÃO</small><strong>Sete regras. <em>Busca por padrões.</em></strong></div>
+      <div class="clip-headline"><small>04 / DETECÇÃO</small><strong>Sete regras nativas. <em>Busca por padrões.</em></strong></div>
       <div class="clip-rules"><span>SEC001</span><span>SEC002</span><span>SEC003</span><span>SEC004</span><span>SEC005</span><span>SEC006</span><span>SEC007</span></div>
       <div class="clip-magnifier"><div class="clip-magnifier-ring"></div><strong>⌕</strong></div>
       <div class="clip-rule-label">AWS • TOKENS • SENHAS • CHAVES</div>
@@ -100,13 +100,34 @@
       <div class="clip-report"><div><span>[ALERTA]</span><b>configuracao.py:4</b></div><p>Categoria: Senha/segredo atribuído</p><div class="clip-hidden">Valor identificado <strong>••••••••••</strong></div></div>
      </div>
      <div class="clip-scene" data-clip-scene="5">
-      <div class="clip-headline"><small>06 / EVIDÊNCIAS</small><strong>Resultados de uma <em>amostra sintética.</em></strong></div>
-      <div class="clip-evidence"><div><strong>03</strong><span>ARQUIVOS</span></div><div><strong>04</strong><span>ALERTAS</span></div><div><strong>16</strong><span>TESTES</span></div></div>
-      <div class="clip-evidence-caption">Valores documentados no repositório · não representam precisão em dados reais.</div>
+      <div class="clip-headline"><small>06 / VALIDAÇÃO HISTÓRICA</small><strong>Resultados de uma <em>amostra sintética.</em></strong></div>
+      <div class="clip-evidence"><div><strong>03</strong><span>ARQUIVOS</span></div><div><strong>04</strong><span>ALERTAS</span></div><div><strong>16</strong><span>TESTES ANTERIORES</span></div></div>
+      <div class="clip-evidence-caption">Valores históricos documentados no repositório · não representam precisão em dados reais.</div>
      </div>
      <div class="clip-scene" data-clip-scene="6">
-      <div class="clip-headline"><small>07 / CONCLUSÃO</small><strong>Um indício <em>não é um veredito.</em></strong></div>
+      <div class="clip-headline"><small>07 / LIMITE DA DETECÇÃO</small><strong>Um indício <em>não é um veredito.</em></strong></div>
       <div class="clip-ending"><div class="clip-ending-mark"><span>✓</span></div><strong>SECUREPATH<span>.</span></strong><small>Analise localmente. Revise com responsabilidade.</small></div>
+     </div>
+
+     <div class="clip-scene" data-clip-scene="7">
+      <div class="clip-headline"><small>08 / EVOLUÇÃO · PARALELISMO</small><strong>Mais arquivos, <em>em paralelo.</em></strong></div>
+      <div class="clip-upgrade-flow"><div class="clip-upgrade-input"><small>ARQUIVOS</small><span>▤</span><span>▤</span><span>▤</span></div><div class="clip-upgrade-arrow">→</div><div class="clip-upgrade-queue"><small>FILA LIMITADA</small><b>2 × workers</b><div><i></i><i></i><i></i><i></i></div></div><div class="clip-upgrade-arrow">→</div><div class="clip-upgrade-threads"><small>ATÉ 64 THREADS</small><div><i style="--delay:0s"></i><i style="--delay:-0.18s"></i><i style="--delay:-0.36s"></i><i style="--delay:-0.54s"></i><i style="--delay:-0.72s"></i><i style="--delay:-0.8999999999999999s"></i><i style="--delay:-1.08s"></i><i style="--delay:-1.26s"></i><i style="--delay:-1.44s"></i><i style="--delay:-1.6199999999999999s"></i><i style="--delay:-1.7999999999999998s"></i><i style="--delay:-1.98s"></i></div></div></div>
+      <div class="clip-upgrade-foot">Processamento concorrente · benefício esperado, não medido</div>
+     </div>
+     <div class="clip-scene" data-clip-scene="8">
+      <div class="clip-headline"><small>09 / CONFIGURAÇÃO</small><strong>Personalize <em>cada varredura.</em></strong></div>
+      <div class="clip-config-grid"><div><small>REGRAS EXTERNAS</small><strong>7 + até 100</strong><code>--rules-file regras.json</code><div class="clip-config-json">{ "rules": [ … ] }</div></div><div><small>EXCLUSÕES</small><strong>Por diretório</strong><code>--exclude-dir generated</code><div class="clip-config-skip">× generated/ · ignorado</div></div></div>
+      <div class="clip-upgrade-foot">Sem modificar o núcleo Python · regras de fontes confiáveis</div>
+     </div>
+     <div class="clip-scene" data-clip-scene="9">
+      <div class="clip-headline"><small>10 / VALIDAÇÃO ATUAL</small><strong>Uma suíte <em>mais abrangente.</em></strong></div>
+      <div class="clip-test-growth"><div><strong>19</strong><small>TESTES ANTERIORES</small></div><span>+</span><div><strong>50</strong><small>CASOS DE CONFIGURAÇÃO</small></div><span>=</span><div class="clip-test-total"><strong>69</strong><small>APROVADOS*</small></div></div>
+      <div class="clip-test-bar"><i></i><i></i></div><div class="clip-upgrade-foot">*Execução local registrada na documentação · não é benchmark nem resultado de CI</div>
+     </div>
+     <div class="clip-scene" data-clip-scene="10">
+      <div class="clip-headline"><small>11 / ROADMAP</small><strong>Próximos passos: <em>medir e integrar.</em></strong></div>
+      <div class="clip-roadmap"><div><span>01</span><b>Desempenho</b><small>Tempo e memória</small></div><div><span>02</span><b>Qualidade</b><small>Precisão e recall</small></div><div><span>03</span><b>Integração</b><small>CI/CD e pre-commit</small></div></div>
+      <div class="clip-upgrade-foot">Propostas futuras · ganhos ainda não demonstrados</div>
      </div>
     </div>
     <div class="clip-subtitles" id="clip-subtitles" role="status" aria-live="off">
@@ -114,18 +135,18 @@
     </div>
     <div class="clip-start-overlay" id="clip-start-overlay">
      <button type="button" id="clip-start" class="clip-start-btn" aria-label="Reproduzir apresentação com narração e legendas"><span>▶</span></button>
-     <strong>Assistir à explicação</strong><small>Áudio em português · Legendas disponíveis</small>
+     <strong>Assistir à explicação</strong><small>1 min 41 s · Voz Afonso · Legendas em português</small>
     </div>
    </div>
    <div class="clip-controlbar">
     <button type="button" class="clip-icon-btn" id="clip-toggle" aria-label="Reproduzir ou pausar"><span id="clip-play-icon">▶</span></button>
     <button type="button" class="clip-icon-btn" id="clip-restart" aria-label="Reiniciar vídeo">↺</button>
-    <div class="clip-progress-area"><div class="clip-progress"><span id="clip-progress-fill"></span></div><div class="clip-progress-label"><span id="clip-progress-text">CENA 1 DE 7</span><span id="clip-state-label">PRONTO PARA REPRODUZIR</span></div></div>
+    <div class="clip-progress-area"><div class="clip-progress"><span id="clip-progress-fill"></span></div><div class="clip-progress-label"><span id="clip-progress-text">CENA 1 DE 11</span><span id="clip-state-label">PRONTO PARA REPRODUZIR</span></div></div>
     <button type="button" id="clip-voice" class="clip-pill-btn" aria-pressed="true" aria-label="Ativar ou desativar narração"><span id="clip-voice-icon">♫</span> Narração</button>
     <button type="button" id="clip-captions" class="clip-pill-btn selected" aria-pressed="true" aria-label="Ativar ou desativar legendas">CC</button>
    </div>
   </div>
-  <div class="clip-note reveal"><span>ⓘ</span> O player inclui animações e legendas em português. Usa a narração gravada quando disponível no repositório e, como alternativa, a voz do navegador.</div>
+  <div class="clip-note reveal"><span>ⓘ</span> Versão ampliada · 11 cenas · narração neural Afonso em português brasileiro. A faixa original foi preservada e o novo capítulo usa a mesma voz. Se o áudio não estiver disponível, a reprodução mantém as legendas, sem substituí-lo pela voz robótica.</div>
  </div>
 </section>
 <section class="section problem-section" id="problema">
@@ -215,7 +236,7 @@
 
 <section class="section evolution-section" id="evolucao" aria-labelledby="evolution-heading">
  <div class="container">
-  <div class="section-head reveal"><span class="overline"><span>↗</span> / ADENDO · 24/11/2026</span><h2 id="evolution-heading">O artefato <em>continua evoluindo.</em></h2><p>A versão apresentada no vídeo permanece como registro da etapa anterior. A revisão mais recente amplia a capacidade de analisar projetos maiores e adaptar o scanner às necessidades de cada organização, sem abandonar o funcionamento local.</p><a class="evo-source" href="https://github.com/fernandomarquesaluno-svg/securepath-cli/commit/f2cb2597ac1ece010c6611c138f250ca5e67e565" target="_blank" rel="noopener noreferrer">Consultar a evolução no código-fonte ↗</a></div>
+  <div class="section-head reveal"><span class="overline"><span>↗</span> / ADENDO · 24/11/2026</span><h2 id="evolution-heading">O artefato <em>continua evoluindo.</em></h2><p>O vídeo inclui a apresentação original e um capítulo narrado sobre esta evolução. A revisão mais recente amplia a capacidade de analisar projetos maiores e adaptar o scanner às necessidades de cada organização, sem abandonar o funcionamento local.</p><a class="evo-source" href="https://github.com/fernandomarquesaluno-svg/securepath-cli/commit/f2cb2597ac1ece010c6611c138f250ca5e67e565" target="_blank" rel="noopener noreferrer">Consultar a evolução no código-fonte ↗</a></div>
   <div class="evo-kpis reveal">
    <div><span>REGRAS NATIVAS</span><strong>07</strong><small>preservadas</small></div>
    <div><span>REGRAS ADICIONAIS</span><strong>100</strong><small>limite por JSON</small></div>
