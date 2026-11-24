@@ -161,7 +161,7 @@ python artefatos.py teste.txt
 python artefatos.py teste.txt --fail-on-findings
 ```
 
-**Resultados esperados na versão atual:** 16 casos de teste (no Windows, o caso de FIFO pode ser marcado como `skipped`), 5 alertas no `teste.txt` e 0 erros de I/O. No último comando, a saída é a mesma, mas o processo termina com código `1`, intencionalmente.
+**Resultados esperados na versão de 05/11/2026 (histórico):** 16 casos de teste (no Windows, o caso de FIFO pode ser marcado como `skipped`), 5 alertas no `teste.txt` e 0 erros de I/O. No último comando, a saída é a mesma, mas o processo termina com código `1`, intencionalmente.
 
 A suíte cobre: achados sintéticos e não exposição do conteúdo; arquivo limpo; arquivo binário com NUL; leitura de texto fora de UTF-8; arquivo acima do limite; exclusão de `.git`; erro de permissão simulado; caminho inexistente; erro simulado de travessia de diretório com continuação; FIFO e link simbólico; saída JSON, tipos adicionais de credenciais, controles negativos e compatibilidade da saída textual. O teste de permissões **simula** a exceção e não equivale a um teste de ACL real em todos os sistemas operacionais.
 
@@ -234,7 +234,7 @@ O relato diferencia anotações históricas de evidência desta revisão. O alun
 
 ## Atualização funcional — 05/11/2026
 
-A versão mais recente amplia o scanner para **sete regras heurísticas (SEC001–SEC007)** e **16 testes automatizados**. Acrescenta identificadores AWS temporários (`ASIA`), tokens GitHub clássicos (`ghp_`) e cabeçalhos de chave privada PEM/OpenSSH, sem alterar os padrões anteriores. Há também um formato estruturado de relatório JSON, que inclui categoria, caminho, linha e ID da regra, **sem revelar o valor detectado**.
+A versão de 05/11/2026 ampliou o scanner para **sete regras heurísticas (SEC001–SEC007)** e **16 testes automatizados**. Acrescenta identificadores AWS temporários (`ASIA`), tokens GitHub clássicos (`ghp_`) e cabeçalhos de chave privada PEM/OpenSSH, sem alterar os padrões anteriores. Há também um formato estruturado de relatório JSON, que inclui categoria, caminho, linha e ID da regra, **sem revelar o valor detectado**.
 
 ```bash
 python -m unittest discover -s tests -v
@@ -247,3 +247,13 @@ A pasta `demonstracao/` contém somente dados artificiais: **4 alertas esperados
 
 Os resultados históricos de **11 testes** continuam documentados como evidência da versão anterior, não do estado atual. Na atualização de 05/11, a extensão foi verificada em cópia local Linux/Python 3.13.5, com **16 testes aprovados**; a validação em Windows segue pendente. Consulte [Evolução técnica](EVOLUCAO_TECNICA.md), [guia de execução](GUIA_EXECUCAO_E_ENTREGA.md), [relato](relato.txt) e [prompts](PROMPTS_REGISTRADOS.md). A IA original confirmada foi Gemini 1.5 Pro; a extensão é da revisão posterior com GPT-6.
 
+
+
+## Revisão para a Tarefa 11
+
+O site registra 69 testes aprovados na execução local de 24/11/2026 (19 anteriores e 50 adicionais). Esse registro não equivale a uma execução nova ou a validação em Windows. Reproduza com `python -m unittest discover -s tests -v`.
+
+- [Scanner web local](docs/scanner.html): implementação JavaScript das sete regras nativas, sem upload. Não equivale à CLI Python e não suporta regras externas, diretórios ou histórico Git.
+- Benchmark sintético: `python benchmark_securepath.py --files 200 --rounds 5`. Mede tempo mediano e throughput para 1, 4 e 8 workers, além de precisão, recall e F1 por linha no corpus artificial. O corpus repete padrões conhecidos, portanto não representa precisão em repositórios reais. Nenhum resultado experimental novo é reivindicado até a execução.
+- A comparação empírica com Gitleaks e TruffleHog permanece pendente: usar o mesmo corpus rotulado, fixar versões, registrar configurações e tempos, desabilitar verificações externas quando aplicável e comparar no mesmo nível de análise. As ferramentas têm escopos e regras diferentes; não assumir equivalência ou superioridade.
+- O vídeo de encerramento do semestre será produzido somente após a validação dos artefatos e do portfólio.
