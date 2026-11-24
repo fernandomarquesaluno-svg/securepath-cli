@@ -1,0 +1,40 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.403
+Uma senha esquecida no código pode abrir caminho para acessos indevidos.
+
+00:00:05.543 --> 00:00:09.122
+Como encontrar esse risco antes de publicar?
+
+00:00:09.262 --> 00:00:17.398
+O SecurePath CLI analisa arquivos e pastas locais, sem enviar seu conteúdo à rede.
+
+00:00:17.538 --> 00:00:20.446
+Foi desenvolvido em Python puro.
+
+00:00:20.586 --> 00:00:30.250
+Você informa um caminho. O scanner percorre os arquivos e ignora links simbólicos, pastas excluídas e arquivos grandes.
+
+00:00:30.390 --> 00:00:39.193
+Depois, sete regras buscam indícios de tokens, chaves AWS, cabeçalhos privados e senhas atribuídas.
+
+00:00:39.333 --> 00:00:42.036
+Tudo por expressões regulares.
+
+00:00:42.176 --> 00:00:47.358
+Ao encontrar um padrão, ele mostra arquivo, linha e categoria.
+
+00:00:47.498 --> 00:00:51.893
+O valor da possível credencial não aparece no relatório.
+
+00:00:52.033 --> 00:00:57.585
+Na demonstração sintética, três arquivos geraram quatro alertas.
+
+00:00:57.725 --> 00:01:02.931
+O projeto também documenta dezesseis testes aprovados em Linux.
+
+00:01:03.071 --> 00:01:08.273
+Atenção: padrões suspeitos não confirmam segredos válidos.
+
+00:01:08.413 --> 00:01:14.526
+Conheça o código e execute o SecurePath apenas nos seus arquivos autorizados.
