@@ -57,7 +57,7 @@
    <div class="floating-tag tag-right"><span class="tag-circle danger">!</span> Valores protegidos</div>
   </div>
  </div>
- <div class="container hero-metrics rise"><div><strong>07</strong><p>regras implementadas<br><small>SEC001 a SEC007</small></p></div><div><strong>19</strong><p>testes definidos<br><small>16 aprovados na revisão anterior</small></p></div><div><strong>0</strong><p>dependências de terceiros<br><small>somente Python padrão</small></p></div><div><strong>100<span>%</span></strong><p>análise local<br><small>sem upload de arquivos</small></p></div></div>
+ <div class="container hero-metrics rise"><div><strong>07</strong><p>regras implementadas<br><small>SEC001 a SEC007</small></p></div><div><strong>69</strong><p>testes automatizados<br><small>69 aprovados na suíte local</small></p></div><div><strong>0</strong><p>dependências de terceiros<br><small>somente Python padrão</small></p></div><div><strong>100<span>%</span></strong><p>análise local<br><small>sem upload de arquivos</small></p></div></div>
 </section>
 <div class="marquee" aria-hidden="true"><div class="marquee-run"><span>LEIA SEU CÓDIGO</span><b>✳</b><span>IDENTIFIQUE INDÍCIOS</span><b>✳</b><span>PROTEJA SEUS SEGREDOS</span><b>✳</b><span>LEIA SEU CÓDIGO</span><b>✳</b><span>IDENTIFIQUE INDÍCIOS</span><b>✳</b><span>PROTEJA SEUS SEGREDOS</span><b>✳</b></div></div>
 
@@ -220,7 +220,7 @@
    <div><span>REGRAS NATIVAS</span><strong>07</strong><small>preservadas</small></div>
    <div><span>REGRAS ADICIONAIS</span><strong>100</strong><small>limite por JSON</small></div>
    <div><span>WORKERS</span><strong>64</strong><small>máximo configurável</small></div>
-   <div><span>TESTES DEFINIDOS</span><strong>19</strong><small>16 anteriores + 3 novos</small></div>
+   <div><span>TESTES APROVADOS</span><strong>69</strong><small>19 anteriores + 50 novos</small></div>
   </div>
   <div class="evo-label reveal"><span>01 / IMPLEMENTADO</span><h3>Três novas capacidades</h3><p>Recursos presentes no código atual, com benefícios esperados — ainda sem benchmark de desempenho.</p></div>
   <div class="evo-feature-grid">
@@ -243,12 +243,12 @@
   <div class="evo-timeline reveal">
    <article><span class="evo-date">28/10/2026</span><h4>Primeira implementação</h4><p>Scanner de credenciais com expressões regulares.</p></article>
    <article><span class="evo-date">05–06/11/2026</span><h4>Revisão e evidências</h4><p>Sete regras, relatório JSON e registro de 16 testes aprovados em Codespaces.</p></article>
-   <article class="evo-latest"><span class="evo-date">24/11/2026</span><h4>Expansão configurável</h4><p>Paralelismo, regras externas e exclusões adicionais; três novos testes no repositório.</p><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli/commit/7b5d22e7b7b290b345c6e22a119e5be4393253a7" target="_blank" rel="noopener noreferrer">Ver revisão de testes ↗</a></article>
+   <article class="evo-latest"><span class="evo-date">24/11/2026</span><h4>Expansão configurável</h4><p>Paralelismo, regras externas e exclusões adicionais; mais 50 casos de teste, totalizando 69 aprovados na execução local.</p><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli/commit/fc59324108450a34f8620213735f275408e04e30" target="_blank" rel="noopener noreferrer">Ver revisão de testes ↗</a></article>
   </div>
-  <div class="evo-validation reveal"><strong>19 testes definidos ≠ 19 testes aprovados</strong><p>Os três novos testes verificam a preservação e ordenação dos achados no modo paralelo, a detecção de uma regra externa e a exclusão de um diretório adicional. A execução da suíte ampliada ainda precisa de evidência registrada. A validação histórica de 16/16 continua separada.</p><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli/blob/7b5d22e7b7b290b345c6e22a119e5be4393253a7/tests/test_artefatos.py" target="_blank" rel="noopener noreferrer">Consultar os testes atuais ↗</a></div>
+  <div class="evo-validation reveal"><strong>69 testes executados: 69 aprovados.</strong><p>A bateria inclui os testes anteriores e 50 novos casos para validação de regras personalizadas válidas e inválidas, limites e padrões configuráveis. A suíte foi executada localmente; não é um resultado de CI nem substitui testes em outros sistemas operacionais.</p><a href="https://github.com/fernandomarquesaluno-svg/securepath-cli/blob/main/tests/test_bateria_adicional.py" target="_blank" rel="noopener noreferrer">Consultar os testes atuais ↗</a></div>
   <div class="evo-label reveal"><span>04 / PROPOSTAS DE EVOLUÇÃO</span><h3>Próximos passos recomendados</h3><p>Planejamento sugerido a partir da revisão do código. Não são funcionalidades implementadas nem compromissos de prazo.</p></div>
   <div class="evo-roadmap reveal">
-   <article><span class="evo-phase">ETAPA 01 · VALIDAR</span><h4>Testes e integração contínua</h4><p>Executar e registrar os 19 testes em Linux e Windows; ampliar cenários de erros, regras inválidas e concorrência.</p><small>Critério: resultados reproduzíveis por ambiente.</small></article>
+   <article><span class="evo-phase">ETAPA 01 · VALIDAR</span><h4>Testes e integração contínua</h4><p>Executar os 69 testes em Windows e em CI; ampliar cenários de erros e comportamento concorrente.</p><small>Critério: resultados reproduzíveis por ambiente.</small></article>
    <article><span class="evo-phase">ETAPA 02 · MEDIR</span><h4>Benchmark de escalabilidade</h4><p>Comparar 1, 2, 4 e 8 workers em conjuntos sintéticos equivalentes, com repetição, tempo, memória de pico e achados consistentes.</p><small>Critério: medir ganho real, sem prometer aceleração.</small></article>
    <article><span class="evo-phase">ETAPA 03 · QUALIFICAR</span><h4>Precisão e robustez</h4><p>Construir um conjunto rotulado, medir precisão e recall, avaliar regras custosas e reduzir falsos positivos. Considerar limites de execução para regex externas.</p><small>Critério: métricas documentadas e casos negativos.</small></article>
    <article><span class="evo-phase">ETAPA 04 · INTEGRAR</span><h4>Fluxo de engenharia de software</h4><p>Integrar ao CI e ao pre-commit, oferecer SARIF e avaliar análise de mudanças e histórico Git de forma autorizada. Estudar saída incremental para grandes volumes de alertas.</p><small>Critério: integração auditável e controle de regressões.</small></article>
