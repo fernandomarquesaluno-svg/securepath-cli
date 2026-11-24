@@ -185,8 +185,38 @@ class SecurePathTests(unittest.TestCase):
         self.assertIn("[ALERTA]", output)
         self.assertIn("alertas=5", output)
         self.assertNotIn('"schema_version"', output)
+    def test_parallel_scan_preserves_findings_and_redacts_values(self):
+        (self.root / "a.txt").write_text("password = 'synthetic-a'\n", encoding="utf-8")
+        (self.root / "b.txt").write_text("secret = 'synthetic-b'\n", encoding="utf-8")
+        code, output, _ = self.run_cli(self.root, "--workers", "3", "--format", "json")
+        report = json.loads(output)
+        self.assertEqual(code, 0)
+        self.assertEqual(report["summary"]["findings"], 2)
+        self.assertEqual([r["path"] for r in report["findings"]], [str(self.root / "a.txt"), str(self.root / "b.txt")])
+        self.assertNotIn("synthetic-a", output)
+        self.assertNotIn("synthetic-b", output)
+
+    def test_custom_rules_file_detects_pattern_without_revealing_value(self):
+        source = self.root / "app.txt"
+        source.write_text("api = 'corp_" + "a" * 32 + "'\n", encoding="utf-8")
+        config = self.root / "rules.json"
+        config.write_text(json.dumps({"rules": [{"id": "ORG001", "category": "Token interno", "pattern": r"\bcorp_[A-Za-z0-9]{32}\b", "flags": []}]}), encoding="utf-8")
+        code, output, _ = self.run_cli(source, "--rules-file", config, "--format", "json")
+        self.assertEqual(code, 0)
+        self.assertEqual(json.loads(output)["findings"][0]["rule_id"], "ORG001")
+        self.assertNotIn("corp_", output)
+
+    def test_custom_excluded_directory_is_not_scanned(self):
+        excluded = self.root / "generated"
+        excluded.mkdir()
+        (excluded / "sample.txt").write_text("password = 'synthetic'", encoding="utf-8")
+        code, output, _ = self.run_cli(self.root, "--exclude-dir", "generated")
+        self.assertEqual(code, 0)
+        self.assertIn("arquivos analisados=0", output)
+        self.assertIn("alertas=0", output)
 
 
 if __name__ == "__main__":
     unittest.main()
+
 
