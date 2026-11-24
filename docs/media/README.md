@@ -14,3 +14,8 @@ O arquivo `securepath-ptbr.vtt` já acompanha o repositório para legendas selec
 Se o MP4 não estiver hospedado, o player em HTML/JS continua funcional: animações e legendas com `speechSynthesis` do navegador.
 
 Para executar o código real de análise, use `artefatos.py` localmente. O vídeo é educativo e usa exemplos sintéticos, nunca segredos reais.
+
+
+## Narração neural revisada
+
+Envie a faixa de áudio WAV de 62,013 s gerada em voz Afonso (pt-BR) como `securepath-narracao-natural.wav` nesta pasta. As sete cenas serão sincronizadas com a faixa. O vídeo convencional revisado, se produzido, deve ter o nome `securepath-explainer-natural.mp4`, acompanhado das legendas `securepath-natural-ptbr.vtt`. A versão original não é mais selecionada automaticamente.

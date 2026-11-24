@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./style.css?v=3.0">
-<script src="./app.js?v=3.0" defer></script>
+<script src="./app.js?v=3.1" defer></script>
 </head>
 <body>
 <a href="#conteudo" class="skip">Pular para o conteúdo</a>
@@ -70,7 +70,7 @@
    <p>Acompanhe uma explicação animada, com <strong>narração em português e legendas sincronizadas</strong>, desde o risco de expor senhas até o relatório do scanner.</p>
   </div>
   <div class="explainer-player reveal" id="explainer-player" aria-label="Apresentação animada e narrada do SecurePath CLI">
-   <div id="explainer-native" class="explainer-native" hidden><video id="explainer-mp4" controls playsinline preload="metadata" aria-label="Vídeo narrado do SecurePath CLI"><source src="./media/securepath-explainer.mp4" type="video/mp4"><track src="./media/securepath-ptbr.vtt" kind="subtitles" srclang="pt-BR" label="Português"></video></div>
+   <div id="explainer-native" class="explainer-native" hidden><video id="explainer-mp4" controls playsinline preload="metadata" aria-label="Vídeo narrado do SecurePath CLI"><source src="./media/securepath-explainer-natural.mp4" type="video/mp4"><track src="./media/securepath-natural-ptbr.vtt" kind="subtitles" srclang="pt-BR" label="Português"></video></div>
    <div class="explainer-screen" id="explainer-screen">
     <div class="clip-top"><span><i class="clip-live-dot"></i> SECUREPATH / VIDEO EXPLAINER</span><span id="clip-topic">01 · O RISCO</span></div>
     <div class="clip-visuals" aria-hidden="true">
@@ -125,7 +125,7 @@
     <button type="button" id="clip-captions" class="clip-pill-btn selected" aria-pressed="true" aria-label="Ativar ou desativar legendas">CC</button>
    </div>
   </div>
-  <div class="clip-note reveal"><span>ⓘ</span> O player usa animações e <strong>narração por voz do navegador</strong>, com legendas em português. Quando o MP4 for hospedado neste repositório, o player convencional o substituirá automaticamente.</div>
+  <div class="clip-note reveal"><span>ⓘ</span> O player inclui animações e legendas em português. Usa a narração gravada quando disponível no repositório e, como alternativa, a voz do navegador.</div>
  </div>
 </section>
 <section class="section problem-section" id="problema">

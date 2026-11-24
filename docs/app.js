@@ -257,6 +257,48 @@ renderStep(0);renderRules();resetDemo();updateProgress();
  let sceneIndex=0,started=false,playing=false,paused=false,voiceEnabled=true,captionsEnabled=true,session=0,ticker=null,fallback=null;
  let sceneProgress=0, elapsed=0, lastTick=0, activeUtterance=null;
  const title=player.querySelector('#clip-topic');
+ const recordedVoice=new Audio();
+ recordedVoice.preload='metadata';
+ const voicePath='./media/securepath-narracao-natural.wav';
+ const sceneStarts=[0,7.218,15.794,24.419,34.807,43.042,51.68];
+ let recordingAvailable=false,recordingPlaying=false;
+ const stopRecording=()=>{recordingPlaying=false;recordedVoice.pause()};
+ fetch(voicePath,{method:'HEAD',cache:'no-cache'}).then(r=>{
+  if(!r.ok)return;
+  recordedVoice.src=voicePath;
+  recordedVoice.addEventListener('canplay',()=>{
+   recordingAvailable=true;
+   if(!playing)stateLabel.textContent='NARRAÇÃO GRAVADA DISPONÍVEL';
+  },{once:true});
+  recordedVoice.load();
+ }).catch(()=>{});
+ recordedVoice.addEventListener('timeupdate',()=>{
+  if(!recordingPlaying)return;
+  const t=recordedVoice.currentTime;
+  let i=sceneStarts.findIndex((s,k)=>k===sceneStarts.length-1 || t<sceneStarts[k+1]);
+  sceneIndex=Math.max(0,i);
+  const end=sceneStarts[sceneIndex+1]||recordedVoice.duration||62.014;
+  sceneProgress=Math.max(0,(t-sceneStarts[sceneIndex])/(end-sceneStarts[sceneIndex]));
+  draw();
+ });
+ recordedVoice.addEventListener('ended',()=>{
+  recordingPlaying=false;playing=false;paused=false;sceneProgress=1;
+  draw();progress.style.width='100%';stateLabel.textContent='EXPLICAÇÃO CONCLUÍDA';
+  $('#clip-play-icon').textContent='↺';
+ });
+ recordedVoice.addEventListener('error',()=>{
+  recordingAvailable=false;
+  if(recordingPlaying){stopRecording();startCurrentScene()}
+ });
+ function playRecording(restart){
+  cancelTimers();cancelSpeech();session++;
+  if(restart)recordedVoice.currentTime=0;
+  recordingPlaying=true;playing=true;paused=false;
+  overlay.hidden=true;started=true;stateLabel.textContent='NARRAÇÃO GRAVADA · PORTUGUÊS';
+  recordedVoice.play().catch(()=>{recordingAvailable=false;stopRecording();startCurrentScene()});
+  draw();
+ }
+
  const estimate=(phrase)=>Math.max(5,phrase.trim().split(/\s+/).length/2.05);
  const current=()=>scenes[sceneIndex];
  function cancelTimers(){
@@ -340,6 +382,8 @@ renderStep(0);renderRules();resetDemo();updateProgress();
   }
  }
  function begin(restart=false){
+  if(recordingAvailable&&voiceEnabled){playRecording(restart);return}
+  stopRecording();
   if(restart){sceneIndex=0;cancelTimers();cancelSpeech();session++}
   overlay.hidden=true;
   started=true;
@@ -348,6 +392,7 @@ renderStep(0);renderRules();resetDemo();updateProgress();
  function pause(){
   if(!playing||paused)return;
   paused=true;
+  if(recordingPlaying)recordedVoice.pause();
   cancelTimers();
   if(synth&&voiceEnabled){try{synth.pause()}catch(_){ }}
   stateLabel.textContent='PAUSADO';
@@ -357,6 +402,7 @@ renderStep(0);renderRules();resetDemo();updateProgress();
   if(!playing){begin(true);return}
   if(!paused)return;
   paused=false;
+  if(recordingPlaying){recordedVoice.play().catch(()=>{stopRecording();startCurrentScene()});stateLabel.textContent='NARRAÇÃO GRAVADA · PORTUGUÊS';draw();return}
   if(synth&&voiceEnabled){try{synth.resume()}catch(_){ }}
   stateLabel.textContent='REPRODUZINDO';
   clock();
@@ -375,7 +421,7 @@ renderStep(0);renderRules();resetDemo();updateProgress();
   voiceBtn.setAttribute('aria-pressed',String(voiceEnabled));
   voiceBtn.classList.toggle('selected',voiceEnabled);
   $('#clip-voice-icon').textContent=voiceEnabled?'♫':'×';
-  if(playing){startCurrentScene();return}
+  if(playing){if(recordingPlaying){stopRecording();startCurrentScene();return}if(voiceEnabled&&recordingAvailable){recordedVoice.currentTime=sceneStarts[sceneIndex];playRecording(false);return}startCurrentScene();return}
   stateLabel.textContent=voiceEnabled?'NARRAÇÃO ATIVADA':'NARRAÇÃO DESATIVADA';
  });
  captionBtn.addEventListener('click',()=>{
@@ -394,7 +440,7 @@ renderStep(0);renderRules();resetDemo();updateProgress();
  if(synth&&synth.onvoiceschanged!==undefined){
   synth.addEventListener?.('voiceschanged',chooseVoice);
  }
- window.addEventListener('pagehide',()=>{session++;cancelTimers();cancelSpeech()});
+ window.addEventListener('pagehide',()=>{session++;cancelTimers();cancelSpeech();stopRecording()});
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing&&!paused)pause()});
  draw();
 })();
@@ -408,7 +454,7 @@ renderStep(0);renderRules();resetDemo();updateProgress();
  const controls=document.querySelector('.clip-controlbar');
  const video=document.getElementById('explainer-mp4');
  if(!wrapper||!theater||!video)return;
- const url=new URL('./media/securepath-explainer.mp4',document.baseURI);
+ const url=new URL('./media/securepath-explainer-natural.mp4',document.baseURI);
  fetch(url.href,{method:'HEAD',cache:'no-store'}).then(response=>{
   if(!response.ok)return;
   wrapper.hidden=false;theater.hidden=true;
