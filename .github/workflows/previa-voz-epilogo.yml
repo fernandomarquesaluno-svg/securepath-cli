@@ -16,14 +16,21 @@ jobs:
           python-version: '3.12'
       - name: Instalar sintetizador neural
         run: |
-          python -m pip install piper-tts==1.8.0 numpy scipy
-          ffmpeg -version | head -n 1
+          python -m pip install piper-tts==1.8.0 numpy scipy imageio-ffmpeg
+          mkdir -p "$RUNNER_TEMP/ffmpeg-bin"
+          ln -sf "$(python -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')" "$RUNNER_TEMP/ffmpeg-bin/ffmpeg"
+          echo "$RUNNER_TEMP/ffmpeg-bin" >> "$GITHUB_PATH"
       - name: Gerar, aproximar características acústicas e medir
         shell: bash
         run: |
           mkdir -p preview models
           curl -fsSL --retry 2 'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx' -o models/faber.onnx
           curl -fsSL --retry 2 'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx.json' -o models/faber.onnx.json
+          for model in edresson/low jeff/medium; do
+            name=${model%/*}; quality=${model#*/}
+            url="https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/$model/pt_BR-$name-$quality.onnx"
+            curl -fsSL --max-time 30 "$url" -o "models/$name.onnx" && curl -fsSL --max-time 15 "$url.json" -o "models/$name.onnx.json" || true
+          done
           python - <<'PY'
           import json, math, subprocess, wave
           from pathlib import Path
@@ -58,7 +65,20 @@ jobs:
               return float(np.median(f0))
           ref='docs/media/securepath-narracao-natural.wav'
           target=pitch(ref)
-          voice=PiperVoice.load('models/faber.onnx')
+          candidates=[]
+          for model in Path('models').glob('*.onnx'):
+              if not Path(str(model)+'.json').exists(): continue
+              try:
+                  trial=PiperVoice.load(str(model))
+                  p=out/'trial.wav'
+                  with wave.open(str(p),'wb') as w: trial.synthesize_wav('O projeto evoluiu de um protótipo para um programa configurável e testado.',w)
+                  hz=pitch(p)
+                  candidates.append((abs(math.log2(target/hz)),str(model),hz))
+                  p.unlink()
+              except Exception as e: print(model,e)
+          _,selected,trial_hz=min(candidates)
+          print('Candidatos:',candidates,'Selecionado:',selected)
+          voice=PiperVoice.load(selected)
           takes=[]
           for i,line in enumerate(lines):
               p=out/f'take-{i}.wav'
@@ -70,7 +90,7 @@ jobs:
               wavfile.write(p,sr,data)
               takes.append(p)
           src=float(np.median([pitch(p) for p in takes]))
-          semi=float(np.clip(12*math.log2(target/src),-2,2))
+          semi=float(np.clip(12*math.log2(target/src),-3,3))
           factor=2**(semi/12)
           print('F0 referência',target,'F0 original Faber',src,'ajuste de semitons',semi)
           filter=f'rubberband=pitch={factor}:formant=preserved,highpass=f=65,equalizer=f=220:t=q:w=1:g=1.5,acompressor=threshold=0.125:ratio=1.4'
@@ -97,7 +117,7 @@ jobs:
               ms=round(t*1000)
               return f'{ms//3600000:02}:{ms//60000%60:02}:{ms//1000%60:02}.{ms%1000:03}'
           (out/'epilogo.vtt').write_text('WEBVTT\n\n'+''.join(f'{stamp(a)} --> {stamp(b)}\n{line}\n\n' for a,b,line in cues))
-          meta={'modelo':'Piper pt_BR-faber-medium','piper':'1.8.0','referencia':'Afonso: faixa original local, apenas medição acústica','f0_alvo_hz':target,'f0_faber_original_hz':src,'f0_previa_hz':pitch(out/'epilogo-previa.wav'),'ajuste_semitons':semi,'duracao_s':len(arr)/rate,'legendas':cues,'observacao':'Não é a voz Afonso nem clonagem. Semelhança perceptual depende de audição humana.'}
+          meta={'modelo':'Piper '+Path(selected).stem,'piper':'1.8.0','referencia':'Afonso: faixa original local, apenas medição acústica','f0_alvo_hz':target,'f0_voz_original_hz':src,'candidatos':candidates,'f0_previa_hz':pitch(out/'epilogo-previa.wav'),'ajuste_semitons':semi,'duracao_s':len(arr)/rate,'legendas':cues,'observacao':'Não é a voz Afonso nem clonagem. Semelhança perceptual depende de audição humana.'}
           (out/'metadados.json').write_text(json.dumps(meta,indent=2,ensure_ascii=False))
           print(json.dumps(meta,ensure_ascii=False))
           PY
