@@ -1,0 +1,154 @@
+name: Finalizar filme com Afonso
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/finalizar-filme-afonso.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: filme-afonso
+  cancel-in-progress: false
+jobs:
+  montagem:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Preparar dependências
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          python -m pip install faster-whisper==1.2.1 numpy
+      - name: Recuperar gravação Afonso autorizada
+        run: |
+          curl --fail --location --retry 2 --max-time 90 'https://resource2.heygen.ai/text_to_speech/2114e16652784c96b3b80042c05bd800/9ce5f601f9e04382bb26141d5a3f839d/id=e5580f196c954abbb48a858f7dbd73c4.wav' -o producao/tarefa11/afonso-epilogo.wav
+      - name: Sincronizar, montar e validar filme
+        shell: bash
+        run: |
+          cat > /tmp/montagem-afonso.py <<'PY'
+          from pathlib import Path
+          import subprocess as sp, json, re, unicodedata, difflib, wave, hashlib, math
+          import numpy as np
+          from faster_whisper import WhisperModel
+          root=Path.cwd()
+          prod=root/'producao/tarefa11'
+          media=root/'docs/media'
+          src=media/'securepath-semestre.mp4'
+          voice=prod/'afonso-epilogo.wav'
+          out=media/'securepath-semestre-afonso.mp4'
+          vtt=media/'securepath-semestre-afonso.vtt'
+          old=json.loads((prod/'falas.json').read_text())
+          with wave.open(str(voice),'rb') as f:
+              dur=f.getnframes()/f.getframerate()
+          assert abs(dur-56.4818820861678)<0.15,dur
+          def norm(t):
+              t=unicodedata.normalize('NFKD',t.lower())
+              return ''.join(c for c in t if c.isalnum() and not unicodedata.combining(c))
+          def tokens(t): return [norm(w) for w in t.split() if norm(w)]
+          ref=[]; bounds=[]
+          for start,end,phrase in old:
+              a=len(ref);ref.extend(tokens(phrase));bounds.append((a,len(ref)))
+          model=WhisperModel('base',device='cpu',compute_type='int8',cpu_threads=4)
+          segs,_=model.transcribe(str(voice),language='pt',word_timestamps=True,beam_size=5,initial_prompt='SecurePath, Python, K-Agent, portfólio, reprodutibilidade. '+ ' '.join(x[2] for x in old))
+          observed=[]
+          for s in segs:
+              for w in s.words or []:
+                  for word in tokens(w.word):
+                      observed.append((word,float(w.start),float(w.end)))
+          actual=[x[0] for x in observed]
+          matcher=difflib.SequenceMatcher(None,ref,actual,autojunk=False)
+          pairs={}
+          for a,b,n in matcher.get_matching_blocks():
+              for k in range(n): pairs[a+k]=b+k
+          coverage=len(pairs)/len(ref)
+          assert coverage>=0.83,(coverage,actual)
+          cues=[]
+          for (a,b),(_,_,phrase) in zip(bounds,old):
+              found=[(i,pairs[i]) for i in range(a,b) if i in pairs]
+              assert len(found)>=max(1,math.ceil((b-a)*.55)),(phrase,found)
+              assert found[0][0]-a<=2 and b-1-found[-1][0]<=2,(phrase,found)
+              start=observed[found[0][1]][1];end=observed[found[-1][1]][2]
+              if cues: start=max(start,cues[-1][1])
+              assert end>start,(phrase,start,end)
+              cues.append([start,end,phrase])
+          assert all(cues[i][0]>cues[i-1][0] for i in range(1,len(cues)))
+          # Preserve original first chapter; map epilogue frames to measured speech boundaries.
+          cut=3025/30
+          target=59.0
+          oldknots=[0]+[x[0] for x in old]+[66]
+          newknots=[0]+[x[0] for x in cues]+[target]
+          # Whisper may place the first word at t=0. Keep the initial transition monotonic.
+          newknots[1]=max(.10,newknots[1])
+          assert all(b>a for a,b in zip(newknots,newknots[1:])),newknots
+          expr=f'{cut+target:.9f}'
+          for oa,ob,na,nb in reversed(list(zip(oldknots,oldknots[1:],newknots,newknots[1:]))):
+              slope=(nb-na)/(ob-oa)
+              expr=f'if(lt(T,{cut+ob:.9f}),{cut+na:.9f}+(T-{cut+oa:.9f})*{slope:.12f},{expr})'
+          expr=f'if(lt(T,{cut:.9f}),T,{expr})/TB'
+          def run(*args): sp.run(args,check=True)
+          def ts(t):
+              ms=round(t*1000);h,ms=divmod(ms,3600000);m,ms=divmod(ms,60000);s,ms=divmod(ms,1000)
+              return f'{h:02d}:{m:02d}:{s:02d}.{ms:03d}'
+          # Reuse original 23 captions exactly; only retime the new chapter.
+          original=(media/'securepath-v2-ptbr.vtt').read_text().strip()
+          assert original.startswith('WEBVTT')
+          vtt.write_text(original+'\n\n'+'\n\n'.join(f'{ts(cut+a)} --> {ts(cut+b)}\n{p}' for a,b,p in cues)+'\n',encoding='utf-8')
+          # Remap original sound effects to the same visual clock. Keep music at its original tempo.
+          rate=48000
+          fxraw=sp.check_output(['ffmpeg','-v','error','-i',str(prod/'efeitos.m4a'),'-f','f32le','-ar',str(rate),'-ac','2','-'])
+          fx=np.frombuffer(fxraw,dtype='<f4').reshape(-1,2)
+          t=np.arange(round(target*rate))/rate
+          pos=np.interp(t,newknots,oldknots)*rate
+          shift=np.column_stack([np.interp(pos,np.arange(len(fx)),fx[:,i],left=0,right=0) for i in range(2)]).astype('<f4')
+          shift[-rate:]*=np.linspace(1,0,rate)[:,None]
+          fxpath=prod/'efeitos-afonso-temporario.wav'
+          with wave.open(str(fxpath),'wb') as f:
+              f.setnchannels(2);f.setsampwidth(2);f.setframerate(rate)
+              f.writeframes(np.clip(shift*32767,-32768,32767).astype('<i2').tobytes())
+          vf=f"[0:v]setpts='{expr}',fps=30,tpad=stop_mode=clone:stop_duration=0.1,trim=duration={cut+target:.9f}[v]"
+          af=f'[0:a]atrim=end={cut:.9f},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo[a];[1:a]loudnorm=I=-17:TP=-2:LRA=9,aresample=48000,aformat=channel_layouts=stereo,apad,atrim=end={target}[n];[2:a]aresample=48000,atrim=end={target},afade=t=out:st={target-2}:d=2[m];[n][m][3:a]amix=inputs=3:duration=first:normalize=0,alimiter=limit=0.94:level=0:latency=1[b];[a][b]concat=n=2:v=0:a=1[out]'
+          run('ffmpeg','-v','error','-y','-i',str(src),'-i',str(voice),'-i',str(prod/'trilha.m4a'),'-i',str(fxpath),'-i',str(vtt),'-filter_complex_threads','2','-filter_complex',vf+';'+af,'-map','[v]','-map','[out]','-map','4:0','-c:v','libx264','-preset','fast','-crf','21','-threads','4','-pix_fmt','yuv420p','-c:a','aac','-b:a','192k','-c:s','mov_text','-metadata:s:s:0','language=por','-movflags','+faststart',str(out))
+          fxpath.unlink()
+          probe=json.loads(sp.check_output(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(out)]))
+          seconds=float(probe['format']['duration'])
+          assert abs(seconds-(cut+target))<.2 and seconds<180,seconds
+          video=next(s for s in probe['streams'] if s['codec_type']=='video')
+          assert (video['width'],video['height'])==(1920,1080)
+          assert video['r_frame_rate']=='30/1'
+          assert any(s['codec_type']=='audio' for s in probe['streams'])
+          assert any(s['codec_type']=='subtitle' for s in probe['streams'])
+          run('ffmpeg','-v','error','-xerror','-i',str(out),'-map','0:v','-map','0:a','-f','null','-')
+          assert out.stat().st_size<95*1024*1024
+          report={'voice':'Afonso - Warm & Resonant','voice_id':'9ce5f601f9e04382bb26141d5a3f839d','language':'pt-BR','speed':1,'new_audio_seconds':dur,'first_chapter_seconds':cut,'final_seconds':seconds,'alignment':'faster-whisper base; correspondência de palavras do roteiro','alignment_coverage':coverage,'observed_words':observed,'cues':cues,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'video':'1920x1080 H.264 30fps','audio':'AAC estéreo','limitations':'Alinhamento automatizado, sem revisão auditiva humana. Efeitos ajustados ao novo relógio; a música mantém andamento original. Filme anterior preservado.'}
+          (prod/'validacao-afonso.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+          html=root/'docs/index.html'
+          s=html.read_text()
+          assert './media/securepath-semestre.mp4' in s and 'Faber (epílogo)' in s
+          s=s.replace('./media/securepath-semestre.mp4','./media/securepath-semestre-afonso.mp4').replace('./media/securepath-semestre.vtt','./media/securepath-semestre-afonso.vtt')
+          s=s.replace('2min47s · Vozes em português brasileiro: Afonso (original) e Faber (epílogo).','2min40s · Narração integral em português brasileiro: Afonso.')
+          assert 'Faber (epílogo)' not in s
+          html.write_text(s)
+          print(json.dumps({k:v for k,v in report.items() if k not in ('observed_words','cues')},ensure_ascii=False))
+          PY
+          python /tmp/montagem-afonso.py
+          python -m unittest discover -s tests
+      - name: Arquivar filme e evidências
+        uses: actions/upload-artifact@v4
+        with:
+          name: securepath-afonso-validado
+          path: |
+            docs/media/securepath-semestre-afonso.mp4
+            docs/media/securepath-semestre-afonso.vtt
+            producao/tarefa11/afonso-epilogo.wav
+            producao/tarefa11/validacao-afonso.json
+      - name: Publicar apenas após validação
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/index.html docs/media/securepath-semestre-afonso.mp4 docs/media/securepath-semestre-afonso.vtt producao/tarefa11/afonso-epilogo.wav producao/tarefa11/validacao-afonso.json
+          git commit -m 'media: publicar filme completo com narracao Afonso'
+          git push origin HEAD:main
