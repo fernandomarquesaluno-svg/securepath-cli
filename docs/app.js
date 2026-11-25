@@ -305,11 +305,10 @@ renderStep(0);renderRules();resetDemo();updateProgress();
    if(show && playing)pause();
    if(!show)video.pause();
    native.hidden=!show;screen.hidden=show;controls.hidden=show;
-   version.textContent=show?'Assistir à animação original':'Assistir ao filme do semestre';
+   if(version)version.textContent=show?'Assistir à animação original':'Assistir ao filme do semestre';
  }
- version.hidden=false;
- version.addEventListener('click',()=>showFilm(native.hidden));
- const fallback=()=>{showFilm(false);version.hidden=true};
+ if(version){version.hidden=false;version.addEventListener('click',()=>showFilm(native.hidden));}
+ const fallback=()=>{showFilm(false);if(version)version.hidden=true};
  video.addEventListener('error',fallback);
  video.querySelector('source').addEventListener('error',fallback);
  if(video.canPlayType('video/mp4') && !video.error)showFilm(true);else fallback();
