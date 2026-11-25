@@ -1,5 +1,13 @@
 # Mídia do vídeo do SecurePath
 
+## Edição entregue na Tarefa 11
+
+O filme publicado na página inicial é [securepath-semestre.mp4](securepath-semestre.mp4), com [legendas em português](securepath-semestre.vtt). Afonso narra as 11 cenas originais. Faber narra o epílogo de 66 segundos. Abaixo do filme, o público também pode escolher a apresentação HTML original.
+
+[Fontes, créditos, roteiro e comandos de produção](../../producao/tarefa11/README.md) · [Relatório de validação](../../producao/tarefa11/VALIDACAO.md)
+
+## Histórico das versões anteriores
+
 O site possui um **player animado com narração pelo navegador e legendas**. Existe também um MP4 de 1 min 15 s, já gerado com narração sintética em português e legendas embutidas.
 
 ## Integrar o MP4 publicado
