@@ -134,9 +134,9 @@ jobs:
           EOF
           mkdir -p experiments
           cat > experiments/test_browser.py <<'EOF'
-          import functools,http.server,threading,subprocess,sys,json,tempfile
+          import functools,http.server,threading,subprocess,sys,json,tempfile,re
           from pathlib import Path
-          from playwright.sync_api import sync_playwright
+          from playwright.sync_api import sync_playwright, expect
           root=Path.cwd()
           srv=http.server.ThreadingHTTPServer(('127.0.0.1',0),functools.partial(http.server.SimpleHTTPRequestHandler,directory=root/'docs'))
           threading.Thread(target=srv.serve_forever,daemon=True).start()
@@ -152,7 +152,7 @@ jobs:
               text='password = "somente-ficticio"\nstatus = "ok"\n'
               pg.locator('#text').fill(text)
               pg.locator('#run').click()
-              pg.wait_for_function("/Análise concluída|Falha|Não foi possível|Limite de tempo/.test(document.getElementById('status').textContent)",timeout=100000)
+              expect(pg.locator('#status')).to_have_text(re.compile(r'^(Análise concluída|Falha|Não foi possível|Limite de tempo)'),timeout=100000)
               assert pg.locator('#status').inner_text().startswith('Análise concluída'), pg.locator('#status').inner_text()
               assert pg.locator('#rows tr').count()==1
               assert 'SEC004' in pg.locator('#rows').inner_text()
@@ -167,7 +167,8 @@ jobs:
               pg.locator('#clear').click()
               pg.locator('#files').set_input_files([{'name':'a.txt','mimeType':'text/plain','buffer':b'password = "somente-ficticio"\n'},{'name':'b.bin','mimeType':'application/octet-stream','buffer':b'abc\x00password = "example"'}])
               pg.locator('#run').click()
-              pg.wait_for_function("document.getElementById('status').textContent.startsWith('Análise concluída')",timeout=90000)
+              expect(pg.locator('#status')).to_have_text(re.compile(r'^(Análise concluída|Falha|Não foi possível|Limite de tempo)'),timeout=100000)
+              assert pg.locator('#status').inner_text().startswith('Análise concluída'), pg.locator('#status').inner_text()
               assert 'Ignorados: 1' in pg.locator('#summary').inner_text()
               assert pg.locator('#rows tr').count()==1
               pg.locator('#clear').click()
