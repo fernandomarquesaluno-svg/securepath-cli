@@ -1,0 +1,110 @@
+WEBVTT
+
+00:00:00.256 --> 00:00:04.309
+Uma senha esquecida no código pode abrir caminho para acessos indevidos.
+
+00:00:04.736 --> 00:00:06.741
+Como encontrar esse risco antes de publicar?
+
+00:00:07.218 --> 00:00:11.016
+O SecurePath CLI analisa arquivos e pastas locais,
+
+00:00:11.442 --> 00:00:13.149
+sem enviar seu conteúdo à rede.
+
+00:00:13.746 --> 00:00:15.325
+Foi desenvolvido em Python puro.
+
+00:00:15.794 --> 00:00:19.317
+Você informa um caminho. O scanner percorre os arquivos
+
+00:00:19.445 --> 00:00:23.840
+e ignora links simbólicos, pastas excluídas e arquivos grandes.
+
+00:00:24.419 --> 00:00:29.411
+Depois, sete regras buscam indícios de tokens, chaves AWS,
+
+00:00:29.880 --> 00:00:32.312
+cabeçalhos privados e senhas atribuídas.
+
+00:00:32.824 --> 00:00:34.318
+Tudo por expressões regulares.
+
+00:00:34.807 --> 00:00:38.903
+Ao encontrar um padrão, ele mostra arquivo, linha e categoria.
+
+00:00:39.287 --> 00:00:42.573
+O valor da possível credencial não aparece no relatório.
+
+00:00:43.042 --> 00:00:46.925
+Na demonstração sintética, três arquivos geraram quatro alertas.
+
+00:00:47.456 --> 00:00:51.210
+O projeto também documenta dezesseis testes aprovados em Linux.
+
+00:00:51.680 --> 00:00:55.861
+Atenção: padrões suspeitos não confirmam segredos válidos.
+
+00:00:56.443 --> 00:01:01.478
+Conheça o código e execute o SecurePath apenas nos seus arquivos autorizados.
+
+00:01:02.269 --> 00:01:04.146
+O SecurePath continua evoluindo.
+
+00:01:04.829 --> 00:01:11.186
+Agora, a varredura pode usar até sessenta e quatro threads, com uma fila limitada de tarefas pendentes.
+
+00:01:11.478 --> 00:01:19.627
+Além disso, um arquivo JSON permite adicionar até cem regras personalizadas, e o usuário pode excluir diretórios específicos.
+
+00:01:20.249 --> 00:01:25.966
+A nova suíte contém sessenta e nove testes, incluindo cinquenta casos de configuração de regras.
+
+00:01:26.350 --> 00:01:29.806
+A documentação registra todos aprovados em uma execução local.
+
+00:01:30.567 --> 00:01:37.735
+O próximo passo é medir o desempenho e a precisão da detecção, e integrar a ferramenta ao fluxo de desenvolvimento.
+
+00:01:38.204 --> 00:01:40.337
+Esses ganhos ainda precisam ser demonstrados.
+
+00:01:41.533 --> 00:01:44.039
+Mas o SecurePath não nasceu pronto.
+
+00:01:44.239 --> 00:01:50.831
+Tudo começou com um mapa mental: como encontrar credenciais expostas antes de publicar código?
+
+00:01:51.031 --> 00:01:53.506
+A ideia virou um protótipo em Python.
+
+00:01:53.706 --> 00:01:57.040
+Revisamos as regras, registramos testes
+
+00:01:57.240 --> 00:02:02.132
+e evoluímos para um scanner configurável, com demonstração no navegador.
+
+00:02:02.332 --> 00:02:08.429
+Então surgiu outra pergunta: como saber se um artefato realmente merece confiança?
+
+00:02:08.629 --> 00:02:12.806
+Comparamos processos de avaliação de eventos científicos.
+
+00:02:13.006 --> 00:02:19.204
+Depois, usamos diferentes modelos de inteligência artificial para avaliar o K-Agent,
+
+00:02:19.404 --> 00:02:24.964
+confrontando pareceres e evidências de funcionalidade e reprodutibilidade.
+
+00:02:25.164 --> 00:02:31.522
+Ao variar as condições da avaliação, investigamos a consistência desses resultados.
+
+00:02:31.722 --> 00:02:34.227
+O portfólio reúne essa trajetória.
+
+00:02:34.427 --> 00:02:38.930
+Mais do que construir software, aprendemos a justificar decisões,
+
+00:02:39.130 --> 00:02:43.296
+documentar limites e sustentar conclusões com evidências.
+

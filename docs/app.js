@@ -299,13 +299,20 @@ renderStep(0);renderRules();resetDemo();updateProgress();
  el('clip-captions').addEventListener('click',()=>{captions=!captions;el('clip-captions').setAttribute('aria-pressed',String(captions));el('clip-captions').classList.toggle('selected',captions);render()});
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)pause()});
  window.addEventListener('pagehide',()=>{if(playing)pause()});
- // Prefer a revised MP4 only, never the obsolete seven-scene video.
- const native=el('explainer-native'),video=el('explainer-mp4'),screen=el('explainer-screen'),controls=player.querySelector('.clip-controlbar');
- fetch('./media/securepath-explainer-v2.mp4',{method:'HEAD',cache:'no-cache'}).then(r=>{
-  if(!r.ok||started||!native||!video)return;
-  native.hidden=false;screen.hidden=true;controls.hidden=true;
-  video.addEventListener('error',()=>{native.hidden=true;screen.hidden=false;controls.hidden=false},{once:true});
- }).catch(()=>{});
+ // A edição do semestre e a composição original compartilham o mesmo espaço.
+ const native=el('explainer-native'),video=el('explainer-mp4'),screen=el('explainer-screen'),controls=player.querySelector('.clip-controlbar'),version=el('clip-version');
+ function showFilm(show){
+   if(show && playing)pause();
+   if(!show)video.pause();
+   native.hidden=!show;screen.hidden=show;controls.hidden=show;
+   version.textContent=show?'Assistir à animação original':'Assistir ao filme do semestre';
+ }
+ version.hidden=false;
+ version.addEventListener('click',()=>showFilm(native.hidden));
+ const fallback=()=>{showFilm(false);version.hidden=true};
+ video.addEventListener('error',fallback);
+ video.querySelector('source').addEventListener('error',fallback);
+ if(video.canPlayType('video/mp4') && !video.error)showFilm(true);else fallback();
  render();
  })();
 
