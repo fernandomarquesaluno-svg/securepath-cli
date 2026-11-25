@@ -1,0 +1,606 @@
+{
+  "seed": 24062026,
+  "unit": "arquivo; positivo se contém segredo fictício intencional",
+  "files": [
+    {
+      "file": "p00_00.txt",
+      "positive": true,
+      "category": "aws-id"
+    },
+    {
+      "file": "p00_01.env",
+      "positive": true,
+      "category": "aws-id"
+    },
+    {
+      "file": "p00_02.cfg",
+      "positive": true,
+      "category": "aws-id"
+    },
+    {
+      "file": "p00_03.txt",
+      "positive": true,
+      "category": "aws-id"
+    },
+    {
+      "file": "p00_04.env",
+      "positive": true,
+      "category": "aws-id"
+    },
+    {
+      "file": "p00_05.cfg",
+      "positive": true,
+      "category": "aws-id"
+    },
+    {
+      "file": "p01_00.txt",
+      "positive": true,
+      "category": "aws-temporario"
+    },
+    {
+      "file": "p01_01.env",
+      "positive": true,
+      "category": "aws-temporario"
+    },
+    {
+      "file": "p01_02.cfg",
+      "positive": true,
+      "category": "aws-temporario"
+    },
+    {
+      "file": "p01_03.txt",
+      "positive": true,
+      "category": "aws-temporario"
+    },
+    {
+      "file": "p01_04.env",
+      "positive": true,
+      "category": "aws-temporario"
+    },
+    {
+      "file": "p01_05.cfg",
+      "positive": true,
+      "category": "aws-temporario"
+    },
+    {
+      "file": "p02_00.txt",
+      "positive": true,
+      "category": "github-classico"
+    },
+    {
+      "file": "p02_01.env",
+      "positive": true,
+      "category": "github-classico"
+    },
+    {
+      "file": "p02_02.cfg",
+      "positive": true,
+      "category": "github-classico"
+    },
+    {
+      "file": "p02_03.txt",
+      "positive": true,
+      "category": "github-classico"
+    },
+    {
+      "file": "p02_04.env",
+      "positive": true,
+      "category": "github-classico"
+    },
+    {
+      "file": "p02_05.cfg",
+      "positive": true,
+      "category": "github-classico"
+    },
+    {
+      "file": "p03_00.txt",
+      "positive": true,
+      "category": "bearer"
+    },
+    {
+      "file": "p03_01.env",
+      "positive": true,
+      "category": "bearer"
+    },
+    {
+      "file": "p03_02.cfg",
+      "positive": true,
+      "category": "bearer"
+    },
+    {
+      "file": "p03_03.txt",
+      "positive": true,
+      "category": "bearer"
+    },
+    {
+      "file": "p03_04.env",
+      "positive": true,
+      "category": "bearer"
+    },
+    {
+      "file": "p03_05.cfg",
+      "positive": true,
+      "category": "bearer"
+    },
+    {
+      "file": "p04_00.txt",
+      "positive": true,
+      "category": "senha"
+    },
+    {
+      "file": "p04_01.env",
+      "positive": true,
+      "category": "senha"
+    },
+    {
+      "file": "p04_02.cfg",
+      "positive": true,
+      "category": "senha"
+    },
+    {
+      "file": "p04_03.txt",
+      "positive": true,
+      "category": "senha"
+    },
+    {
+      "file": "p04_04.env",
+      "positive": true,
+      "category": "senha"
+    },
+    {
+      "file": "p04_05.cfg",
+      "positive": true,
+      "category": "senha"
+    },
+    {
+      "file": "p05_00.txt",
+      "positive": true,
+      "category": "chave-rsa"
+    },
+    {
+      "file": "p05_01.env",
+      "positive": true,
+      "category": "chave-rsa"
+    },
+    {
+      "file": "p05_02.cfg",
+      "positive": true,
+      "category": "chave-rsa"
+    },
+    {
+      "file": "p05_03.txt",
+      "positive": true,
+      "category": "chave-rsa"
+    },
+    {
+      "file": "p05_04.env",
+      "positive": true,
+      "category": "chave-rsa"
+    },
+    {
+      "file": "p05_05.cfg",
+      "positive": true,
+      "category": "chave-rsa"
+    },
+    {
+      "file": "p06_00.txt",
+      "positive": true,
+      "category": "chave-openssh"
+    },
+    {
+      "file": "p06_01.env",
+      "positive": true,
+      "category": "chave-openssh"
+    },
+    {
+      "file": "p06_02.cfg",
+      "positive": true,
+      "category": "chave-openssh"
+    },
+    {
+      "file": "p06_03.txt",
+      "positive": true,
+      "category": "chave-openssh"
+    },
+    {
+      "file": "p06_04.env",
+      "positive": true,
+      "category": "chave-openssh"
+    },
+    {
+      "file": "p06_05.cfg",
+      "positive": true,
+      "category": "chave-openssh"
+    },
+    {
+      "file": "p07_00.txt",
+      "positive": true,
+      "category": "stripe"
+    },
+    {
+      "file": "p07_01.env",
+      "positive": true,
+      "category": "stripe"
+    },
+    {
+      "file": "p07_02.cfg",
+      "positive": true,
+      "category": "stripe"
+    },
+    {
+      "file": "p07_03.txt",
+      "positive": true,
+      "category": "stripe"
+    },
+    {
+      "file": "p07_04.env",
+      "positive": true,
+      "category": "stripe"
+    },
+    {
+      "file": "p07_05.cfg",
+      "positive": true,
+      "category": "stripe"
+    },
+    {
+      "file": "p08_00.txt",
+      "positive": true,
+      "category": "slack"
+    },
+    {
+      "file": "p08_01.env",
+      "positive": true,
+      "category": "slack"
+    },
+    {
+      "file": "p08_02.cfg",
+      "positive": true,
+      "category": "slack"
+    },
+    {
+      "file": "p08_03.txt",
+      "positive": true,
+      "category": "slack"
+    },
+    {
+      "file": "p08_04.env",
+      "positive": true,
+      "category": "slack"
+    },
+    {
+      "file": "p08_05.cfg",
+      "positive": true,
+      "category": "slack"
+    },
+    {
+      "file": "p09_00.txt",
+      "positive": true,
+      "category": "api-generica"
+    },
+    {
+      "file": "p09_01.env",
+      "positive": true,
+      "category": "api-generica"
+    },
+    {
+      "file": "p09_02.cfg",
+      "positive": true,
+      "category": "api-generica"
+    },
+    {
+      "file": "p09_03.txt",
+      "positive": true,
+      "category": "api-generica"
+    },
+    {
+      "file": "p09_04.env",
+      "positive": true,
+      "category": "api-generica"
+    },
+    {
+      "file": "p09_05.cfg",
+      "positive": true,
+      "category": "api-generica"
+    },
+    {
+      "file": "n00_00.txt",
+      "positive": false,
+      "category": "texto-publico"
+    },
+    {
+      "file": "n00_01.env",
+      "positive": false,
+      "category": "texto-publico"
+    },
+    {
+      "file": "n00_02.cfg",
+      "positive": false,
+      "category": "texto-publico"
+    },
+    {
+      "file": "n00_03.txt",
+      "positive": false,
+      "category": "texto-publico"
+    },
+    {
+      "file": "n00_04.env",
+      "positive": false,
+      "category": "texto-publico"
+    },
+    {
+      "file": "n00_05.cfg",
+      "positive": false,
+      "category": "texto-publico"
+    },
+    {
+      "file": "n01_00.txt",
+      "positive": false,
+      "category": "identificador"
+    },
+    {
+      "file": "n01_01.env",
+      "positive": false,
+      "category": "identificador"
+    },
+    {
+      "file": "n01_02.cfg",
+      "positive": false,
+      "category": "identificador"
+    },
+    {
+      "file": "n01_03.txt",
+      "positive": false,
+      "category": "identificador"
+    },
+    {
+      "file": "n01_04.env",
+      "positive": false,
+      "category": "identificador"
+    },
+    {
+      "file": "n01_05.cfg",
+      "positive": false,
+      "category": "identificador"
+    },
+    {
+      "file": "n02_00.txt",
+      "positive": false,
+      "category": "placeholder"
+    },
+    {
+      "file": "n02_01.env",
+      "positive": false,
+      "category": "placeholder"
+    },
+    {
+      "file": "n02_02.cfg",
+      "positive": false,
+      "category": "placeholder"
+    },
+    {
+      "file": "n02_03.txt",
+      "positive": false,
+      "category": "placeholder"
+    },
+    {
+      "file": "n02_04.env",
+      "positive": false,
+      "category": "placeholder"
+    },
+    {
+      "file": "n02_05.cfg",
+      "positive": false,
+      "category": "placeholder"
+    },
+    {
+      "file": "n03_00.txt",
+      "positive": false,
+      "category": "exemplo-publico"
+    },
+    {
+      "file": "n03_01.env",
+      "positive": false,
+      "category": "exemplo-publico"
+    },
+    {
+      "file": "n03_02.cfg",
+      "positive": false,
+      "category": "exemplo-publico"
+    },
+    {
+      "file": "n03_03.txt",
+      "positive": false,
+      "category": "exemplo-publico"
+    },
+    {
+      "file": "n03_04.env",
+      "positive": false,
+      "category": "exemplo-publico"
+    },
+    {
+      "file": "n03_05.cfg",
+      "positive": false,
+      "category": "exemplo-publico"
+    },
+    {
+      "file": "n04_00.txt",
+      "positive": false,
+      "category": "hash-publico"
+    },
+    {
+      "file": "n04_01.env",
+      "positive": false,
+      "category": "hash-publico"
+    },
+    {
+      "file": "n04_02.cfg",
+      "positive": false,
+      "category": "hash-publico"
+    },
+    {
+      "file": "n04_03.txt",
+      "positive": false,
+      "category": "hash-publico"
+    },
+    {
+      "file": "n04_04.env",
+      "positive": false,
+      "category": "hash-publico"
+    },
+    {
+      "file": "n04_05.cfg",
+      "positive": false,
+      "category": "hash-publico"
+    },
+    {
+      "file": "n05_00.txt",
+      "positive": false,
+      "category": "token-curto"
+    },
+    {
+      "file": "n05_01.env",
+      "positive": false,
+      "category": "token-curto"
+    },
+    {
+      "file": "n05_02.cfg",
+      "positive": false,
+      "category": "token-curto"
+    },
+    {
+      "file": "n05_03.txt",
+      "positive": false,
+      "category": "token-curto"
+    },
+    {
+      "file": "n05_04.env",
+      "positive": false,
+      "category": "token-curto"
+    },
+    {
+      "file": "n05_05.cfg",
+      "positive": false,
+      "category": "token-curto"
+    },
+    {
+      "file": "n06_00.txt",
+      "positive": false,
+      "category": "url-publica"
+    },
+    {
+      "file": "n06_01.env",
+      "positive": false,
+      "category": "url-publica"
+    },
+    {
+      "file": "n06_02.cfg",
+      "positive": false,
+      "category": "url-publica"
+    },
+    {
+      "file": "n06_03.txt",
+      "positive": false,
+      "category": "url-publica"
+    },
+    {
+      "file": "n06_04.env",
+      "positive": false,
+      "category": "url-publica"
+    },
+    {
+      "file": "n06_05.cfg",
+      "positive": false,
+      "category": "url-publica"
+    },
+    {
+      "file": "n07_00.txt",
+      "positive": false,
+      "category": "configuracao"
+    },
+    {
+      "file": "n07_01.env",
+      "positive": false,
+      "category": "configuracao"
+    },
+    {
+      "file": "n07_02.cfg",
+      "positive": false,
+      "category": "configuracao"
+    },
+    {
+      "file": "n07_03.txt",
+      "positive": false,
+      "category": "configuracao"
+    },
+    {
+      "file": "n07_04.env",
+      "positive": false,
+      "category": "configuracao"
+    },
+    {
+      "file": "n07_05.cfg",
+      "positive": false,
+      "category": "configuracao"
+    },
+    {
+      "file": "n08_00.txt",
+      "positive": false,
+      "category": "marcador-documental"
+    },
+    {
+      "file": "n08_01.env",
+      "positive": false,
+      "category": "marcador-documental"
+    },
+    {
+      "file": "n08_02.cfg",
+      "positive": false,
+      "category": "marcador-documental"
+    },
+    {
+      "file": "n08_03.txt",
+      "positive": false,
+      "category": "marcador-documental"
+    },
+    {
+      "file": "n08_04.env",
+      "positive": false,
+      "category": "marcador-documental"
+    },
+    {
+      "file": "n08_05.cfg",
+      "positive": false,
+      "category": "marcador-documental"
+    },
+    {
+      "file": "n09_00.txt",
+      "positive": false,
+      "category": "identificador-curto"
+    },
+    {
+      "file": "n09_01.env",
+      "positive": false,
+      "category": "identificador-curto"
+    },
+    {
+      "file": "n09_02.cfg",
+      "positive": false,
+      "category": "identificador-curto"
+    },
+    {
+      "file": "n09_03.txt",
+      "positive": false,
+      "category": "identificador-curto"
+    },
+    {
+      "file": "n09_04.env",
+      "positive": false,
+      "category": "identificador-curto"
+    },
+    {
+      "file": "n09_05.cfg",
+      "positive": false,
+      "category": "identificador-curto"
+    }
+  ]
+}
