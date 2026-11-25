@@ -1,0 +1,67 @@
+[
+  [
+    0.7,
+    3.2057142857142855,
+    "Mas o SecurePath não nasceu pronto."
+  ],
+  [
+    3.4057142857142857,
+    9.99750566893424,
+    "Tudo começou com um mapa mental: como encontrar credenciais expostas antes de publicar código?"
+  ],
+  [
+    10.197505668934241,
+    12.672244897959184,
+    "A ideia virou um protótipo em Python."
+  ],
+  [
+    12.872244897959183,
+    16.20671201814059,
+    "Revisamos as regras, registramos testes"
+  ],
+  [
+    16.40671201814059,
+    21.298503401360545,
+    "e evoluímos para um scanner configurável, com demonstração no navegador."
+  ],
+  [
+    21.498503401360544,
+    27.595192743764173,
+    "Então surgiu outra pergunta: como saber se um artefato realmente merece confiança?"
+  ],
+  [
+    27.795192743764172,
+    31.97301587301587,
+    "Comparamos processos de avaliação de eventos científicos."
+  ],
+  [
+    32.17301587301587,
+    38.37083900226757,
+    "Depois, usamos diferentes modelos de inteligência artificial para avaliar o K-Agent,"
+  ],
+  [
+    38.570839002267576,
+    44.13074829931973,
+    "confrontando pareceres e evidências de funcionalidade e reprodutibilidade."
+  ],
+  [
+    44.33074829931973,
+    50.68907029478458,
+    "Ao variar as condições da avaliação, investigamos a consistência desses resultados."
+  ],
+  [
+    50.88907029478458,
+    53.3940589569161,
+    "O portfólio reúne essa trajetória."
+  ],
+  [
+    53.5940589569161,
+    58.09700680272109,
+    "Mais do que construir software, aprendemos a justificar decisões,"
+  ],
+  [
+    58.297006802721086,
+    62.46272108843537,
+    "documentar limites e sustentar conclusões com evidências."
+  ]
+]
