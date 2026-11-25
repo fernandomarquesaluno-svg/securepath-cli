@@ -145,14 +145,15 @@ jobs:
               b=p.chromium.launch(headless=True)
               pg=b.new_page(viewport={'width':390,'height':844})
               external=[]
-              pg.route('**/*',lambda route: route.continue_() if route.request.url.startswith(base) else (external.append(route.request.url),route.abort()))
+              pg.context.route('**/*',lambda route: route.continue_() if route.request.url.startswith(base) else (external.append(route.request.url),route.abort()))
               pg.on('console',lambda msg: print('browser:',msg.type,msg.text))
-          pg.on('pageerror',lambda err: print('pageerror:',err))
-          pg.goto(base+'/scan-python/')
+              pg.on('pageerror',lambda err: print('pageerror:',err))
+              pg.goto(base+'/scan-python/')
               text='password = "somente-ficticio"\nstatus = "ok"\n'
               pg.locator('#text').fill(text)
               pg.locator('#run').click()
-              pg.wait_for_function("document.getElementById('status').textContent.startsWith('Análise concluída')",timeout=90000)
+              pg.wait_for_function("/Análise concluída|Falha|Não foi possível|Limite de tempo/.test(document.getElementById('status').textContent)",timeout=100000)
+              assert pg.locator('#status').inner_text().startswith('Análise concluída'), pg.locator('#status').inner_text()
               assert pg.locator('#rows tr').count()==1
               assert 'SEC004' in pg.locator('#rows').inner_text()
               assert 'somente-ficticio' not in pg.locator('#rows').inner_text()
@@ -164,7 +165,7 @@ jobs:
               pg.locator('#filter').fill('inexistente')
               assert pg.locator('#rows tr').count()==0
               pg.locator('#clear').click()
-              pg.locator('#files').set_input_files([{'name':'a.txt','mimeType':'text/plain','buffer':b'password = "example"\\n'},{'name':'b.bin','mimeType':'application/octet-stream','buffer':b'abc\x00password = "example"'}])
+              pg.locator('#files').set_input_files([{'name':'a.txt','mimeType':'text/plain','buffer':b'password = "somente-ficticio"\n'},{'name':'b.bin','mimeType':'application/octet-stream','buffer':b'abc\x00password = "example"'}])
               pg.locator('#run').click()
               pg.wait_for_function("document.getElementById('status').textContent.startsWith('Análise concluída')",timeout=90000)
               assert 'Ignorados: 1' in pg.locator('#summary').inner_text()
