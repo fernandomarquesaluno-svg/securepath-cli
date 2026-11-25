@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   browser:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -58,7 +58,7 @@ jobs:
               for(const d of exclusions)ignored.add(d);
               const result={scanner:'SecurePath CLI (Python / Pyodide)',schema_version:'1.0',summary:{examined:0,skipped:0,io_errors:0,findings:0},findings:[]};
               for(let i=0;i<files.length;i++){
-                const f=files[i],path=f.webkitRelativePath||f.name;
+                const {file:f,path}=files[i];
                 if(path.split('/').slice(0,-1).some(d=>ignored.has(d))||f.size>5*1024*1024){result.summary.skipped++;}
                 else{
                   py.FS.writeFile('/tmp/input',new Uint8Array(await f.arrayBuffer()));
@@ -72,7 +72,7 @@ jobs:
               }
               result.summary.findings=result.findings.length;
               emit('result',{result});
-            }catch(e){emit('error',{message:data.type==='init'?'Não foi possível iniciar Python no navegador.': 'Falha na análise ou configuração inválida. Confira as regras e tente novamente.'});}
+            }catch(e){console.error(String(e));emit('error',{message:data.type==='init'?'Não foi possível iniciar Python no navegador.': 'Falha na análise ou configuração inválida. Confira as regras e tente novamente.'});}
           };
           EOF
           cat > docs/scan-python/ui.js <<'EOF'
@@ -107,7 +107,7 @@ jobs:
             timeout(90000);
             w.onmessage=({data:m})=>{
               if(w!==worker)return;
-              if(m.type==='ready'){status('Analisando localmente...');timeout(30000);w.postMessage({type:'scan',files,custom,exclusions})}
+              if(m.type==='ready'){status('Analisando localmente...');timeout(30000);w.postMessage({type:'scan',files:files.map(file=>({file,path:file.webkitRelativePath||file.name})),custom,exclusions})}
               if(m.type==='progress'){$('progress').value=m.done;status(m.done+' / '+m.total+' arquivos processados');timeout(30000)}
               if(m.type==='result'){result=m.result;resetWorker();render();status('Análise concluída; memória de trabalho descartada.')}
               if(m.type==='error'){resetWorker();status(m.message)}
@@ -146,7 +146,9 @@ jobs:
               pg=b.new_page(viewport={'width':390,'height':844})
               external=[]
               pg.route('**/*',lambda route: route.continue_() if route.request.url.startswith(base) else (external.append(route.request.url),route.abort()))
-              pg.goto(base+'/scan-python/')
+              pg.on('console',lambda msg: print('browser:',msg.type,msg.text))
+          pg.on('pageerror',lambda err: print('pageerror:',err))
+          pg.goto(base+'/scan-python/')
               text='password = "somente-ficticio"\nstatus = "ok"\n'
               pg.locator('#text').fill(text)
               pg.locator('#run').click()
@@ -178,7 +180,9 @@ jobs:
           print('Browser: equivalência com CLI, arquivo binário, filtro, cancelamento, responsividade e nenhum pedido externo observados.')
           EOF
       - name: Validar no Chromium
+        shell: bash
         run: |
+          set -euo pipefail
           python -m pip install playwright==1.52.0
           python -m playwright install --with-deps chromium
           python experiments/test_browser.py | tee docs/scan-python/validacao.txt
