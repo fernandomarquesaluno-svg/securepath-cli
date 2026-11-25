@@ -1,0 +1,108 @@
+name: Prévia de voz neural para o epílogo
+on:
+  push:
+    branches: [experimento/voz-epilogo]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthesize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar sintetizador neural
+        run: |
+          python -m pip install piper-tts==1.8.0 numpy scipy
+          ffmpeg -version | head -n 1
+      - name: Gerar, aproximar características acústicas e medir
+        shell: bash
+        run: |
+          mkdir -p preview models
+          curl -fsSL --retry 2 'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx' -o models/faber.onnx
+          curl -fsSL --retry 2 'https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx.json' -o models/faber.onnx.json
+          python - <<'PY'
+          import json, math, subprocess, wave
+          from pathlib import Path
+          import numpy as np
+          from scipy.io import wavfile
+          from scipy.signal import resample_poly, correlate
+          from piper import PiperVoice
+          out=Path('preview')
+          lines=[
+            'O SecurePath nasceu de um mapa mental e evoluiu de um protótipo em Python para um scanner configurável e testado.',
+            'Na atividade seis, comparamos processos de avaliação científica.',
+            'Nas atividades sete e oito, avaliamos o K-Agent com diferentes modelos de inteligência artificial, confrontando pareceres e evidências.',
+            'O portfólio registra essa trajetória: construir, testar e justificar decisões com transparência.'
+          ]
+          def pitch(path):
+              rate,x=wavfile.read(path)
+              if x.ndim>1: x=x.mean(axis=1)
+              x=x.astype(float)
+              x/=max(1,np.max(np.abs(x)))
+              x=resample_poly(x,8000,rate)
+              f0=[]
+              for i in range(0,len(x)-400,240):
+                  y=x[i:i+400]
+                  if np.sqrt(np.mean(y*y))<.025: continue
+                  y=y-y.mean()
+                  r=correlate(y,y,mode='full')[399:]
+                  if r[0]<=0: continue
+                  lo,hi=27,123
+                  k=lo+np.argmax(r[lo:hi])
+                  if r[k]/r[0]>.47: f0.append(8000/k)
+              if len(f0)<10: raise ValueError('Insuficientes quadros sonoros')
+              return float(np.median(f0))
+          ref='docs/media/securepath-narracao-natural.wav'
+          target=pitch(ref)
+          voice=PiperVoice.load('models/faber.onnx')
+          takes=[]
+          for i,line in enumerate(lines):
+              p=out/f'take-{i}.wav'
+              spoken=line.replace('SecurePath','Secúr Péth').replace('Python','Páiton').replace('K-Agent','Kê Êidjent')
+              with wave.open(str(p),'wb') as w: voice.synthesize_wav(spoken,w)
+              sr,data=wavfile.read(p)
+              active=np.flatnonzero(np.abs(data.astype(float))>150)
+              data=data[max(0,active[0]-int(.075*sr)):min(len(data),active[-1]+int(.15*sr))]
+              wavfile.write(p,sr,data)
+              takes.append(p)
+          src=float(np.median([pitch(p) for p in takes]))
+          semi=float(np.clip(12*math.log2(target/src),-2,2))
+          factor=2**(semi/12)
+          print('F0 referência',target,'F0 original Faber',src,'ajuste de semitons',semi)
+          filter=f'rubberband=pitch={factor}:formant=preserved,highpass=f=65,equalizer=f=220:t=q:w=1:g=1.5,acompressor=threshold=0.125:ratio=1.4'
+          filters=subprocess.check_output(['ffmpeg','-hide_banner','-filters'],text=True)
+          if 'rubberband' not in filters:
+              filter=f'asetrate={int(sr*factor)},aresample={sr},atempo={1/factor},highpass=f=65,equalizer=f=220:t=q:w=1:g=1.5'
+          rate=44100
+          pieces=[np.zeros(round(.35*rate),dtype=np.int16)]
+          cues=[]
+          pos=len(pieces[0])
+          for p,line in zip(takes,lines):
+              raw=subprocess.check_output(['ffmpeg','-v','error','-i',str(p),'-af',filter,'-ar',str(rate),'-ac','1','-f','s16le','pipe:'])
+              data=np.frombuffer(raw,dtype=np.int16).copy()
+              cues.append([round(pos/rate,3),round((pos+len(data))/rate,3),line])
+              pieces.extend([data,np.zeros(round(.32*rate),dtype=np.int16)])
+              pos+=len(data)+round(.32*rate)
+              p.unlink()
+          arr=np.concatenate(pieces)
+          wavfile.write(out/'pre-mix.wav',rate,arr)
+          subprocess.run(['ffmpeg','-v','error','-y','-i',str(out/'pre-mix.wav'),'-af','loudnorm=I=-17:TP=-2:LRA=7','-ar',str(rate),str(out/'epilogo-previa.wav')],check=True)
+          (out/'pre-mix.wav').unlink()
+          subprocess.run(['ffmpeg','-v','error','-y','-i',str(out/'epilogo-previa.wav'),'-b:a','160k',str(out/'epilogo-previa.mp3')],check=True)
+          def stamp(t):
+              ms=round(t*1000)
+              return f'{ms//3600000:02}:{ms//60000%60:02}:{ms//1000%60:02}.{ms%1000:03}'
+          (out/'epilogo.vtt').write_text('WEBVTT\n\n'+''.join(f'{stamp(a)} --> {stamp(b)}\n{line}\n\n' for a,b,line in cues))
+          meta={'modelo':'Piper pt_BR-faber-medium','piper':'1.8.0','referencia':'Afonso: faixa original local, apenas medição acústica','f0_alvo_hz':target,'f0_faber_original_hz':src,'f0_previa_hz':pitch(out/'epilogo-previa.wav'),'ajuste_semitons':semi,'duracao_s':len(arr)/rate,'legendas':cues,'observacao':'Não é a voz Afonso nem clonagem. Semelhança perceptual depende de audição humana.'}
+          (out/'metadados.json').write_text(json.dumps(meta,indent=2,ensure_ascii=False))
+          print(json.dumps(meta,ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: previa-epilogo-voz-neural
+          path: preview/
+          retention-days: 14
