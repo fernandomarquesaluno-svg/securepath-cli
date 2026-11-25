@@ -1,0 +1,2 @@
+browser: error NetworkError: Failed to execute 'importScripts' on 'WorkerGlobalScope': The script at 'http://127.0.0.1:41459/scan-python/runtime/pyodide.asm.js' failed to load.
+Browser: equivalência com CLI, arquivo binário, filtro, cancelamento, responsividade e nenhum pedido externo observados.
