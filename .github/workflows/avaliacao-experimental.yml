@@ -1,0 +1,63 @@
+name: Avaliação experimental do SecurePath
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/avaliacao-experimental.yml'
+      - 'experiments/evaluate.py'
+      - 'artefatos.py'
+      - 'tests/**'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: securepath-experiments
+  cancel-in-progress: false
+jobs:
+  experimentos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar versões fixas das ferramentas de comparação
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/bin"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+          (curl -fsSL --retry 2 --max-time 90 https://github.com/gitleaks/gitleaks/releases/download/v8.24.2/gitleaks_8.24.2_linux_x64.tar.gz -o "$RUNNER_TEMP/gitleaks.tar.gz" && tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP/bin" gitleaks) || echo 'Gitleaks indisponível: será registrado no relatório'
+          (curl -fsSL --retry 2 --max-time 120 https://github.com/trufflesecurity/trufflehog/releases/download/v3.88.0/trufflehog_3.88.0_linux_amd64.tar.gz -o "$RUNNER_TEMP/trufflehog.tar.gz" && tar -xzf "$RUNNER_TEMP/trufflehog.tar.gz" -C "$RUNNER_TEMP/bin" trufflehog) || echo 'TruffleHog indisponível: será registrado no relatório'
+          python -m pip install detect-secrets==1.5.0 || echo 'detect-secrets indisponível: será registrado no relatório'
+          test -x /usr/bin/time
+      - name: Executar testes e experimentos
+        run: python experiments/evaluate.py
+      - name: Evidências reproduzíveis
+        uses: actions/upload-artifact@v4
+        with:
+          name: securepath-experimentos
+          path: docs/experimentos/
+      - name: Vincular resultados ao site sem modificar vídeo
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path('docs/index.html')
+          s=p.read_text()
+          summary=json.loads(Path('docs/experimentos/testes.json').read_text())
+          if 'href="./experimentos/"' not in s:
+              s=s.replace('<a href="#evolucao">Etapas de desenvolvimento</a>', '<a href="#evolucao">Etapas de desenvolvimento</a><a href="./experimentos/">Experimentos</a>')
+              s=s.replace('<section class="section evidence-section" id="evidencias">', '<section class="section evidence-section" id="evidencias"><div class="container"><div class="scanner-panel"><h2>Resultados experimentais</h2><p>Base sintética rotulada, resultados das ferramentas executadas, benchmark com 1, 2, 4 e 8 workers, métricas e testes individuais.</p><a href="./experimentos/">Abrir laboratório experimental →</a></div></div>')
+          s=s.replace('Nenhum teste comparativo de precisão, recall ou tempo foi executado.', 'Consulte as execuções e as limitações no laboratório experimental.')
+          s=s.replace('69 aprovados na suíte local',f"{summary['passed']} aprovados na execução CI")
+          s=s.replace('A suíte foi executada localmente; não é um resultado de CI nem substitui testes em outros sistemas operacionais.', 'A suíte também foi executada no GitHub Actions em Linux; consulte os resultados individuais. A execução não substitui testes em outros sistemas operacionais.')
+          p.write_text(s)
+          PY
+      - name: Publicar resultados verificados
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/experimentos docs/index.html
+          git commit -m 'evidencias: resultados reais de testes e avaliação experimental'
+          git push origin HEAD:main
